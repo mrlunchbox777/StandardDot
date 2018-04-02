@@ -6,7 +6,5 @@ namespace shoellibraries.Abstract.Configuration
     public interface IConfiguration
     {
         IConfigurationMetadata ConfigurationMetadata { get; }
-        
-        bool DoesConfigHaveSetting(string key);
     }
 }
