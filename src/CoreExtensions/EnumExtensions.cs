@@ -18,7 +18,7 @@ namespace shoellibraries.CoreExtensions
         /// <param name="target">Target enum</param>
         /// <param name="source">The string that has the enum</param>
         /// <returns>The enum from the string, or null</returns>
-        public static T? MoveItemToFirst<T>(this T? target, string source)
+        public static T? TryParseSafe<T>(this T? target, string source)
             where T : struct, IConvertible
         {
             if (!typeof(T).IsEnum)
