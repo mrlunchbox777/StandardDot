@@ -5,6 +5,6 @@ namespace shoellibraries.Abstract.Configuration
 {
     public interface IConfiguration
     {
-        IConfigurationMetadata ConfigurationMetadata { get; }
+        IConfigurationMetadata ConfigurationMetadata { get; set; }
     }
 }
