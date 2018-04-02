@@ -9,12 +9,11 @@ namespace shoellibraries.Abstract.Configuration
     public abstract class ConfigurationCacheBase : IConfigurationCache
     {
         public ConfigurationCacheBase(ICachingService cachingService, ISerializationService serializationService,
-            TimeSpan configurationLifeSpan, TimeSpan? metadataLifeSpan = null)
+            TimeSpan configurationLifeSpan)
         {
             CachingService = cachingService;
             SerializationService = serializationService;
             ConfigurationLifeSpan = configurationLifeSpan;
-            MetadataLifeSpan = metadataLifeSpan ?? TimeSpan.FromDays(1);
         }
 
         protected virtual ICachingService CachingService { get; }
@@ -99,6 +98,8 @@ namespace shoellibraries.Abstract.Configuration
                 throw new InvalidOperationException("Unable to read or deserialize configuration using " +
                     (configurationMetadata.UseStream ? "Stream" : "Filesystem") + ". See Inner Exception for details.", ex);
             }
+            configuration.ConfigurationMetadata = configurationMetadata;
+            CachingService.Cache(configurationMetadata.ConfigurationName, configuration, DateTime.UtcNow, DateTime.UtcNow.Add(ConfigurationLifeSpan));
 
             return configuration;
         }

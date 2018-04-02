@@ -8,8 +8,8 @@ namespace Configuration
     public class DefaultConfigurationCache : ConfigurationCacheBase
     {
         public DefaultConfigurationCache(ICachingService cachingService, ISerializationService serializationService,
-            TimeSpan configurationLifeSpan, TimeSpan? metadataLifeSpan = null)
-            : base(cachingService, serializationService, configurationLifeSpan, metadataLifeSpan)
+            TimeSpan configurationLifeSpan)
+            : base(cachingService, serializationService, configurationLifeSpan)
         {
         }
     }
