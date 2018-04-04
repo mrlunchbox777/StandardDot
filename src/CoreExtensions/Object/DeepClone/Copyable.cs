@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 
-namespace shoellibraries.CoreExtensions.Object.DeepClone
+namespace StandardDot.CoreExtensions.Object.DeepClone
 {
     /// <summary>
     /// This class is an abstract base class that can be used as a really simple way of making an object

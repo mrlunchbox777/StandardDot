@@ -1,7 +1,7 @@
 using System;
-using shoellibraries.Enums;
+using StandardDot.Enums;
 
-namespace shoellibraries.Abstract
+namespace StandardDot.Abstract
 {
     public interface ILoggingService
     {

@@ -1,9 +1,9 @@
 using System;
 using System.IO;
-using shoellibraries.CoreExtensions;
-using shoellibraries.CoreExtensions.Object;
+using StandardDot.CoreExtensions;
+using StandardDot.CoreExtensions.Object;
 
-namespace shoellibraries.Abstract.CoreServices
+namespace StandardDot.Abstract.CoreServices
 {
     ///
     public class Json : ISerializationService

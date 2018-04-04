@@ -1,5 +1,9 @@
 # C# Boilerplate Code
 
+[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%Help/HMAC%20Authentication%20Help.md)
+
+[Home](/README.md)
+
 ```csharp
 using System;
 using System.Configuration;

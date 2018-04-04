@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 
-namespace shoellibraries.Abstract.CoreServices
+namespace StandardDot.Abstract.CoreServices
 {
     ///
     public interface ISerializationService : IDisposable

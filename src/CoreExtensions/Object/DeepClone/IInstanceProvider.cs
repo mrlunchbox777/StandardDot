@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace shoellibraries.CoreExtensions.Object.DeepClone
+namespace StandardDot.CoreExtensions.Object.DeepClone
 {
     /// <summary>
     /// An interface defining an instance provider, i.e. an object that can create instances of a specific type.

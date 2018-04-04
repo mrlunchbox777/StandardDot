@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using shoellibraries.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object;
 using Xunit;
 
-namespace shoellibraries.CoreExtensions.UnitTests
+namespace StandardDot.CoreExtensions.UnitTests
 {
   public class StreamExtensionsTest
     {

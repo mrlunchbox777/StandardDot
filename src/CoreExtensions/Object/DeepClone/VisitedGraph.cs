@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace shoellibraries.CoreExtensions.Object.DeepClone
+namespace StandardDot.CoreExtensions.Object.DeepClone
 {
     /// <summary>
     /// A class that helps <see cref="ObjectDeepCloneExtensions" /> figure out visted properties and fields

@@ -1,9 +1,9 @@
-﻿using shoellibraries.CoreExtensions.Object;
-using shoellibraries.CoreExtensions.Object.DeepClone;
+﻿using StandardDot.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object.DeepClone;
 using System;
 using Xunit;
 
-namespace shoellibraries.CoreExtensions.UnitTests.Object.DeepClone
+namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
 {
     public class FlatObjectTest
     {
