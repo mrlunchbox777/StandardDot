@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace shoellibraries.CoreExtensions.UnitTests.Object.DeepClone
+namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
 {
     internal enum Gender
     {

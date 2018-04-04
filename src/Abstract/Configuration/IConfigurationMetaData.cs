@@ -1,8 +1,8 @@
 using System;
 using System.IO;
-using shoellibraries.Enums;
+using StandardDot.Enums;
 
-namespace shoellibraries.Abstract.Configuration
+namespace StandardDot.Abstract.Configuration
 {
     public interface IConfigurationMetadata
     {

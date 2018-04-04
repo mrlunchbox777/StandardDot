@@ -3,7 +3,7 @@ using System.IO;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
-namespace shoellibraries.CoreExtensions
+namespace StandardDot.CoreExtensions
 {
     /// <summary>
     /// Extensions for strings.
@@ -117,7 +117,7 @@ namespace shoellibraries.CoreExtensions
                 return null;
             }
             
-            return shoellibraries.Constants.DateTime.UnixEpoch.Add((TimeSpan)timespanUnixTimeStamp);
+            return StandardDot.Constants.DateTime.UnixEpoch.Add((TimeSpan)timespanUnixTimeStamp);
         }
 
         /// <summary>

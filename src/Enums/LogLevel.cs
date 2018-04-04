@@ -1,4 +1,4 @@
-namespace shoellibraries.Enums
+namespace StandardDot.Enums
 {
     public enum LogLevel
     {

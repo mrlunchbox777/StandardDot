@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace shoellibraries.Abstract
+namespace StandardDot.Abstract
 {
     public interface IApiKeyService : IDictionary<string, string>
     {

@@ -1,7 +1,7 @@
 using System;
-using shoellibraries.Abstract.Caching;
+using StandardDot.Abstract.Caching;
 
-namespace Caching
+namespace StandardDot.Caching
 {
     public class DefaultCachedObject<T> : ICachedObject<T>
     {

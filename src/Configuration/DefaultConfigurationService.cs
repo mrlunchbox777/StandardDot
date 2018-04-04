@@ -1,5 +1,5 @@
 ﻿using System;
-using shoellibraries.Abstract.Configuration;
+using StandardDot.Abstract.Configuration;
 
 namespace Configuration
 {

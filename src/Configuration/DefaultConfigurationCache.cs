@@ -1,7 +1,7 @@
 using System;
-using shoellibraries.Abstract.Caching;
-using shoellibraries.Abstract.Configuration;
-using shoellibraries.Abstract.CoreServices;
+using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.Configuration;
+using StandardDot.Abstract.CoreServices;
 
 namespace Configuration
 {

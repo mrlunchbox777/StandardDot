@@ -1,7 +1,7 @@
 using System.IO;
-using shoellibraries.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object;
 
-namespace shoellibraries.CoreExtensions
+namespace StandardDot.CoreExtensions
 {
     /// <summary>
     /// Extensions for streams.

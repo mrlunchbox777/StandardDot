@@ -1,5 +1,18 @@
 # HMAC Help
 
+[Home](/README.md)
+
+## Boiler Plate Code
+
+* [C#](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)
+* [JS and Node](/src/Authentication/Hmac/API%20Integration%Help/C#.md)
+
+## [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)
+
+## Basic Instructions
+
+[A Basic README](/src/Authentication/Hmac/API%20Integration%Help/README.md)
+
 We use HMAC Authentication to verify requests.
 
 You will be given 2 values
@@ -59,4 +72,4 @@ Steps in the process
 8. Submit your header with your request, and you should be authenticated
 
 
-There are several utility enpoints given in the `Integration Endpoints.md` Document
+There are several utility enpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)

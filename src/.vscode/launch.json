@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/CoreExtensions.UnitTests/bin/Debug/netcoreapp1.1/shoellibraries.CoreExtensions.UnitTests.dll",
+            "program": "${workspaceFolder}/CoreExtensions.UnitTests/bin/Debug/netcoreapp1.1/StandardDot.CoreExtensions.UnitTests.dll",
             "args": [],
             "cwd": "${workspaceFolder}/CoreExtensions.UnitTests",
             // For more information about the 'console' field, see https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md#console-terminal-window

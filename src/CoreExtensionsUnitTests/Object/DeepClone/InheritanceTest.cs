@@ -1,8 +1,8 @@
 ﻿using System;
-using shoellibraries.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object;
 using Xunit;
 
-namespace shoellibraries.CoreExtensions.UnitTests.Object.DeepClone
+namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
 {
     public class InheritanceTest
     {
