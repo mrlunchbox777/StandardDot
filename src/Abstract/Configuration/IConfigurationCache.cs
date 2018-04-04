@@ -1,8 +1,8 @@
 using System;
-using shoellibraries.Abstract.Caching;
-using shoellibraries.Enums;
+using StandardDot.Abstract.Caching;
+using StandardDot.Enums;
 
-namespace shoellibraries.Abstract.Configuration
+namespace StandardDot.Abstract.Configuration
 {
     public interface IConfigurationCache
     {

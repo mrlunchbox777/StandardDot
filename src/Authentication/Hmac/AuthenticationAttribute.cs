@@ -13,9 +13,9 @@
 // using PreS.Enums;
 // using PreS.Extensions;
 // using PreS.Models;
-// using shoellibraries.CoreExtensions;
+// using StandardDot.CoreExtensions;
 
-// namespace shoellibraries.Hmac
+// namespace StandardDot.Hmac
 // {
 //     /// <summary>
 //     /// Uses the HMAC Authentication Service to handle requests

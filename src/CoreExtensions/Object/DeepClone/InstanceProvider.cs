@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace shoellibraries.CoreExtensions.Object.DeepClone
+namespace StandardDot.CoreExtensions.Object.DeepClone
 {
     /// <summary>
     /// Abstract class that implements the <see cref="IInstanceProvider"/> interface,

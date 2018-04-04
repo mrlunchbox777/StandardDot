@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-using shoellibraries.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object;
 using Xunit;
 
-namespace shoellibraries.CoreExtensions.UnitTests.Object
+namespace StandardDot.CoreExtensions.UnitTests.Object
 {
   public class ObjectSerializationExtensionsTest
     {

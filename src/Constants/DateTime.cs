@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace shoellibraries.Constants
+namespace StandardDot.Constants
 {
     public class DateTime
     {

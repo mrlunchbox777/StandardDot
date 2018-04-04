@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/CoreExtensions.UnitTests/shoellibraries.CoreExtensions.UnitTests.csproj"
+                "${workspaceFolder}/CoreExtensions.UnitTests/StandardDot.CoreExtensions.UnitTests.csproj"
             ],
             "problemMatcher": "$msCompile"
         }

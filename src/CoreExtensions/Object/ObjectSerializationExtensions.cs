@@ -2,11 +2,11 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
-using shoellibraries.Enums;
-using shoellibraries.Abstract;
-using shoellibraries.CoreExtensions;
+using StandardDot.Enums;
+using StandardDot.Abstract;
+using StandardDot.CoreExtensions;
 
-namespace shoellibraries.CoreExtensions.Object
+namespace StandardDot.CoreExtensions.Object
 {
     /// <summary>
     /// Serialization Extensions for objects

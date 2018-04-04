@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using shoellibraries.Abstract.Caching;
+using StandardDot.Abstract.Caching;
 
-namespace Caching
+namespace StandardDot.Caching
 {
     public class MemoryCachingService : ICachingService
     {

@@ -1,10 +1,10 @@
 using System;
 using System.IO;
-using shoellibraries.Abstract.Caching;
-using shoellibraries.Abstract.CoreServices;
-using shoellibraries.Enums;
+using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.CoreServices;
+using StandardDot.Enums;
 
-namespace shoellibraries.Abstract.Configuration
+namespace StandardDot.Abstract.Configuration
 {
     public abstract class ConfigurationCacheBase : IConfigurationCache
     {

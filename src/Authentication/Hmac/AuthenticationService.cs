@@ -2,12 +2,12 @@ using System;
 using System.IO;
 using System.Security.Cryptography;
 using System.Security.Principal;
-using shoellibraries.Abstract;
-using shoellibraries.Abstract.Caching;
-using shoellibraries.CoreExtensions;
-using shoellibraries.Enums;
+using StandardDot.Abstract;
+using StandardDot.Abstract.Caching;
+using StandardDot.CoreExtensions;
+using StandardDot.Enums;
 
-namespace shoellibraries.Hmac
+namespace StandardDot.Hmac
 {
     /// <summary>
     /// Handles HMAC Authentication, please read the documentation under API Integration Help

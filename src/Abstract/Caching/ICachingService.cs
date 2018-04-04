@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace shoellibraries.Abstract.Caching
+namespace StandardDot.Abstract.Caching
 {
     public interface ICachingService : IDictionary<string, ICachedObject<object>>
     {

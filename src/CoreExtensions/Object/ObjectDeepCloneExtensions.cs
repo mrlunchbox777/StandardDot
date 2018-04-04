@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using shoellibraries.CoreExtensions.Object.DeepClone;
+using StandardDot.CoreExtensions.Object.DeepClone;
 
-namespace shoellibraries.CoreExtensions.Object
+namespace StandardDot.CoreExtensions.Object
 {
     /// <summary>
     /// Extensions that allow deep clones of objects.

@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace shoellibraries.CoreExtensions.UnitTests
+namespace StandardDot.CoreExtensions.UnitTests
 {
     [DataContract]
     public class Foobar

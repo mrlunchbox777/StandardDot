@@ -1,6 +1,6 @@
 using System;
 
-namespace shoellibraries.Abstract.Caching
+namespace StandardDot.Abstract.Caching
 {
     public interface ICachedObject<T>
     {

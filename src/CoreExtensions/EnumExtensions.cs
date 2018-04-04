@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Json;
 
-namespace shoellibraries.CoreExtensions
+namespace StandardDot.CoreExtensions
 {
     /// <summary>
     /// Extensions for Enum.
