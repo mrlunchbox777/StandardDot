@@ -1,5 +1,9 @@
 # UTILITY METHODS
 
+[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%Help/HMAC%20Authentication%20Help.md)
+
+[Home](/README.md)
+
 ### Anonymous
 
 1. Heartbeat, GET `https://{host}/api/{controller}`

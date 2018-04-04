@@ -1,5 +1,9 @@
 # READ ME
 
+[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%Help/HMAC%20Authentication%20Help.md)
+
+[Home](/README.md)
+
 The endpoints document contains all the endpoints you'll need to integrate.
 This is an example and a breakdown of what is stored there (note never include the curly braces around the param values when submitting)
 
@@ -55,7 +59,6 @@ catch (WebException ex)
 ```
 
 The HMAC Authentication help breaks down how HMAC authentication works and how you can implement it. It shows the different values that will be needed, and how to put them together.
-
 
 
 Please reach out to us with any questions you may have.
