@@ -3,7 +3,7 @@ using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.Configuration;
 using StandardDot.Abstract.CoreServices;
 
-namespace Configuration
+namespace StandardDot.Configuration
 {
     public class DefaultConfigurationCache : ConfigurationCacheBase
     {
