@@ -8,11 +8,11 @@
 
 * We use [Git](https://www.codecademy.com/courses/learn-git/lessons/git-workflow)
     * We use the [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) workflow
-        * [`master`](https://bitbucket.org/socialwallet/socialsend/branch/master) is protected, only Luke can accept merge requests
-        * [`develop`](https://bitbucket.org/socialwallet/socialsend/branch/develop) is protected, anyone can accept merge requests
+        * [`master`](https://github.com/mrlunchbox777/StandardDot/tree/master) is protected, only admins can accept merge requests
+        * [`develop`](https://github.com/mrlunchbox777/StandardDot/tree/develop) is protected, only admins can accept merge requests
         * Our Gitflow Standards
-            * Production branch - [`master`](https://bitbucket.org/socialwallet/socialsend/branch/master)
-            * Development branch - [`develop`](https://bitbucket.org/socialwallet/socialsend/branch/develop)
+            * Production branch - [`master`](https://github.com/mrlunchbox777/StandardDot/tree/master)
+            * Development branch - [`develop`](https://github.com/mrlunchbox777/StandardDot/tree/develop)
             * Feature branch prefix - `feature/`
             * Release branch prefix - `release/`
             * Hotfix branch prefix - `hotfix/`
