@@ -27,19 +27,19 @@ Note the curly braces are just there to show the variables, DO NOT INCLUDE THEM.
 The header will look like this
 
 ```http
-[Authorization: sls AppId:Signature:Nonce:Timestamp]
+[Authorization: sds AppId:Signature:Nonce:Timestamp]
 ```
 
 The value more specifically like this
 
 ```http
-sls {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}
+sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}
 ```
 
 1. `:` - The first one is the key value seperator, the remaining `:`'s are seperator to get the different portions of the header value
 2. `Authorization` - Header key
-3. `sls` - Authentication namespace
-4. `AppId` - The AppId you get from Social Wallet
+3. `sds` - Authentication namespace
+4. `AppId` - The AppId you get from the provider
 5. `Signature` - A Base64 encoded HMAC SHA256 hash of the Signature Data (uses your secret key as the hashing key)
 6. `Nonce` - An arbitrary string that you will generate to identify a unique request (Generate a new one for EVERY request)
 7. `Timestamp` - Unix Timestamp (seconds since Jan 1st 1970) use UTC
@@ -67,8 +67,8 @@ Steps in the process
     - `{AppId}{RequestHttpMethod}{RequestUriString}{RequestTimeStamp}{Nonce}{RequestContentBase64String}`
 6. HMAC SHA256 Hash your signature, using your Secret Key as the hashing key, and then Base64 Encode the hash - [C++](https://gist.github.com/woodja/6082940)
 7. Create your header
-    - Complete Header - `[Authorization: sls AppId:Signature:Nonce:Timestamp]`
-    - Header Value - `sls {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
+    - Complete Header - `[Authorization: sds AppId:Signature:Nonce:Timestamp]`
+    - Header Value - `sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
 8. Submit your header with your request, and you should be authenticated
 
 

@@ -21,7 +21,7 @@ namespace StandardDot.Hmac
         /// <param name="apiKeyService">The service that provides Api Keys</param>
         /// <param name="cachingService">The service that handles caching</param>
         public AuthenticationService(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
-            : this(loggingService, apiKeyService, cachingService, 300, 300, "sls")
+            : this(loggingService, apiKeyService, cachingService, 300, 300, "sds")
         {
         }
 
@@ -33,7 +33,7 @@ namespace StandardDot.Hmac
         /// <param name="cachingService">The service that handles caching</param>
         /// <param name="requestMaxAgeInSeconds">How long to store a nonce to prevent replay requests, default 300</param>
         /// <param name="serverClientMaxTimeDifference">The number of seconds that the requester is allowed to be off, default 300</param>
-        /// <param name="authenticationScheme">The scheme that identifies this authentication, default sls</param>
+        /// <param name="authenticationScheme">The scheme that identifies this authentication, default sds</param>
         public AuthenticationService(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService,
             ulong requestMaxAgeInSeconds, ulong serverClientMaxTimeDifference, string authenticationScheme)
         {
@@ -75,17 +75,20 @@ namespace StandardDot.Hmac
                 return null;
             }
         }
-
-        // the resourceRequestMethod is the http method (should probably always be in upper)
-            // ensure the resource is uri encoded
         
         /// <summary>
-        /// Gets the different parts of the HMAC Authentication Value
+        /// Checks if a request is valid based on what the client passed
         /// </summary>
-        /// <param name="hmacAuthenticationValue">The authentication value that the client passed</param>
-        /// <returns>An array of the parts of the HMAC Authentication Value</returns>
-        private Tuple<bool, string> IsValidRequest(Stream content, string resource, string resourceRequestMethod, string appId, string incomingBase64Signature,
-            string nonce, string requestTimeStamp)
+        /// <param name="content">The content that the client passed</param>
+        /// <param name="resource">The resource that the client requested (URI ENCODED)</param>
+        /// <param name="resourceRequestMethod">The method that the client used to request the resource (ALL UPPER)</param>
+        /// <param name="appId">The appId the client is claiming to be</param>
+        /// <param name="incomingBase64Signature">The base64 signature the client passed</param>
+        /// <param name="nonce">The nonce the client provided to identify the request</param>
+        /// <param name="requestTimeStamp">The timestamp the client provided to identify the request</param>
+        /// <returns>(Is the request valid, The error message)</returns>
+        private Tuple<bool, string> IsValidRequest(Stream content, string resource, string resourceRequestMethod, string appId,
+            string incomingBase64Signature, string nonce, string requestTimeStamp)
         {
             if (string.IsNullOrWhiteSpace(resource))
             {
@@ -148,6 +151,11 @@ namespace StandardDot.Hmac
 
         }
 
+        /// <summary>
+        /// Ensures that the request recognizes the correct time, and that it is not a repeat request (based on nonce recognition)
+        /// </summary>
+        /// <param name="contentStream">The stream of content to hash</param>
+        /// <returns>If the request is a replay request</returns>
         private bool IsReplayRequest(string nonce, string requestTimeStamp)
         {
             if (CachingService.ContainsKey(nonce))
@@ -172,10 +180,10 @@ namespace StandardDot.Hmac
         }
 
         /// <summary>
-        /// Returns (content, hash, raw content)
+        /// Computes the hash of the content, and returns the content in several different ways
         /// </summary>
-        /// <param name="contentStream"></param>
-        /// <returns></returns>
+        /// <param name="contentStream">The stream of content to hash</param>
+        /// <returns>(A copy of the contentStream, the hash of the content, the string representing the content)</returns>
         private static Tuple<Stream, byte[], string> ComputeHash(Stream contentStream)
         {
             using (MD5 md5 = MD5.Create())
@@ -194,7 +202,16 @@ namespace StandardDot.Hmac
             }
         }
 
-        public Tuple<bool, string, GenericPrincipal> DoAuthorization(string hmacAuthorizationValue,
+        /// <summary>
+        /// Authorizes a request using HMAC authentication
+        /// </summary>
+        /// <param name="hmacAuthenticationValue">The authentication value that the client passed (usually from the headers)</param>
+        /// <param name="content">The content that the client passed</param>
+        /// <param name="resource">The resource that the client requested (URI ENCODED)</param>
+        /// <param name="resourceRequestMethod">The method that the client used to request the resource (ALL UPPER)</param>
+        /// <param name="allowAnonymous">Should allow anonymous requests</param>
+        /// <returns>(Is Authorized, Error Message, A Principal based on the AppId)</returns>
+        public Tuple<bool, string, GenericPrincipal> DoAuthorization(string hmacAuthenticationValue,
             Stream content, string resource, string resourceRequestMethod, bool allowAnonymous)
         {
             // If anonymous access is allowed the client should be authorized no matter what
@@ -203,8 +220,8 @@ namespace StandardDot.Hmac
                 return null;
             }
 
-            string[] authParts = hmacAuthorizationValue?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hmacAuthorizationValue != null && authParts.Length > 0
+            string[] authParts = hmacAuthenticationValue?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            if (hmacAuthenticationValue != null && authParts.Length > 0
                 && AuthenticationScheme.Equals(authParts[0].Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 string rawAuthValue = authParts[1];
@@ -245,7 +262,7 @@ namespace StandardDot.Hmac
             }
             else
             {
-                string errorMessage = (string.IsNullOrWhiteSpace(hmacAuthorizationValue) ? "No Hmac Authorization Value." : "")
+                string errorMessage = (string.IsNullOrWhiteSpace(hmacAuthenticationValue) ? "No Hmac Authorization Value." : "")
                                     + (authParts?.Length > 0
                                         ? "Not enough auth parts. Did you include the namespace and parameter string?"
                                         : "")
