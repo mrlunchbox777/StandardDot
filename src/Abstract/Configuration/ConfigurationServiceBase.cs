@@ -15,27 +15,30 @@ namespace StandardDot.Abstract.Configuration
 
         protected virtual ConfigurationCacheBase CacheBase { get; set; }
 
-        public virtual void ResetConfigurations()
+        public virtual void ResetCachedConfigurations()
         {
             CacheBase.ResetCache();
         }
         
-        public virtual void ClearConfiguration<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        public virtual void ClearConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            CacheBase.ClearConfiguration<T>(configurationMetadata);
+            CacheBase.ClearConfiguration<T, Tm>(configurationMetadata);
         }
 
-        public virtual T GetConfiguration<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        public virtual T GetConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            return CacheBase.GetConfiguration<T>(configurationMetadata);
+            return CacheBase.GetConfiguration<T, Tm>(configurationMetadata);
         }
 
-        public virtual bool DoesConfigurationExist<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        public virtual bool DoesConfigurationExist<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            return CacheBase.DoesConfigurationExist<T>(configurationMetadata);
+            return CacheBase.DoesConfigurationExist<T, Tm>(configurationMetadata);
         }
     }
 }

@@ -31,41 +31,45 @@ namespace StandardDot.Abstract.Configuration
             CachingService.Clear();
         }
 
-        protected internal virtual void ClearConfiguration<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        protected internal virtual void ClearConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            IConfigurationMetadata metadata = GetMetadataForConfig<T>(configurationMetadata);
+            Tm metadata = GetMetadataForConfiguration<T, Tm>(configurationMetadata);
             if (CachingService.ContainsKey(metadata.ConfigurationName))
             {
                 CachingService.Remove(metadata.ConfigurationName);
             }
         }
 
-        protected internal virtual bool DoesConfigurationExist<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        protected internal virtual bool DoesConfigurationExist<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            IConfigurationMetadata metadata = GetMetadataForConfig<T>(configurationMetadata);
+            Tm metadata = GetMetadataForConfiguration<T, Tm>(configurationMetadata);
             return CachingService.ContainsKey(metadata.ConfigurationName);
         }
 
-        protected internal virtual void AddConfiguration<T>(T configuration)
-            where T: IConfiguration
+        protected internal virtual void AddConfiguration<T, Tm>(T configuration)
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
             DateTime cacheTime = DateTime.UtcNow;
-            ClearConfiguration<T>(configuration.ConfigurationMetadata);
+            ClearConfiguration<T, Tm>(configuration.ConfigurationMetadata);
             CachingService.Cache(configuration.ConfigurationMetadata.ConfigurationName, configuration, cacheTime, (cacheTime.Add(ConfigurationLifeSpan)));
         }
 
-        protected internal virtual T GetConfiguration<T>(IConfigurationMetadata configurationMetadata = null)
-            where T: IConfiguration
+        protected internal virtual T GetConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            IConfigurationMetadata metadata = GetMetadataForConfig<T>(configurationMetadata);
+            Tm metadata = GetMetadataForConfiguration<T, Tm>(configurationMetadata);
             ICachedObject<T> cachedObject = CachingService.Retrieve<T>(metadata.ConfigurationName);
             T configuration;
 
             if (cachedObject == null || cachedObject.ExpireTime < DateTime.UtcNow || cachedObject.Value == null)
             {
-                configuration = GetConfigurationFromSource<T>(metadata);
+                configuration = GetConfigurationFromSource<T, Tm>(metadata);
             }
             else
             {
@@ -75,14 +79,17 @@ namespace StandardDot.Abstract.Configuration
             return configuration;
         }
 
-        protected virtual T GetConfigurationFromSource<T>(IConfigurationMetadata configurationMetadata)
-            where T: IConfiguration
+        // disposes of the stream if used
+        protected virtual T GetConfigurationFromSource<T, Tm>(Tm configurationMetadata)
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
             T configuration = default(T);
+            Stream configurationStream = null;
             
             try
             {
-                Stream configurationStream = configurationMetadata.UseStream
+                configurationStream = configurationMetadata.UseStream
                     ? configurationMetadata.GetConfigurationStream()
                     : File.OpenRead(configurationMetadata.ConfigurationLocation);
                 
@@ -92,42 +99,35 @@ namespace StandardDot.Abstract.Configuration
                 }
                     
                 configuration = SerializationService.DeserializeObject<T>(configurationStream);
+                configurationStream.Dispose();
             }
             catch (Exception ex)
             {
+                configurationStream?.Dispose();
                 throw new InvalidOperationException("Unable to read or deserialize configuration using " +
                     (configurationMetadata.UseStream ? "Stream" : "Filesystem") + ". See Inner Exception for details.", ex);
             }
+            
             configuration.ConfigurationMetadata = configurationMetadata;
             CachingService.Cache(configurationMetadata.ConfigurationName, configuration, DateTime.UtcNow, DateTime.UtcNow.Add(ConfigurationLifeSpan));
 
             return configuration;
         }
 
-        protected virtual IConfigurationMetadata GetMetadataForConfig<T>(IConfigurationMetadata configurationMetadata)
-            where T: IConfiguration
+        /// <summary>
+        /// Gets the metadata for a configuration type
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
+        protected virtual Tm GetMetadataForConfiguration<T, Tm>(Tm configurationMetadata)
+            where T: IConfiguration<T, Tm>, new()
+            where Tm: IConfigurationMetadata<T, Tm>, new()
         {
-            IConfigurationMetadata metadata = configurationMetadata;
+            Tm metadata = configurationMetadata;
             if (metadata == null)
             {
-                T initialInstance = (T)Activator.CreateInstance(typeof(T));
-                metadata = GetMetadataForConfigByReflection<T>();
-            }
-            return metadata;
-        }
-
-        protected virtual IConfigurationMetadata GetMetadataForConfigByReflection<T>()
-            where T: IConfiguration
-        {
-            Type configurationMetaDataType = typeof(T).GetProperty("ConfigurationMetadata").PropertyType;
-            IConfigurationMetadata metadata;
-            try
-            {
-                metadata = (IConfigurationMetadata)Activator.CreateInstance(configurationMetaDataType);
-            }
-            catch (Exception ex)
-            {
-                throw new InvalidOperationException("Unable to create IConfigurationMetadata, and no metadata was passed in.", ex);
+                metadata = new Tm();
             }
             return metadata;
         }

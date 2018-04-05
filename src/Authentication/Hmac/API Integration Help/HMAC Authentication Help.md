@@ -4,14 +4,14 @@
 
 ## Boiler Plate Code
 
-* [C#](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)
-* [JS and Node](/src/Authentication/Hmac/API%20Integration%Help/C#.md)
+* [C#](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
+* [JS and Node](/src/Authentication/Hmac/API%20Integration%20Help/C#.md)
 
-## [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)
+## [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
 
 ## Basic Instructions
 
-[A Basic README](/src/Authentication/Hmac/API%20Integration%Help/README.md)
+[A Basic README](/src/Authentication/Hmac/API%20Integration%20Help/README.md)
 
 We use HMAC Authentication to verify requests.
 
@@ -72,4 +72,4 @@ Steps in the process
 8. Submit your header with your request, and you should be authenticated
 
 
-There are several utility enpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%Help/Integration%20Endpoints.md)
+There are several utility enpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
