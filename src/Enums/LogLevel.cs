@@ -1,5 +1,8 @@
 namespace StandardDot.Enums
 {
+    /// <summary>
+    /// The log levels for logging services
+    /// </summary>
     public enum LogLevel
     {
         Debug = 0,

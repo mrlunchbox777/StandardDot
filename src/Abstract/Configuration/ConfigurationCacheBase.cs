@@ -14,7 +14,7 @@ namespace StandardDot.Abstract.Configuration
         /// <param name="serializationService">A serialization service to use for reading configurations</param>
         /// <param name="configurationLifeSpan">How long cached configurations should be valid for</param>
         public ConfigurationCacheBase(ICachingService cachingService, ISerializationService serializationService,
-            TimeSpan configurationLifeSpan)
+            TimeSpan? configurationLifeSpan = null)
         {
             CachingService = cachingService;
             SerializationService = serializationService;
@@ -25,7 +25,7 @@ namespace StandardDot.Abstract.Configuration
 
         protected virtual ISerializationService SerializationService { get; }
 
-        protected virtual TimeSpan ConfigurationLifeSpan { get; }
+        protected virtual TimeSpan? ConfigurationLifeSpan { get; }
 
         public virtual int NumberOfConfigurations => CachingService.Count;
 
@@ -82,7 +82,8 @@ namespace StandardDot.Abstract.Configuration
         {
             DateTime cacheTime = DateTime.UtcNow;
             ClearConfiguration<T, Tm>(configuration.ConfigurationMetadata);
-            CachingService.Cache(configuration.ConfigurationMetadata.ConfigurationName, configuration, cacheTime, (cacheTime.Add(ConfigurationLifeSpan)));
+            CachingService.Cache(configuration.ConfigurationMetadata.ConfigurationName, configuration, cacheTime,
+                (ConfigurationLifeSpan == null ? (DateTime?)null : cacheTime.Add(ConfigurationLifeSpan.Value)));
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace StandardDot.Abstract.Configuration
             }
             
             configuration.ConfigurationMetadata = configurationMetadata;
-            CachingService.Cache(configurationMetadata.ConfigurationName, configuration, DateTime.UtcNow, DateTime.UtcNow.Add(ConfigurationLifeSpan));
+            AddConfiguration<T, Tm>(configuration);
 
             return configuration;
         }
