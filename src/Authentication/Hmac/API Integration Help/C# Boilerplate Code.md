@@ -98,8 +98,8 @@ namespace Your.App.Namespace
             {
                 byte[] signatureBytes = hmac.ComputeHash(signature);
                 string requestSignatureBase64String = Convert.ToBase64String(signatureBytes);
-                // Setting the values in the Authorization header using custom scheme (sls)
-                client.Headers.Add("Authorization","sls " +
+                // Setting the values in the Authorization header using custom scheme (sds)
+                client.Headers.Add("Authorization","sds " +
                     $"{AppId}:{requestSignatureBase64String}:{nonce}:{requestTimeStamp}");
             }
         }
