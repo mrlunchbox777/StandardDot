@@ -26,8 +26,7 @@
 //         // 5 mins
 //         private const ulong _requestMaxAgeInSeconds = 300;
 
-//         // Social Wallet Scheme
-//         private const string _authenticationScheme = "sls";
+//         private const string _authenticationScheme = "sds";
 
 //         private const string _authorizationKey = "Authorization";
 

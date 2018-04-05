@@ -38,7 +38,7 @@ var signatureHash = crypto.createHmac('sha256', SECRET_KEY).update(signature).di
 // var signatureBytes  = CryptoJS.HmacSHA256(signature, SECRET_KEY);
 // var signatureHash = signatureBytes.toString(CryptoJS.enc.Base64);
 
-var authString = `sls ${APP_ID}:${signatureHash}:${nonceString}:${ts}`;
+var authString = `sds ${APP_ID}:${signatureHash}:${nonceString}:${ts}`;
 ```
 
 Then add the `authString` to the headers of the request.
