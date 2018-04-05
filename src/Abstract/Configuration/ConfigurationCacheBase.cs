@@ -2,12 +2,17 @@ using System;
 using System.IO;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Enums;
 
 namespace StandardDot.Abstract.Configuration
 {
+    /// <summary>
+    /// A base for configuration caching
+    /// </summary>
     public abstract class ConfigurationCacheBase : IConfigurationCache
     {
+        /// <param name="cachingService">The backing caching service to use</param>
+        /// <param name="serializationService">A serialization service to use for reading configurations</param>
+        /// <param name="configurationLifeSpan">How long cached configurations should be valid for</param>
         public ConfigurationCacheBase(ICachingService cachingService, ISerializationService serializationService,
             TimeSpan configurationLifeSpan)
         {
@@ -22,15 +27,22 @@ namespace StandardDot.Abstract.Configuration
 
         protected virtual TimeSpan ConfigurationLifeSpan { get; }
 
-        protected virtual TimeSpan MetadataLifeSpan { get; }
-
         public virtual int NumberOfConfigurations => CachingService.Count;
 
+        /// <summary>
+        /// Removes all configurations from cache
+        /// </summary>
         public virtual void ResetCache()
         {
             CachingService.Clear();
         }
 
+        /// <summary>
+        /// Removes a configuration from cache
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
         protected internal virtual void ClearConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()
@@ -42,6 +54,13 @@ namespace StandardDot.Abstract.Configuration
             }
         }
 
+        /// <summary>
+        /// Checks if a configuration exists. Will cache it if found.
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
+        /// <returns>If the configuration exists</returns>
         protected internal virtual bool DoesConfigurationExist<T, Tm>(Tm configurationMetadata = default(Tm))
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()
@@ -50,6 +69,13 @@ namespace StandardDot.Abstract.Configuration
             return CachingService.ContainsKey(metadata.ConfigurationName);
         }
 
+
+        /// <summary>
+        /// Adds the configuration to the defined cache
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configuration">The configuration to add to cache</param>
         protected internal virtual void AddConfiguration<T, Tm>(T configuration)
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()
@@ -59,6 +85,13 @@ namespace StandardDot.Abstract.Configuration
             CachingService.Cache(configuration.ConfigurationMetadata.ConfigurationName, configuration, cacheTime, (cacheTime.Add(ConfigurationLifeSpan)));
         }
 
+        /// <summary>
+        /// Gets the config from the cache if it can, from the source otherwise.
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
+        /// <returns>The configuration</returns>
         protected internal virtual T GetConfiguration<T, Tm>(Tm configurationMetadata = default(Tm))
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()
@@ -79,7 +112,13 @@ namespace StandardDot.Abstract.Configuration
             return configuration;
         }
 
-        // disposes of the stream if used
+        /// <summary>
+        /// Gets the config from the source. Disposes of the stream if used. Caches the configuration if found.
+        /// </summary>
+        /// <typeparam name="T">The configuration type</typeparam>
+        /// <typeparam name="Tm">The configuration metadata type</typeparam>
+        /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
+        /// <returns>The configuration</returns>
         protected virtual T GetConfigurationFromSource<T, Tm>(Tm configurationMetadata)
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()
@@ -120,6 +159,7 @@ namespace StandardDot.Abstract.Configuration
         /// <typeparam name="T">The configuration type</typeparam>
         /// <typeparam name="Tm">The configuration metadata type</typeparam>
         /// <param name="configurationMetadata">The metadata related to the configuration, default gathered from Type Data</param>
+        /// <returns>The configuration metadata</returns>
         protected virtual Tm GetMetadataForConfiguration<T, Tm>(Tm configurationMetadata)
             where T: IConfiguration<T, Tm>, new()
             where Tm: IConfigurationMetadata<T, Tm>, new()

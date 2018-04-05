@@ -4,7 +4,7 @@ using System.IO;
 namespace StandardDot.Abstract.Configuration
 {
     /// <summary>
-    /// An interface for basic configuration metadata
+    /// A base for configuration metadata
     /// </summary>
     /// <typeparam name="T">The configuration type</typeparam>
     /// <typeparam name="Tm">The configuration metadata type</typeparam>
