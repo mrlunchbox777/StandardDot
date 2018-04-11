@@ -7,7 +7,7 @@ using StandardDot.Abstract.Caching;
 using StandardDot.CoreExtensions;
 using StandardDot.Enums;
 
-namespace StandardDot.Hmac
+namespace StandardDot.Authentication.Hmac
 {
     /// <summary>
     /// Handles HMAC Authentication, please read the documentation under API Integration Help
