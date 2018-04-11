@@ -67,7 +67,7 @@ namespace StandardDot.Caching
         public ICachedObject<object> this[string key]
         {
             get => Retrieve<object>(key);
-            set => Cache<object>(key, value, DateTime.UtcNow, DateTime.UtcNow.Add(DefaultCacheLifespan));
+            set => Cache<object>(key, value);
         }
 
         /// <summary>
@@ -179,7 +179,7 @@ namespace StandardDot.Caching
         public bool TryGetValue(string key, out ICachedObject<object> value)
         {
             value = Retrieve<object>(key);
-            return value == null;
+            return value != null;
         }
 
         /// <summary>
@@ -206,7 +206,35 @@ namespace StandardDot.Caching
         /// <returns>If the object was found and valid</returns>
         public bool Contains(KeyValuePair<string, ICachedObject<object>> item)
         {
-            return Store.Contains(item);
+            if (!ContainsKey(item.Key))
+            {
+                return false;
+            }
+
+            ICachedObject<object> value = Store[item.Key];
+
+            if (value.Value == null)
+            {
+                return false;
+            }
+            if (value.ExpireTime < DateTime.UtcNow)
+            {
+                Invalidate(item.Key);
+                return false;
+            }
+            if (value.CachedTime != item.Value.CachedTime)
+            {
+                return false;
+            }
+            if (value.ExpireTime != item.Value.ExpireTime)
+            {
+                return false;
+            }
+            if (value.Value != item.Value.Value)
+            {
+                return false;
+            }
+            return true;
         }
 
         /// <summary>
@@ -226,7 +254,35 @@ namespace StandardDot.Caching
         /// <returns>If the object was able to be removed</returns>
         public bool Remove(KeyValuePair<string, ICachedObject<object>> item)
         {
-            return Store.Remove(item);
+            if (!ContainsKey(item.Key))
+            {
+                return false;
+            }
+
+            ICachedObject<object> value = Store[item.Key];
+
+            if (value.Value == null)
+            {
+                return false;
+            }
+            if (value.ExpireTime < DateTime.UtcNow)
+            {
+                Invalidate(item.Key);
+                return false;
+            }
+            if (value.CachedTime != item.Value.CachedTime)
+            {
+                return false;
+            }
+            if (value.ExpireTime != item.Value.ExpireTime)
+            {
+                return false;
+            }
+            if (value.Value != item.Value.Value)
+            {
+                return false;
+            }
+            return Store.Remove(item.Key);
         }
 
         /// <summary>
