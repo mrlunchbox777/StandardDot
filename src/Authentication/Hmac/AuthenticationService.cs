@@ -4,6 +4,7 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using StandardDot.Abstract;
 using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.CoreServices;
 using StandardDot.CoreExtensions;
 using StandardDot.Enums;
 

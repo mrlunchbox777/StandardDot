@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CachingUnitTests", "Caching
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dto", "Dto\Dto.csproj", "{14DE1A6F-E0E6-4EE9-A1B8-50D50AAD3423}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DtoUnitTests", "DtoUnitTests\DtoUnitTests.csproj", "{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -235,6 +237,18 @@ Global
 		{14DE1A6F-E0E6-4EE9-A1B8-50D50AAD3423}.Release|x64.Build.0 = Release|x64
 		{14DE1A6F-E0E6-4EE9-A1B8-50D50AAD3423}.Release|x86.ActiveCfg = Release|x86
 		{14DE1A6F-E0E6-4EE9-A1B8-50D50AAD3423}.Release|x86.Build.0 = Release|x86
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|x64.ActiveCfg = Debug|x64
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|x64.Build.0 = Debug|x64
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|x86.ActiveCfg = Debug|x86
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Debug|x86.Build.0 = Debug|x86
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|x64.ActiveCfg = Release|x64
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|x64.Build.0 = Release|x64
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|x86.ActiveCfg = Release|x86
+		{E8CC4FDB-71E9-491C-912D-B7ED86138DDD}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
