@@ -4,10 +4,11 @@ using System.Security.Cryptography;
 using System.Security.Principal;
 using StandardDot.Abstract;
 using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.CoreServices;
 using StandardDot.CoreExtensions;
 using StandardDot.Enums;
 
-namespace StandardDot.Hmac
+namespace StandardDot.Authentication.Hmac
 {
     /// <summary>
     /// Handles HMAC Authentication, please read the documentation under API Integration Help

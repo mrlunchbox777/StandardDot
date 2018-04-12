@@ -65,7 +65,7 @@ namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
             Assert.NotSame(father, sensation);
             Assert.NotSame(father.Children, sensation.Children);
             Assert.NotNull(sensation.Children);
-            Assert.Equal(1, sensation.Children.Count);
+            Assert.Single(sensation.Children);
             Assert.NotSame(father.Children[0], sensation.Children[0]);
             Assert.Equal(father.Name, sensation.Name);
             Assert.Equal(father.Children[0].Name, sensation.Children[0].Name);

@@ -1,7 +1,7 @@
 using System;
 using StandardDot.Enums;
 
-namespace StandardDot.Abstract
+namespace StandardDot.Abstract.CoreServices
 {
     /// <summary>
     /// An interface for basic logging

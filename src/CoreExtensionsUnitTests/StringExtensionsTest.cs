@@ -28,7 +28,7 @@ namespace StandardDot.CoreExtensions.UnitTests
         [Fact]
         public void GetStreamFromStringWhiteSpace()
         {
-            Assert.Equal(0, " ".GetStreamFromString().GetByteArrayFromStream().Length);
+            Assert.Empty(" ".GetStreamFromString().GetByteArrayFromStream());
         }
 
         [Fact]
