@@ -5,16 +5,49 @@ using System.Security.Cryptography;
 using System.Text;
 using StandardDot.CoreExtensions;
 
-/// TODO: Add comments
 namespace StandardDot.Authentication.Hmac
 {
+    /// <summary>
+    /// The base for an HMAC authentication generator. The scheme, app id, and secret key can be passed in or overridden.
+    /// </summary>
     public abstract class HmacHeaderGeneratorBase
     {
-        // Obtained from Provider, SecretKey MUST be stored securely
-        protected abstract string AppId { get; }
-        protected abstract string SecretKey { get; } // override this with a secure way to get the secret key
+        public HmacHeaderGeneratorBase()
+        {}
 
-        public void AddHmacHeaders(HttpClient client, Uri requestUri, HttpMethod method, string content = null)
+        /// <param name="customHeaderScheme">The header scheme that will be used for generating headers</param>
+        public HmacHeaderGeneratorBase(string customHeaderScheme)
+        {
+            CustomHeaderScheme = customHeaderScheme;
+        }
+
+        /// <param name="customHeaderScheme">The header scheme that will be used for generating headers</param>
+        /// <param name="appId">The appid that will be used to generate headers</param>
+        /// <param name="secretKey">The secret key that will be used to generate headers</param>
+        public HmacHeaderGeneratorBase(string customHeaderScheme, string appId, string secretKey)
+            : this(customHeaderScheme)
+        {
+            AppId = appId;
+            SecretKey = secretKey;
+        }
+
+        // Obtained from Provider, SecretKey MUST be stored securely
+        protected virtual string AppId { get; }
+
+        // Override this with a secure way to get the secret key
+        protected virtual string SecretKey { get; }
+
+        // Override this with the scheme being used
+        protected virtual string CustomHeaderScheme { get; }
+
+        /// <summary>
+        /// Adds the HMAC Authentication headers to the client
+        /// </summary>
+        /// <param name="client">The client that will be used to make the request</param>
+        /// <param name="requestUri">The Uri that the request will be sent to</param>
+        /// <param name="method">The method that the request will be used</param>
+        /// <param name="content">The content of the request</param>
+        public virtual void AddHmacHeaders(HttpClient client, Uri requestUri, HttpMethod method, string content = null)
         {
             string requestContentBase64String = string.Empty;
 

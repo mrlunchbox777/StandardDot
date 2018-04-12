@@ -4,8 +4,8 @@
 
 ## Boiler Plate Code
 
-* [C#](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
-* [JS and Node](/src/Authentication/Hmac/API%20Integration%20Help/C#.md)
+* [C#](/src/Authentication/Hmac/API%20Integration%20Help/C%23%20Boilerplate%20Code.md)
+* [JS and Node](/src/Authentication/Hmac/API%20Integration%20Help/JS%20and%20NodeJS%20Boilerplate%20Code.md)
 
 ## [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
 
