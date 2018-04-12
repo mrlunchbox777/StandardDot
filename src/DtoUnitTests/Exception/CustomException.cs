@@ -6,6 +6,10 @@ namespace StandardDot.Dto.UnitTests.Exception
 {
     public class CustomException : System.Exception
     {
+        public CustomException()
+            : base ()
+        {}
+
         public CustomException(int hResult, string stackTrace,
             string message, IDictionary data, CustomException innerException)
             : base(message, innerException)
@@ -15,6 +19,7 @@ namespace StandardDot.Dto.UnitTests.Exception
             Message = message;
             Data = data;
         }
+
         public override string Source { get; set; }
 
         public override string HelpLink { get; set; }

@@ -55,13 +55,13 @@ namespace StandardDot.Dto.Exception
                     }
                     Type keyType = item.Key.GetType();
                     Type valueType = item.Value?.GetType();
-                    if (!(keyType.IsValueType 
-                        || keyType.CustomAttributes.FirstOrDefault(a => typeof(DataContractAttribute).IsAssignableFrom(a.GetType())) != null))
+                    if (!(keyType.IsValueType || typeof(string).IsAssignableFrom(keyType) || typeof(decimal).IsAssignableFrom(keyType)
+                        || keyType.CustomAttributes.FirstOrDefault(a => typeof(DataContractAttribute).IsAssignableFrom(a.AttributeType)) != null))
                     {
                         continue;
                     }
-                    if (!(valueType == null || valueType.IsValueType 
-                        || valueType.CustomAttributes.FirstOrDefault(a => typeof(DataContractAttribute).IsAssignableFrom(a.GetType())) != null))
+                    if (valueType == null || !(valueType.IsValueType || typeof(string).IsAssignableFrom(valueType) || typeof(decimal).IsAssignableFrom(valueType)
+                        || valueType.CustomAttributes.FirstOrDefault(a => typeof(DataContractAttribute).IsAssignableFrom(a.AttributeType)) != null))
                     {
                         continue;
                     }
