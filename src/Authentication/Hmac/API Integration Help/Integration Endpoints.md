@@ -1,6 +1,6 @@
 # UTILITY METHODS
 
-[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%Help/HMAC%20Authentication%20Help.md)
+[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
 
 [Home](/README.md)
 
