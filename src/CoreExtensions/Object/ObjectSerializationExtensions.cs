@@ -3,8 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using StandardDot.Enums;
-using StandardDot.Abstract;
-using StandardDot.CoreExtensions;
+using StandardDot.Abstract.CoreServices;
 
 namespace StandardDot.CoreExtensions.Object
 {

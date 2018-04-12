@@ -374,9 +374,9 @@ namespace StandardDot.Caching.UnitTests
             string cachableKey = this.cachableKey;
             KeyValuePair<string, ICachedObject<object>> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
 
-            Assert.False(service.Contains(item));
+            Assert.DoesNotContain(item, service);
             service.Add(item);
-            Assert.True(service.Contains(item));
+            Assert.Contains(item, service);
         }
 
         [Fact]
@@ -390,38 +390,38 @@ namespace StandardDot.Caching.UnitTests
             KeyValuePair<string, ICachedObject<object>> item;
             DateTime originalTime = originalItem.Value.CachedTime;
 
-            Assert.False(service.Contains(originalItem));;
+            Assert.DoesNotContain(originalItem, service);
 
             service.Clear();
             Assert.Empty(service);
             item = GetCachableKvp(originalTime, cacheLifeTime, null, cachableKey);
             service.Add(item);
-            Assert.False(service.Contains(originalItem));
+            Assert.DoesNotContain(originalItem, service);
 
             service.Clear();
             Assert.Empty(service);
             item = GetCachableKvp(originalTime, TimeSpan.FromMinutes(-5), cachable, cachableKey);
             service.Add(item);
-            Assert.False(service.Contains(originalItem));
+            Assert.DoesNotContain(originalItem, service);
             Assert.Empty(service);
 
             service.Clear();
             Assert.Empty(service);
             item = GetCachableKvp(originalTime.AddMilliseconds(10), cacheLifeTime, cachable, cachableKey);
             service.Add(item);
-            Assert.False(service.Contains(originalItem));
+            Assert.DoesNotContain(originalItem, service);
 
             service.Clear();
             Assert.Empty(service);
             item = GetCachableKvp(originalTime, TimeSpan.FromMinutes(4), cachable, cachableKey);
             service.Add(item);
-            Assert.False(service.Contains(originalItem));
+            Assert.DoesNotContain(originalItem, service);
 
             service.Clear();
             Assert.Empty(service);
             item = GetCachableKvp(originalTime, cacheLifeTime, GetCachableObject(), cachableKey);
             service.Add(item);
-            Assert.False(service.Contains(originalItem));
+            Assert.DoesNotContain(originalItem, service);
         }
 
         [Fact]
