@@ -1,5 +1,5 @@
 using System.IO;
-using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.CoreServices.Serialization;
 using StandardDot.CoreExtensions;
 using Xunit;
 

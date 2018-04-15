@@ -13,10 +13,4 @@
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
-    <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
-    <ProjectReference Include="..\Constants\Constants.csproj" />
-  </ItemGroup>
-
 </Project>
