@@ -264,111 +264,123 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             ClearTestLogDirectory();
         }
 
-        // [Fact]
-        // public void LogMessageWithObject()
-        // {
-        //     ClearTestLogDirectory();
-        //     Json serializationService = new Json();
-        //     TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
-
-        //     const string title = "Test Log";
-        //     const string message = "A test log";
-        //     Foobar original = new Foobar
-        //         {
-        //             Foo = 4,
-        //             Bar = 6
-        //         };
-
-        //     DateTime startLogging = DateTime.UtcNow;
-        //     loggingService.LogMessage(title, original, LogLevel.Debug, message);
-        //     DateTime endLogging = DateTime.UtcNow;
-
-        //     IEnumerable<string> logs = Directory.EnumerateFiles(Path);
-        //     Assert.Single(logs);
-
-        //     string fullLogName = logs.Single();
-        //     string fullLogString = File.ReadAllText(fullLogName);
-        //     Assert.NotNull(fullLogString);
-
-        //     Log<Foobar> log = serializationService.DeserializeObject<Log<Foobar>>(fullLogString);
-
-        //     string description = "Message Log with object - " + typeof(Foobar).FullName;
-
-        //     Assert.NotNull(log);
-        //     Assert.True(log.TimeStamp >= startLogging.AddMilliseconds(-5) && log.TimeStamp <= endLogging.AddMilliseconds(5));
-        //     Assert.Equal(title, log.Title);
-        //     Assert.Equal(message, log.Message);
-        //     Assert.Equal(LogLevel.Debug, log.LogLevel);
-        //     Assert.Null(log.Exception);
-        //     Assert.Equal(description, log.Description);
-
-        //     Assert.NotNull(log.Target);
-        //     Assert.Equal(original.Foo, log.Target.Foo);
-        //     Assert.Equal(0, log.Target.Bar);
-
-        //     ClearTestLogDirectory();
-        // }
-
-        // [Fact]
-        // public void LogMessageWithObjectWithoutMessage()
-        // {
-        //     ClearTestLogDirectory();
-        //     Json serializationService = new Json();
-        //     TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
-
-        //     const string title = "Test Log";
-        //     Foobar original = new Foobar
-        //         {
-        //             Foo = 4,
-        //             Bar = 6
-        //         };
-
-        //     DateTime startLogging = DateTime.UtcNow;
-        //     loggingService.LogMessage(title, original, LogLevel.Debug);
-        //     DateTime endLogging = DateTime.UtcNow;
-
-        //     IEnumerable<string> logs = Directory.EnumerateFiles(Path);
-        //     Assert.Single(logs);
-
-        //     string fullLogName = logs.Single();
-        //     string fullLogString = File.ReadAllText(fullLogName);
-        //     Assert.NotNull(fullLogString);
-
-        //     Log<Foobar> log = serializationService.DeserializeObject<Log<Foobar>>(fullLogString);
-
-        //     string description = "Message Log with object - " + typeof(Foobar).FullName;
-
-        //     Assert.NotNull(log);
-        //     Assert.True(log.TimeStamp >= startLogging.AddMilliseconds(-5) && log.TimeStamp <= endLogging.AddMilliseconds(5));
-        //     Assert.Equal(title, log.Title);
-        //     Assert.Equal(description, log.Message);
-        //     Assert.Equal(LogLevel.Debug, log.LogLevel);
-        //     Assert.Null(log.Exception);
-        //     Assert.Equal(description, log.Description);
-
-        //     Assert.NotNull(log.Target);
-        //     Assert.Equal(original.Foo, log.Target.Foo);
-        //     Assert.Equal(0, log.Target.Bar);
-
-        //     ClearTestLogDirectory();
-        // }
-
         [Fact]
-        public void LogObject()
+        public void LogExceptionWithObject()
         {
-            Json service = new Json();
-            string originalString = "{\"Foo\":4, \"Bar\":3}";
+            ClearTestLogDirectory();
+            Json serializationService = new Json();
+            TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+
+            const string title = "Test Log";
+            const string message = "A test log";
             Foobar original = new Foobar
                 {
-                    Foo = 4
+                    Foo = 4,
+                    Bar = 6
                 };
+
+            InvalidOperationException exception;
+            try
+            {
+                throw new InvalidOperationException(title);
+            }
+            catch (InvalidOperationException ex)
+            {
+                exception = ex;
+            }
+
+            DateTime startLogging = DateTime.UtcNow;
+            loggingService.LogExceptionWithObject(exception, original, message);
+            DateTime endLogging = DateTime.UtcNow;
+
+            IEnumerable<string> logs = Directory.EnumerateFiles(Path);
+            Assert.Single(logs);
+
+            string fullLogName = logs.Single();
+            string fullLogString = File.ReadAllText(fullLogName);
+            Assert.NotNull(fullLogString);
+
+            Log<Foobar> log = serializationService.DeserializeObject<Log<Foobar>>(fullLogString);
+
+            string description = "Exception Log - " + title;
+
+            Assert.NotNull(log);
+            Assert.True(log.TimeStamp >= startLogging.AddMilliseconds(-5) && log.TimeStamp <= endLogging.AddMilliseconds(5));
+            Assert.Equal(title, log.Title);
+            Assert.Equal(message, log.Message);
+            Assert.Equal(LogLevel.Error, log.LogLevel);
+            Assert.Equal(description, log.Description);
+
+            Assert.NotNull(log.Target);
+            Assert.Equal(original.Foo, log.Target.Foo);
+            Assert.Equal(0, log.Target.Bar);
             
-            Foobar deserialized = service.DeserializeObject<Foobar>(originalString);
-            Assert.NotNull(deserialized);
-            Assert.NotEqual(original, deserialized);
-            Assert.Equal(original.Foo, deserialized.Foo);
-            Assert.Equal(original.Bar, deserialized.Bar);
+            Assert.NotNull(log.Exception);
+            Assert.Equal(typeof(SerializableException), log.Exception.GetType());
+            Assert.Equal(title, log.Exception.Message);
+
+            ClearTestLogDirectory();
         }
+
+        [Fact]
+        public void LogExceptionWithObjectWithoutMessage()
+        {
+            ClearTestLogDirectory();
+            Json serializationService = new Json();
+            TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+
+            const string title = "Test Log";
+            Foobar original = new Foobar
+                {
+                    Foo = 4,
+                    Bar = 6
+                };
+
+            InvalidOperationException exception;
+            try
+            {
+                throw new InvalidOperationException(title);
+            }
+            catch (InvalidOperationException ex)
+            {
+                exception = ex;
+            }
+
+            DateTime startLogging = DateTime.UtcNow;
+            loggingService.LogExceptionWithObject(exception, original);
+            DateTime endLogging = DateTime.UtcNow;
+
+            IEnumerable<string> logs = Directory.EnumerateFiles(Path);
+            Assert.Single(logs);
+
+            string fullLogName = logs.Single();
+            string fullLogString = File.ReadAllText(fullLogName);
+            Assert.NotNull(fullLogString);
+
+            Log<Foobar> log = serializationService.DeserializeObject<Log<Foobar>>(fullLogString);
+
+            string description = "Exception Log - " + title;
+
+            Assert.NotNull(log);
+            Assert.True(log.TimeStamp >= startLogging.AddMilliseconds(-5) && log.TimeStamp <= endLogging.AddMilliseconds(5));
+            Assert.Equal(title, log.Title);
+            Assert.Equal(description, log.Message);
+            Assert.Equal(LogLevel.Error, log.LogLevel);
+            Assert.Equal(description, log.Description);
+
+            Assert.NotNull(log.Target);
+            Assert.Equal(original.Foo, log.Target.Foo);
+            Assert.Equal(0, log.Target.Bar);
+            
+            Assert.NotNull(log.Exception);
+            Assert.Equal(typeof(SerializableException), log.Exception.GetType());
+            Assert.Equal(title, log.Exception.Message);
+
+            ClearTestLogDirectory();
+        }
+
+        // Test Log
+        // Test Get Logs
 
         private void ClearTestLogDirectory()
         {
