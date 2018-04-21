@@ -1,5 +1,6 @@
 ﻿using System;
 using StandardDot.CoreExtensions.Object;
+using StandardDot.TestClasses;
 using Xunit;
 
 namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
@@ -23,15 +24,6 @@ namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
             Human copy = (Human)human.Copy();
 
             Assert.NotSame(human, copy);
-        }
-
-        internal class Foo
-        {
-            public int Value { get; set; }
-        }
-        
-        internal class Bar : Foo
-        {
         }
     }
 }

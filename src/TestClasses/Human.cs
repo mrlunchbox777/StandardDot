@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
+namespace StandardDot.TestClasses
 {
-    internal enum Gender
+    public enum Gender
     {
         Male = 0,
         Female = 1
     }
 
-    internal class Human
+    public class Human
     {
         private string _name;
         private Gender _gender;

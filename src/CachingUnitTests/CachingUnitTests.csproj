@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Caching\Caching.csproj" />
     <ProjectReference Include="..\Abstract\Abstract.csproj" />
+    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
 
 </Project>
