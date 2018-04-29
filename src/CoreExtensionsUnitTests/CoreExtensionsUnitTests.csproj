@@ -15,6 +15,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
+    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
 
 </Project>

@@ -12,6 +12,8 @@ namespace StandardDot.Dto.Exception
     [DataContract]
     public class SerializableException
     {
+        public SerializableException() {}
+        
         /// <param name="exception">The exception to convert to serializable form</param>
         /// <param name="includeTargetSite">If the target site should be included in the serialization, default true</param>
         /// <param name="includeData">If the data should be included in the serialization

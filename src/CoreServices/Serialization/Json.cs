@@ -3,7 +3,7 @@ using System.IO;
 using StandardDot.CoreExtensions;
 using StandardDot.CoreExtensions.Object;
 
-namespace StandardDot.Abstract.CoreServices
+namespace StandardDot.Abstract.CoreServices.Serialization
 {
     /// <summary>
     /// A Basic Json Serializer

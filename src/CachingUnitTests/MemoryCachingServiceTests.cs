@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using StandardDot.Abstract.Caching;
+using StandardDot.TestClasses;
 using Xunit;
 
 namespace StandardDot.Caching.UnitTests

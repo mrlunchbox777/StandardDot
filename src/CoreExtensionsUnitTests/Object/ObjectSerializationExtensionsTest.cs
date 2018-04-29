@@ -1,14 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Text;
 using StandardDot.CoreExtensions.Object;
+using StandardDot.TestClasses;
 using Xunit;
 
 namespace StandardDot.CoreExtensions.UnitTests.Object
 {
-  public class ObjectSerializationExtensionsTest
+    public class ObjectSerializationExtensionsTest
     {
         [Fact]
         public void SerializeJson()
