@@ -14,21 +14,21 @@ using Xunit;
 
 namespace StandardDot.CoreServices.UnitTests.Logging
 {
-    public class TextLogEnumerableTests
+    public class TextLogBaseEnumerableTests
     {
         [Fact]
         public void TestBasicEnumeration()
         {
             TextLoggingService service = GetLogsService();
-
             ClearTestLogDirectory(service);
+
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogEnumerable<object> collection = service.GetLogs<object>();
+            ILogBaseEnumerable collection = service.GetLogs();
 
             Assert.NotEmpty(collection);
-            foreach (Log<object> log in collection)
+            foreach (LogBase log in collection)
             {
                 Assert.NotNull(log);
             }
@@ -42,16 +42,16 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         public void TestCachedEnumeration()
         {
             TextLoggingService service = GetLogsService();
-
             ClearTestLogDirectory(service);
+
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogEnumerable<object> collection = service.GetLogs<object>();
+            ILogBaseEnumerable collection = service.GetLogs();
 
-            Log<object>[] logs = collection.ToArray();
+            LogBase[] logs = collection.ToArray();
             int index = 0;
-            foreach (Log<object> log in collection)
+            foreach (LogBase log in collection)
             {
                 Assert.Equal(log, logs[index]);
                 index++;
@@ -60,7 +60,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(2, collectionCount);
             
             index = 0; 
-            foreach (Log<object> log in collection)
+            foreach (LogBase log in collection)
             {
                 Assert.Equal(log, logs[index]);
                 index++;
@@ -73,16 +73,16 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         public void TestNonGenricEnumerator()
         {
             TextLoggingService service = GetLogsService();
-
             ClearTestLogDirectory(service);
+
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogEnumerable<object> collection = service.GetLogs<object>();
+            ILogBaseEnumerable collection = service.GetLogs();
 
-            Log<object>[] logs = collection.ToArray();
+            LogBase[] logs = collection.ToArray();
             int index = 0;
-            foreach (Log<object> log in ((IEnumerable)collection))
+            foreach (LogBase log in ((IEnumerable)collection))
             {
                 Assert.Equal(log, logs[index]);
                 index++;
@@ -91,7 +91,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(2, collectionCount);
             
             index = 0; 
-            foreach (Log<object> log in ((IEnumerable)collection))
+            foreach (LogBase log in ((IEnumerable)collection))
             {
                 Assert.Equal(log, logs[index]);
                 index++;
@@ -123,61 +123,6 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
 
             return loggingService;
-        }
-
-        private Log<object> AddMessageLog(TextLoggingService loggingService)
-        {
-            return AddMessageLogWithObject<object>(null, loggingService);
-        }
-
-        private Log<T> AddMessageLogWithObject<T>(T target, TextLoggingService loggingService)
-            where T : new()
-        {
-            return AddLog(target, null, loggingService);
-        }
-
-        public Log<object> AddExceptionLog(TextLoggingService loggingService)
-        {
-            return AddExceptionLogWithObject<object>(null, loggingService);
-        }
-
-        public Log<T> AddExceptionLogWithObject<T>(T target, TextLoggingService loggingService)
-            where T : new()
-        {
-            const string title = "Test Log";
-            InvalidOperationException exception;
-            try
-            {
-                throw new InvalidOperationException(title);
-            }
-            catch (InvalidOperationException ex)
-            {
-                exception = ex;
-            }
-            return AddLog(target, exception, loggingService);
-        }
-
-        private Log<T> AddLog<T>(T target, Exception exception, TextLoggingService loggingService)
-            where T : new()
-        {
-            const string title = "Test Log";
-            const string message = "A test log";
-
-            string description = "Manual Exception Log - " + message;
-            Log<T> originalLog = new Log<T>
-            {
-                Target = target,
-                TimeStamp = DateTime.UtcNow,
-                Title = title,
-                Message = message,
-                LogLevel = LogLevel.Info,
-                Exception = exception == null ? null : new SerializableException(exception),
-                Description = description
-            };
-
-            loggingService.Log(originalLog);
-
-            return originalLog;
         }
 
         private void ClearTestLogDirectory(TextLoggingService service)

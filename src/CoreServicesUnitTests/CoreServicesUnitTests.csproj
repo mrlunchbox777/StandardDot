@@ -18,6 +18,7 @@
     <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
     <ProjectReference Include="..\Constants\Constants.csproj" />
     <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
+    <ProjectReference Include="..\Caching\Caching.csproj" />
   </ItemGroup>
 
 </Project>

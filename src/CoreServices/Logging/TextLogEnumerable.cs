@@ -11,7 +11,7 @@ namespace StandardDot.CoreServices.Logging
     /// <summary>
     /// An Enumerable to get text logs
     /// </summary>
-    /// <typeparam name="T">The target type for the logs (must be serializable), should typically be object</typeparam>
+    /// <typeparam name="T">The target type for the logs (must be serializable)</typeparam>
     public class TextLogEnumerable<T> : LogEnumerableBase<T>
         where T : new()
     {
@@ -47,36 +47,36 @@ namespace StandardDot.CoreServices.Logging
 
         public override IEnumerator<Log<T>> GetEnumerator()
         {
-            if (Visited == null)
+            return Visited == null
+                ? base.GetEnumerator()
+                : GetEnumeratorManually();
+        }
+
+        protected virtual IEnumerator<Log<T>> GetEnumeratorManually()
+        {
+            foreach(string logPath in AllLogPaths)
             {
-                Source.GetEnumerator();
-            }
-            else
-            {
-                foreach(string logPath in AllLogPaths)
+                if (!Visited.ContainsKey(logPath))
                 {
-                    if (!Visited.ContainsKey(logPath))
-                    {
-                        continue;
-                    }
-                    Log<T> log = Visited[logPath];
-                    if (log == null)
-                    {
-                        try
-                        {
-                            log = GetLogFromFile(logPath);
-                        }
-                        catch (Exception)
-                        {
-                            if (OnlySerializeLogsOfTheCorrectType)
-                            {
-                                continue;
-                            }
-                            throw;
-                        }
-                    }
-                    yield return log;
+                    continue;
                 }
+                Log<T> log = Visited[logPath];
+                if (log == null)
+                {
+                    try
+                    {
+                        log = GetLogFromFile(logPath);
+                    }
+                    catch (Exception)
+                    {
+                        if (OnlySerializeLogsOfTheCorrectType)
+                        {
+                            continue;
+                        }
+                        throw;
+                    }
+                }
+                yield return log;
             }
         }
 

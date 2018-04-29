@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Dto.CoreServices;
 
@@ -8,22 +9,21 @@ namespace StandardDot.CoreServices.Logging
     /// <summary>
     /// A Text File Logging Service
     /// </summary>
-    public class TextLoggingService : LoggingServiceBase
+    public class CacheLoggingService : LoggingServiceBase
     {
-        /// <param name="logPath">The directory logs should be stored in (should end in /)</param>
+        /// <param name="cachingService">The service to cache the logs to</param>
         /// <param name="serializationService">The serialization service to use</param>
-        /// <param name="logExtension">The extension to use for the logs</param>
-        public TextLoggingService(string logPath, ISerializationService serializationService, string logExtension)
+        public CacheLoggingService(ICachingService cachingService, ISerializationService serializationService, string cacheItemNamePartSeparator = "_")
             : base(serializationService)
         {
-            LogPath = logPath;
-            LogExtension = logExtension;
+            CachingService = cachingService;
+            CacheItemNamePartSeparator = cacheItemNamePartSeparator;
         }
 
-        public string LogPath { get; }
+        protected virtual ICachingService CachingService { get; set; }
 
-        public string LogExtension { get; set; }
-        
+        protected virtual string CacheItemNamePartSeparator { get; set; }
+
         /// <summary>
         /// Logs a log object
         /// </summary>
@@ -32,13 +32,9 @@ namespace StandardDot.CoreServices.Logging
         public override void Log<T>(Log<T> log)
         {
             string uniqueId = Guid.NewGuid().ToString("N");
-            string logName = log.LogLevel + "_" + log.TimeStamp.ToFileTimeUtc() + "_" + uniqueId + LogExtension;
+            string logName = log.LogLevel + CacheItemNamePartSeparator + log.TimeStamp.ToFileTimeUtc() + CacheItemNamePartSeparator + uniqueId;
             string serializedLog = SerializationService.SerializeObject(log);
-            if (!Directory.Exists(LogPath))
-            {
-                Directory.CreateDirectory(LogPath);
-            }
-            File.WriteAllText(LogPath + logName, serializedLog);
+            CachingService.Cache(logName, log);
         }
 
         /// <summary>
@@ -48,16 +44,16 @@ namespace StandardDot.CoreServices.Logging
         /// <returns>IEnumerable that iterates through all logs</returns>
         protected override LogEnumerableBase<T> BaseGetLogs<T>()
         {
-            return new TextLogEnumerable<T>(LogPath, SerializationService);
+            return new CacheLogEnumerable<T>(CachingService, SerializationService, true);
         }
 
         /// <summary>
-        /// Get object to find all logs
+        /// Get object to find all logs (can be filtered)
         /// </summary>
         /// <returns>IEnumerable that iterates through all logs</returns>
         protected override ILogBaseEnumerable BaseGetLogs()
         {
-            return new TextLogBaseEnumerable(LogPath, SerializationService);
+            return new CacheLogBaseEnumerable(CachingService, SerializationService);
         }
     }
 }

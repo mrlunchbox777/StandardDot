@@ -10,8 +10,6 @@ namespace StandardDot.Abstract.CoreServices
     /// <summary>
     /// An Enumerator to get logs
     /// </summary>
-    /// <typeparam name="T">The target type for the logs (must be serializable)</typeparam>
-    public interface ILogEnumerable<T> : IEnumerable<Log<T>>
-        where T : new()
+    public interface ILogBaseEnumerable : IEnumerable<LogBase>
     {}
 }

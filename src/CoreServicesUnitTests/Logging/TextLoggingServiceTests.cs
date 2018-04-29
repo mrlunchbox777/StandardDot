@@ -18,9 +18,9 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogTest()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             DateTime startLogging = DateTime.UtcNow;
             loggingService.LogMessage("Test Log", "A test log", LogLevel.Debug);
@@ -42,15 +42,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
 
             File.Delete(logName);
             Assert.False(File.Exists(logName));
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogMessage()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -77,15 +77,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Null(log.Exception);
             Assert.Equal("Message Log", log.Description);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogMessageWithObject()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -122,15 +122,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(original.Foo, log.Target.Foo);
             Assert.Equal(0, log.Target.Bar);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogMessageWithObjectWithoutMessage()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             Foobar original = new Foobar
@@ -166,15 +166,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(original.Foo, log.Target.Foo);
             Assert.Equal(0, log.Target.Bar);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogException()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -215,15 +215,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(typeof(SerializableException), log.Exception.GetType());
             Assert.Equal(title, log.Exception.Message);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogExceptionWithoutMessage()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
 
@@ -263,15 +263,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(typeof(SerializableException), log.Exception.GetType());
             Assert.Equal(title, log.Exception.Message);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogExceptionWithObject()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -321,15 +321,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(typeof(SerializableException), log.Exception.GetType());
             Assert.Equal(title, log.Exception.Message);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogExceptionWithObjectWithoutMessage()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             Foobar original = new Foobar
@@ -378,15 +378,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(typeof(SerializableException), log.Exception.GetType());
             Assert.Equal(title, log.Exception.Message);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void LogObjectTest()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -448,15 +448,15 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             Assert.Equal(title, log.Exception.Message);
             Assert.Equal(originalLog.Exception.Message, log.Exception.Message);
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
         [Fact]
         public void GetLogsTest()
         {
-            ClearTestLogDirectory();
             Json serializationService = new Json();
             TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+            ClearTestLogDirectory(loggingService);
 
             const string title = "Test Log";
             const string message = "A test log";
@@ -514,16 +514,16 @@ namespace StandardDot.CoreServices.UnitTests.Logging
 
             Assert.Equal(log, logs.First());
 
-            ClearTestLogDirectory();
+            ClearTestLogDirectory(loggingService);
         }
 
-        private void ClearTestLogDirectory()
+        private void ClearTestLogDirectory(TextLoggingService service)
         {
-            if (!Directory.Exists(Path))
+            if (!Directory.Exists(service.LogPath))
             {
                 return;
             }
-            List<string> allLogs = Directory.EnumerateFiles(Path).ToList();
+            List<string> allLogs = Directory.EnumerateFiles(service.LogPath).ToList();
             if (!allLogs.Any())
             {
                 return;
@@ -534,7 +534,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             }
         }
 
-        private string Path = Environment.CurrentDirectory + "/test/";
+        private string Path = Environment.CurrentDirectory + "/test/" + Guid.NewGuid().ToString("N") + "/";
 
         private string LogExtension = ".json";
     }

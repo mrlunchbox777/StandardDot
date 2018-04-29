@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using StandardDot.Dto.CoreServices;
 using StandardDot.Dto.Exception;
 using StandardDot.Enums;
@@ -131,12 +132,28 @@ namespace StandardDot.Abstract.CoreServices
             return BaseGetLogs<T>();
         }
 
+
+        /// <summary>
+        /// Get object to find all logs
+        /// </summary>
+        /// <returns>IEnumerable that iterates through all logs</returns>
+        public ILogBaseEnumerable GetLogs()
+        {
+            return BaseGetLogs();
+        }
+
         /// <summary>
         /// Get object to find all logs (can be filtered)
         /// </summary>
-        /// <typeparam name="T">The target type for the logs (must be serializable), should typically be object</typeparam>
+        /// <typeparam name="T">The target type for the logs (must be serializable)</typeparam>
         /// <returns>IEnumerable that iterates through all logs</returns>
         protected abstract LogEnumerableBase<T> BaseGetLogs<T>()
             where T: new();
+
+        /// <summary>
+        /// Get object to find all logs
+        /// </summary>
+        /// <returns>IEnumerable that iterates through all logs</returns>
+        protected abstract ILogBaseEnumerable BaseGetLogs();
     }
 }

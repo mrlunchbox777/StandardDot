@@ -56,11 +56,17 @@ namespace StandardDot.Abstract.CoreServices
             where T: new();
 
         /// <summary>
-        /// Get object to find all logs with exceptions
+        /// Get object to find all logs
         /// </summary>
-        /// <typeparam name="T">The target type for the logs (must be serializable), should typically be object</typeparam>
-        /// <returns>IEnumerable that iterates through all logs with exceptions</returns>
+        /// <typeparam name="T">The target type for the logs (must be serializable)</typeparam>
+        /// <returns>IEnumerable that iterates through all logs</returns>
         ILogEnumerable<T> GetLogs<T>()
             where T: new();
+
+        /// <summary>
+        /// Get object to find all logs
+        /// </summary>
+        /// <returns>IEnumerable that iterates through all logs</returns>
+        ILogBaseEnumerable GetLogs();
     }
 }
