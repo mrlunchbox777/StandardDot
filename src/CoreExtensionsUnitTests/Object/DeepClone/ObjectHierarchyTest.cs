@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using StandardDot.CoreExtensions.Object;
+using StandardDot.TestClasses;
 using Xunit;
 
 namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
@@ -69,16 +70,6 @@ namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
             Assert.NotSame(father.Children[0], sensation.Children[0]);
             Assert.Equal(father.Name, sensation.Name);
             Assert.Equal(father.Children[0].Name, sensation.Children[0].Name);
-        }
-
-        private class Node
-        {
-            private Node _prev;
-            private Node _next;
-            private string name;
-            public Node Prev { get { return _prev; } set { _prev = value; } }
-            public Node Next { get { return _next; } set { _next = value; } }
-            public string Name { get { return name; } set { name = value; } }
         }
     }
 }

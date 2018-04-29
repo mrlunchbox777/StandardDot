@@ -1,5 +1,5 @@
 using System;
-using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.CoreServices.Serialization;
 using StandardDot.Caching;
 using StandardDot.Configuration;
 using StandardDot.ConfigurationUnitTests.TestConfigurationMetadatas;
