@@ -93,7 +93,7 @@ namespace StandardDot.Authentication.Hmac
 
             string requestContentBase64String = "";
 
-            string sharedKey = ApiKeyService[appId];
+            ApiKeyService.TryGetValue(appId, out string sharedKey);
             if (string.IsNullOrWhiteSpace(sharedKey))
             {
                 LoggingService.LogMessage("Api Auth Request Not Valid",

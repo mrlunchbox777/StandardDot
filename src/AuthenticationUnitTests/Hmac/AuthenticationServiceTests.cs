@@ -11,6 +11,7 @@ using StandardDot.Authentication.UnitTests.AuthenticationServiceTestObjects;
 using StandardDot.Caching;
 using StandardDot.CoreExtensions;
 using StandardDot.CoreServices.Logging;
+using StandardDot.Enums;
 using Xunit;
 
 namespace StandardDot.Authentication.UnitTests
@@ -37,6 +38,18 @@ namespace StandardDot.Authentication.UnitTests
         public void IsValidRequest()
         {
             IsValidRequestOverride service = GetService((l, a, c) => new IsValidRequestOverride(l, a, c));
+            const string appId = "appId1";
+            const string resource = "/test";
+
+            Tuple<bool, HmacIsValidRequestResult> result = service.CheckValidRequest(null, null, null, null, null, null, null);
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.NoValidResouce, result.Item2);
+
+            result = service.CheckValidRequest(null, resource, null, appId, null, null, null);
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.UnableToFindAppId, result.Item2);
+
+            // more to do here
         }
 
         [Fact]
