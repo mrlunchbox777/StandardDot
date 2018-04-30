@@ -13,8 +13,8 @@ namespace StandardDot.CoreExtensions.UnitTests
         public void GetStringFromStream()
         {
             string original = "foobar";
-            Stream testStream = original.GetStreamFromString();
-            Assert.Equal(original, testStream.GetStringFromStream());
+            Stream testStream = original.ToStream();
+            Assert.Equal(original, testStream.GetString());
         }
 
         [Fact]
@@ -22,8 +22,8 @@ namespace StandardDot.CoreExtensions.UnitTests
         {
             string original = "foobar";
             byte[] originalByteArray = Encoding.UTF8.GetBytes(original);
-            Stream testStream = original.GetStreamFromString();
-            Assert.Equal(originalByteArray, testStream.GetByteArrayFromStream());
+            Stream testStream = original.ToStream();
+            Assert.Equal(originalByteArray, testStream.ToByteArray());
         }
     }
 }

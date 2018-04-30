@@ -69,7 +69,7 @@ namespace StandardDot.Authentication.Hmac
                 MD5 md5 = MD5.Create();
                 // Hashing the request body, any change in request body will result in different hash, we'll incure message integrity
                 byte[] requestContentHash;
-                using (Stream contentStream = content.GetStreamFromString())
+                using (Stream contentStream = content.ToStream())
                 {
                     requestContentHash = md5.ComputeHash(contentStream);
                 }

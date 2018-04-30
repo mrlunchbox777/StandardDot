@@ -24,7 +24,7 @@ namespace StandardDot.CoreExtensions
             }
             DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
             T obj;
-            using (Stream stream = jsonString.GetStreamFromString())
+            using (Stream stream = jsonString.ToStream())
             {
                 obj = (T)ser.ReadObject(stream);
             }
@@ -37,7 +37,7 @@ namespace StandardDot.CoreExtensions
         /// <param name="target">The string to convert to a stream.</param>
         /// <param name="encoding">The encoding for the string, default UTF8.</param>
         /// <returns>The stream created from a string.</returns>
-        public static Stream GetStreamFromString(this string target, Encoding encoding = null)
+        public static Stream ToStream(this string target, Encoding encoding = null)
         {
             if (string.IsNullOrWhiteSpace(target))
             {
@@ -65,7 +65,7 @@ namespace StandardDot.CoreExtensions
         /// <param name="target">The byte[] to convert to a string</param>
         /// <param name="encoding">The encoding for the string, default UTF8.</param>
         /// <returns>The string pulled from a byte[]</returns>
-        public static string GetString(this byte[] target, Encoding encoding = null)
+        public static string FromBytes(this byte[] target, Encoding encoding = null)
         {
             return (encoding ?? Encoding.UTF8).GetString(target);
         }
@@ -77,7 +77,7 @@ namespace StandardDot.CoreExtensions
         /// <param name="target">The byte[] to convert to a string</param>
         /// <param name="encoding">The encoding for the string, default UTF8.</param>
         /// <returns>The base64 encoded string pulled from a byte[]</returns>
-        public static string GetArbitraryString(this byte[] target)
+        public static string ToArbitraryString(this byte[] target)
         {
             return Convert.ToBase64String(target);
         }
@@ -134,6 +134,7 @@ namespace StandardDot.CoreExtensions
             
             ulong unixTimestampSeconds = Convert.ToUInt64(unixTimestamp);
 
-            return TimeSpan.FromSeconds(unixTimestampSeconds);}
+            return TimeSpan.FromSeconds(unixTimestampSeconds);
+        }
     }
 }

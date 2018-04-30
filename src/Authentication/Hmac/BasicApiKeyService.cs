@@ -4,8 +4,12 @@ using StandardDot.Abstract;
 
 namespace StandardDot.Authentication.Hmac
 {
+    /// <summary>
+    /// An Api Key Service backed by a string, string dictionary
+    /// </summary>
     public class BasicApiKeyService : IApiKeyService
     {
+        /// <param name="source">The backing dictionary that provides api keys and secrets</param>
         public BasicApiKeyService(IDictionary<string, string> source)
         {
             Source = source;

@@ -37,7 +37,7 @@ namespace StandardDot.Abstract.CoreServices.Serialization
             {
                 return default(T);
             }
-            return target.GetStringFromStream().DeserializeJson<T>();
+            return target.GetString().DeserializeJson<T>();
         }
 
         public void Dispose()
