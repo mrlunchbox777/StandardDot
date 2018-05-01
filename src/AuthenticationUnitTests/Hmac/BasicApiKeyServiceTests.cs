@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,15 @@ namespace StandardDot.Authentication.UnitTests
 {
     public class BasicApiKeyServiceTests
     {
+        [Fact]
+        public void GenerateApiKeyTest()
+        {
+            Dictionary<string, string> backingKeys = GetBackingKeys();
+            BasicApiKeyService service = new BasicApiKeyService(backingKeys);
+            string apiKey = service.GenerateApiKey();
+            Assert.NotNull(apiKey);
+            Assert.Equal(32, Convert.FromBase64String(apiKey).Length);
+        }
 
         [Fact]
         public void BasicApiKeyServiceUsage()

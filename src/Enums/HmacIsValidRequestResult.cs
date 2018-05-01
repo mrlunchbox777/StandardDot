@@ -25,6 +25,15 @@ namespace StandardDot.Enums
         SignaturesMismatch = 4,
 
         [EnumMember(Value = "None")]
-        NoError = 5
+        NoError = 5,
+
+        [EnumMember(Value = "NoHmacHeader")]
+        NoHmacHeader = 6,
+
+        [EnumMember(Value = "NotEnoughHeaderParts")]
+        NotEnoughHeaderParts = 7,
+
+        [EnumMember(Value = "BadNamespace")]
+        BadNamespace = 8
     }
 }

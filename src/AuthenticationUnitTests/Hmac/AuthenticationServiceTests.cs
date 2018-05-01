@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
+using System.Security.Principal;
 using StandardDot.Abstract;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
@@ -35,21 +36,54 @@ namespace StandardDot.Authentication.UnitTests
         }
 
         [Fact]
-        public void IsValidRequest()
+        public void IsValidRequestTest()
         {
-            IsValidRequestOverride service = GetService((l, a, c) => new IsValidRequestOverride(l, a, c));
-            const string appId = "appId1";
+            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            IsValidRequestOverride service = GetService((l, a, c) => new IsValidRequestOverride(l, a, c), cachingService);
+            const string badAppId = "badappId";
             const string resource = "/test";
+            const string method = "GET";
+            const string content = "some content";
 
             Tuple<bool, HmacIsValidRequestResult> result = service.CheckValidRequest(null, null, null, null, null, null, null);
             Assert.False(result.Item1);
             Assert.Equal(HmacIsValidRequestResult.NoValidResouce, result.Item2);
 
-            result = service.CheckValidRequest(null, resource, null, appId, null, null, null);
+            result = service.CheckValidRequest(null, resource, null, badAppId, null, null, null);
             Assert.False(result.Item1);
             Assert.Equal(HmacIsValidRequestResult.UnableToFindAppId, result.Item2);
 
-            // more to do here
+            result = service.CheckValidRequest(null, resource, null, _appId, null, null, null);
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.ReplayRequest, result.Item2);
+
+            result = service.CheckValidRequest(null, resource, null, _appId, null, "a nonce", null);
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.ReplayRequest, result.Item2);
+            
+            ulong badCurrentTime = DateTime.UtcNow.AddMinutes(-30).UnixTimeStamp();
+            result = service.CheckValidRequest(null, resource, null, _appId, null, "a nonce", badCurrentTime.ToString());
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.ReplayRequest, result.Item2);
+
+            ulong goodCurrentTime = DateTime.UtcNow.UnixTimeStamp();
+            cachingService.Cache("a nonce", "a nonce");
+            result = service.CheckValidRequest(null, resource, null, _appId, null, "a nonce", goodCurrentTime.ToString());
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.ReplayRequest, result.Item2);
+
+            HmacSignatureGenerator signatureGenerator = new HmacSignatureGenerator(CustomHeaderScheme);
+            string fullSignature = signatureGenerator.GenerateFullHmacSignature(resource, method, _appId, _secretKey, content);
+            string[] signatureParts = service.GetHeaderValues(fullSignature.Split(" ")[1]);
+            result = service.CheckValidRequest(content.ToStream(), resource, method, signatureParts[0], signatureParts[1], signatureParts[2], signatureParts[3]);
+            Assert.True(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.NoError, result.Item2);
+
+            fullSignature = signatureGenerator.GenerateFullHmacSignature(resource, method, _appId, _secretKey, content);
+            signatureParts = service.GetHeaderValues(fullSignature.Split(" ")[1]);
+            result = service.CheckValidRequest(content.ToStream(), resource, method, signatureParts[0], _secretKey, signatureParts[2], signatureParts[3]);
+            Assert.False(result.Item1);
+            Assert.Equal(HmacIsValidRequestResult.SignaturesMismatch, result.Item2);
         }
 
         [Fact]
@@ -100,8 +134,28 @@ namespace StandardDot.Authentication.UnitTests
             Assert.Equal(contentString, result.Item3);
         }
 
-        // do authorization
+        [Fact]
+        public void DoAuthorizationTest()
+        {
+            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            AuthenticationService service = GetService((l, a, c) => new AuthenticationService(l, a, c), cachingService);
+            const string badAppId = "badappId";
+            const string resource = "/test";
+            const string method = "GET";
+            const string content = "some content";
+            ulong badCurrentTime = DateTime.UtcNow.AddMinutes(-30).UnixTimeStamp();
+            ulong goodCurrentTime = DateTime.UtcNow.UnixTimeStamp();
+            cachingService.Cache("a nonce", "a nonce");
+            HmacSignatureGenerator signatureGenerator = new HmacSignatureGenerator(CustomHeaderScheme);
+            string fullSignature = signatureGenerator.GenerateFullHmacSignature(resource, method, _appId, _secretKey, content);
 
+            string hmacAuthenticationValue = CustomHeaderScheme + " " + null;
+            Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal> result = service.DoAuthorization(null, null, null, null, true);
+            Assert.Null(result);
+
+            // TODO: More stuff
+        }
+        
         private static T GetService<T>(Func<ILoggingService, IApiKeyService, ICachingService, T> constructor, MemoryCachingService cachingService = null)
             where T: AuthenticationService
         {
@@ -122,6 +176,8 @@ namespace StandardDot.Authentication.UnitTests
         
         private const string _appId = "app1";
         
-        private const string _secretKey = "secretKey1";
+        private const string _secretKey = "GVsVLyUq3U2+7bOdkdCTBemtSM8So98G+5EzunOJEcw=";
+
+        private const string CustomHeaderScheme = "sds";
     }
 }

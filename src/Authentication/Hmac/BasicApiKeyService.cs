@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using StandardDot.Abstract;
 
 namespace StandardDot.Authentication.Hmac
@@ -17,6 +19,16 @@ namespace StandardDot.Authentication.Hmac
 
         protected virtual IDictionary<string, string> Source { get; set; }
 
+        public string GenerateApiKey()
+        {
+            using (RNGCryptoServiceProvider cryptoProvider = new RNGCryptoServiceProvider())
+            {
+                byte[] secretKeyByteArray = new byte[32]; //256 bit
+                cryptoProvider.GetBytes(secretKeyByteArray);
+                string apiKey = Convert.ToBase64String(secretKeyByteArray);
+                return apiKey;
+            }
+        }
 
         public virtual string this[string key] { get => Source[key]; set => Source[key] = value; }
 

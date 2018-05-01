@@ -21,5 +21,10 @@ namespace StandardDot.Authentication.UnitTests.AuthenticationServiceTestObjects
             return IsValidRequest(content, resource, resourceRequestMethod, appId,
                 incomingBase64Signature, nonce, requestTimeStamp);
         }
+        
+        public string[] GetHeaderValues(string header)
+        {
+            return GetAuthorizationHeaderValues(header);
+        }
     }
 }
