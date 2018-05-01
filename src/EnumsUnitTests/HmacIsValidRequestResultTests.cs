@@ -17,7 +17,7 @@ namespace StandardDot.Enums.UnitTests
 
             Assert.NotNull(allresults);
             Assert.NotEmpty(allresults);
-            Assert.Equal(9, allresults.Length);
+            Assert.Equal(10, allresults.Length);
             Assert.Equal(0, (int)HmacIsValidRequestResult.General);
             Assert.Equal(1, (int)HmacIsValidRequestResult.NoValidResouce);
             Assert.Equal(2, (int)HmacIsValidRequestResult.UnableToFindAppId);
@@ -27,6 +27,7 @@ namespace StandardDot.Enums.UnitTests
             Assert.Equal(6, (int)HmacIsValidRequestResult.NoHmacHeader);
             Assert.Equal(7, (int)HmacIsValidRequestResult.NotEnoughHeaderParts);
             Assert.Equal(8, (int)HmacIsValidRequestResult.BadNamespace);
+            Assert.Equal(9, (int)HmacIsValidRequestResult.NotEnoughHeaderValueItems);
         }
     }
 }

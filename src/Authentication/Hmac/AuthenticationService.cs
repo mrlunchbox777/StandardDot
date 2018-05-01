@@ -219,7 +219,7 @@ namespace StandardDot.Authentication.Hmac
             }
 
             string[] authParts = hmacAuthenticationValue?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hmacAuthenticationValue != null && authParts.Length > 0
+            if (hmacAuthenticationValue != null && authParts.Length == 2
                 && AuthenticationScheme.Equals(authParts[0].Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 string rawAuthValue = authParts[1];
@@ -257,17 +257,17 @@ namespace StandardDot.Authentication.Hmac
                                                 + (autherizationHeaderArray?.Length.ToString() ?? "0");
                     LoggingService.LogMessage("Bad Hmac Auth", errorMessage, LogLevel.Info);
                     return new Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal>(false,
-                        new [] {HmacIsValidRequestResult.NotEnoughHeaderParts}, null);
+                        new [] {HmacIsValidRequestResult.NotEnoughHeaderValueItems}, null);
                 }
             }
             else
             {
                 bool noHmacValue = string.IsNullOrWhiteSpace(hmacAuthenticationValue);
-                bool gotSomeAuthParts = authParts?.Length > 0;
-                bool badNameSpace = AuthenticationScheme.Equals(authParts?.FirstOrDefault()?.Trim(), StringComparison.OrdinalIgnoreCase);
+                bool gotWrongNumberOfParts = authParts?.Length != 2;
+                bool badNameSpace = !AuthenticationScheme.Equals(authParts?.FirstOrDefault()?.Trim(), StringComparison.OrdinalIgnoreCase);
 
                 string errorMessage = (noHmacValue ? "No Hmac Authorization Value. " : "")
-                                    + (gotSomeAuthParts
+                                    + (gotWrongNumberOfParts
                                         ? "Not enough auth parts. Did you include the namespace and parameter string? "
                                         : "")
                                     + (badNameSpace
@@ -280,7 +280,7 @@ namespace StandardDot.Authentication.Hmac
                 {
                     descriptors.Add(HmacIsValidRequestResult.NoHmacHeader);
                 }
-                if (gotSomeAuthParts)
+                if (gotWrongNumberOfParts)
                 {
                     descriptors.Add(HmacIsValidRequestResult.NotEnoughHeaderParts);
                 }

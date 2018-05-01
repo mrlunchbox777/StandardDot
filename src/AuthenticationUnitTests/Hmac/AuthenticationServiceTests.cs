@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using StandardDot.Abstract;
@@ -139,21 +140,77 @@ namespace StandardDot.Authentication.UnitTests
         {
             MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
             AuthenticationService service = GetService((l, a, c) => new AuthenticationService(l, a, c), cachingService);
-            const string badAppId = "badappId";
             const string resource = "/test";
             const string method = "GET";
             const string content = "some content";
-            ulong badCurrentTime = DateTime.UtcNow.AddMinutes(-30).UnixTimeStamp();
-            ulong goodCurrentTime = DateTime.UtcNow.UnixTimeStamp();
-            cachingService.Cache("a nonce", "a nonce");
             HmacSignatureGenerator signatureGenerator = new HmacSignatureGenerator(CustomHeaderScheme);
             string fullSignature = signatureGenerator.GenerateFullHmacSignature(resource, method, _appId, _secretKey, content);
-
             string hmacAuthenticationValue = CustomHeaderScheme + " " + null;
+
             Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal> result = service.DoAuthorization(null, null, null, null, true);
             Assert.Null(result);
 
-            // TODO: More stuff
+            result = service.DoAuthorization(null, null, null, null, true);
+            Assert.Null(result);
+
+            result = service.DoAuthorization(null, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Equal(3, result.Item2.Count());
+            Assert.Contains(HmacIsValidRequestResult.NoHmacHeader, result.Item2);
+            Assert.Contains(HmacIsValidRequestResult.NotEnoughHeaderParts, result.Item2);
+            Assert.Contains(HmacIsValidRequestResult.BadNamespace, result.Item2);
+            Assert.Null(result.Item3);
+
+            hmacAuthenticationValue = "qqq 1:2:3:4";
+            result = service.DoAuthorization(hmacAuthenticationValue, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Single(result.Item2);
+            Assert.Equal(HmacIsValidRequestResult.BadNamespace, result.Item2.Single());
+            Assert.Null(result.Item3);
+
+            hmacAuthenticationValue = "sds";
+            result = service.DoAuthorization(hmacAuthenticationValue, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Single(result.Item2);
+            Assert.Equal(HmacIsValidRequestResult.NotEnoughHeaderParts, result.Item2.Single());
+            Assert.Null(result.Item3);
+ 
+            hmacAuthenticationValue = "1:2:3:4";
+            result = service.DoAuthorization(hmacAuthenticationValue, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Equal(2, result.Item2.Count());
+            Assert.Contains(HmacIsValidRequestResult.BadNamespace, result.Item2);
+            Assert.Contains(HmacIsValidRequestResult.NotEnoughHeaderParts, result.Item2);
+            Assert.Null(result.Item3);
+ 
+            hmacAuthenticationValue = "sds 1:2:3";
+            result = service.DoAuthorization(hmacAuthenticationValue, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Single(result.Item2);
+            Assert.Equal(HmacIsValidRequestResult.NotEnoughHeaderValueItems, result.Item2.Single());
+            Assert.Null(result.Item3);
+ 
+            hmacAuthenticationValue = "sds 1:2:3:4";
+            result = service.DoAuthorization(hmacAuthenticationValue, null, null, null, false);
+            Assert.NotNull(result);
+            Assert.False(result.Item1);
+            Assert.Single(result.Item2);
+            Assert.Equal(HmacIsValidRequestResult.NoValidResouce, result.Item2.Single());
+            Assert.Null(result.Item3);
+ 
+            hmacAuthenticationValue = fullSignature;
+            result = service.DoAuthorization(hmacAuthenticationValue, content.ToStream(), resource, method, false);
+            Assert.NotNull(result);
+            Assert.True(result.Item1);
+            Assert.Single(result.Item2);
+            Assert.Equal(HmacIsValidRequestResult.NoError, result.Item2.Single());
+            Assert.NotNull(result.Item3);
+            Assert.Equal(_appId, result.Item3.Identity.Name);
         }
         
         private static T GetService<T>(Func<ILoggingService, IApiKeyService, ICachingService, T> constructor, MemoryCachingService cachingService = null)

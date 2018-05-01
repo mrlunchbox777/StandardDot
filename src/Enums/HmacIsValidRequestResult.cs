@@ -34,6 +34,9 @@ namespace StandardDot.Enums
         NotEnoughHeaderParts = 7,
 
         [EnumMember(Value = "BadNamespace")]
-        BadNamespace = 8
+        BadNamespace = 8,
+
+        [EnumMember(Value = "NotEnoughHeaderValueItems")]
+        NotEnoughHeaderValueItems = 9
     }
 }
