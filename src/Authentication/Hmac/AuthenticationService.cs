@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Security.Cryptography;
 using System.Security.Principal;
 using StandardDot.Abstract;
@@ -15,20 +17,13 @@ namespace StandardDot.Authentication.Hmac
     /// </summary>
     public class AuthenticationService
     {
-        /// <summary>
-        /// Create an Authentication Service that only requires other services
-        /// </summary>
         /// <param name="loggingService">The service to write logs to</param>
         /// <param name="apiKeyService">The service that provides Api Keys</param>
         /// <param name="cachingService">The service that handles caching</param>
         public AuthenticationService(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
             : this(loggingService, apiKeyService, cachingService, 300, 300, "sds")
-        {
-        }
+        { }
 
-        /// <summary>
-        /// Create an Authentication Service that only requires other services
-        /// </summary>
         /// <param name="loggingService">The service to write logs to</param>
         /// <param name="apiKeyService">The service that provides Api Keys</param>
         /// <param name="cachingService">The service that handles caching</param>
@@ -63,7 +58,7 @@ namespace StandardDot.Authentication.Hmac
         /// </summary>
         /// <param name="hmacAuthenticationValue">The authentication value that the client passed</param>
         /// <returns>An array of the parts of the HMAC Authentication Value</returns>
-        private string[] GetAutherizationHeaderValues(string hmacAuthenticationValue)
+        protected virtual string[] GetAuthorizationHeaderValues(string hmacAuthenticationValue)
         {
             string[] credArray = hmacAuthenticationValue.Split(':');
 
@@ -87,25 +82,25 @@ namespace StandardDot.Authentication.Hmac
         /// <param name="incomingBase64Signature">The base64 signature the client passed</param>
         /// <param name="nonce">The nonce the client provided to identify the request</param>
         /// <param name="requestTimeStamp">The timestamp the client provided to identify the request</param>
-        /// <returns>(Is the request valid, The error message)</returns>
-        private Tuple<bool, string> IsValidRequest(Stream content, string resource, string resourceRequestMethod, string appId,
+        /// <returns>(Is the request valid, description of the result)</returns>
+        protected virtual Tuple<bool, HmacIsValidRequestResult> IsValidRequest(Stream content, string resource, string resourceRequestMethod, string appId,
             string incomingBase64Signature, string nonce, string requestTimeStamp)
         {
             if (string.IsNullOrWhiteSpace(resource))
             {
                 LoggingService.LogMessage("HMAC Auth Resource Not Valid",
                     "No valid request requested resource", LogLevel.Debug);
-                return new Tuple<bool, string>(false, "No Valid Resource");
+                return new Tuple<bool, HmacIsValidRequestResult>(false, HmacIsValidRequestResult.NoValidResouce);
             }
 
             string requestContentBase64String = "";
 
-            string sharedKey = ApiKeyService[appId];
+            ApiKeyService.TryGetValue(appId, out string sharedKey);
             if (string.IsNullOrWhiteSpace(sharedKey))
             {
                 LoggingService.LogMessage("Api Auth Request Not Valid",
                     "Unable to find appId", LogLevel.Debug);
-                return new Tuple<bool, string>(false, "Unable to find appId. Is your app active?");
+                return new Tuple<bool, HmacIsValidRequestResult>(false, HmacIsValidRequestResult.UnableToFindAppId);
             }
 
             if (IsReplayRequest(nonce, requestTimeStamp))
@@ -113,8 +108,8 @@ namespace StandardDot.Authentication.Hmac
                 LoggingService.LogMessage("Api Auth Request Not Valid",
                     "Looked like a replay request.\r\nNonce - " + nonce + "\r\nRequest Timestamp - " + requestTimeStamp
                     + "\r\nOur Timestamp" + (DateTime.UtcNow - Constants.DateTime.UnixEpoch).TotalSeconds, LogLevel.Debug);
-                return new Tuple<bool, string>(false,
-                    "This looks like a replay request. Are you creating a new nonce every time?");
+                return new Tuple<bool, HmacIsValidRequestResult>(false,
+                    HmacIsValidRequestResult.ReplayRequest);
             }
 
             // we need a content stream (we need to make sure we pass this back)
@@ -125,8 +120,10 @@ namespace StandardDot.Authentication.Hmac
                 requestContentBase64String = Convert.ToBase64String(hashAndContent.Item2);
             }
 
+            string encodedResource =
+                System.Web.HttpUtility.UrlEncode(resource.ToLower());
             string data =
-                $"{appId}{resourceRequestMethod}{resource}{requestTimeStamp}{nonce}{requestContentBase64String}";
+                $"{appId}{resourceRequestMethod}{encodedResource}{requestTimeStamp}{nonce}{requestContentBase64String}";
 
             byte[] secretKeyBytes = Convert.FromBase64String(sharedKey);
 
@@ -147,7 +144,9 @@ namespace StandardDot.Authentication.Hmac
                         + "\r\nRaw Content - " + hashAndContent.Item2,
                         LogLevel.Debug);
                 }
-                return new Tuple<bool, string>(matched, matched ? "" : "Signatures didn't match.");
+                return new Tuple<bool, HmacIsValidRequestResult>(matched, matched
+                    ? HmacIsValidRequestResult.NoError
+                    : HmacIsValidRequestResult.SignaturesMismatch);
             }
 
         }
@@ -157,16 +156,14 @@ namespace StandardDot.Authentication.Hmac
         /// </summary>
         /// <param name="contentStream">The stream of content to hash</param>
         /// <returns>If the request is a replay request</returns>
-        private bool IsReplayRequest(string nonce, string requestTimeStamp)
+        protected virtual bool IsReplayRequest(string nonce, string requestTimeStamp)
         {
-            if (CachingService.ContainsKey(nonce))
+            if (string.IsNullOrWhiteSpace(nonce) || CachingService.ContainsKey(nonce))
             {
                 return true;
             }
 
-            TimeSpan currentTs = DateTime.UtcNow - Constants.DateTime.UnixEpoch;
-
-            ulong serverTotalSeconds = Convert.ToUInt64(currentTs.TotalSeconds);
+            ulong serverTotalSeconds = DateTime.UtcNow.UnixTimeStamp();
             ulong requestTotalSeconds = Convert.ToUInt64(requestTimeStamp);
 
             if ((serverTotalSeconds - requestTotalSeconds) > ServerClientMaxTimeDifference)
@@ -174,8 +171,8 @@ namespace StandardDot.Authentication.Hmac
                 return true;
             }
 
-            CachingService.Cache(nonce, nonce, requestTimeStamp?.GetDateTimeFromUnixTimestampString() ?? DateTime.MinValue,
-                DateTime.UtcNow.AddSeconds(RequestMaxAgeInSeconds));
+            DateTime cachedTime = requestTimeStamp?.GetDateTimeFromUnixTimestampString() ?? DateTime.MinValue;
+            CachingService.Cache(nonce, nonce, cachedTime, cachedTime.AddSeconds(RequestMaxAgeInSeconds));
 
             return false;
         }
@@ -185,11 +182,11 @@ namespace StandardDot.Authentication.Hmac
         /// </summary>
         /// <param name="contentStream">The stream of content to hash</param>
         /// <returns>(A copy of the contentStream, the hash of the content, the string representing the content)</returns>
-        private static Tuple<Stream, byte[], string> ComputeHash(Stream contentStream)
+        protected virtual Tuple<Stream, byte[], string> ComputeHash(Stream contentStream)
         {
             using (MD5 md5 = MD5.Create())
             {
-                byte[] content = contentStream.GetByteArrayFromStream();
+                byte[] content = contentStream.ToByteArray();
 
                 string rawContent = "";
                 if (content.Length == 0)
@@ -198,7 +195,7 @@ namespace StandardDot.Authentication.Hmac
                 }
 
                 byte[] hash = md5.ComputeHash(content);
-                rawContent = content.GetString();
+                rawContent = content.FromBytes();
                 return new Tuple<Stream, byte[], string>(new MemoryStream(content), hash, rawContent);
             }
         }
@@ -211,8 +208,8 @@ namespace StandardDot.Authentication.Hmac
         /// <param name="resource">The resource that the client requested (URI ENCODED)</param>
         /// <param name="resourceRequestMethod">The method that the client used to request the resource (ALL UPPER)</param>
         /// <param name="allowAnonymous">Should allow anonymous requests</param>
-        /// <returns>(Is Authorized, Error Message, A Principal based on the AppId)</returns>
-        public Tuple<bool, string, GenericPrincipal> DoAuthorization(string hmacAuthenticationValue,
+        /// <returns>(Is Authorized, Descriptions of the result, A Principal based on the AppId)</returns>
+        public virtual Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal> DoAuthorization(string hmacAuthenticationValue,
             Stream content, string resource, string resourceRequestMethod, bool allowAnonymous)
         {
             // If anonymous access is allowed the client should be authorized no matter what
@@ -222,12 +219,12 @@ namespace StandardDot.Authentication.Hmac
             }
 
             string[] authParts = hmacAuthenticationValue?.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-            if (hmacAuthenticationValue != null && authParts.Length > 0
+            if (hmacAuthenticationValue != null && authParts.Length == 2
                 && AuthenticationScheme.Equals(authParts[0].Trim(), StringComparison.OrdinalIgnoreCase))
             {
                 string rawAuthValue = authParts[1];
 
-                string[] autherizationHeaderArray = GetAutherizationHeaderValues(rawAuthValue);
+                string[] autherizationHeaderArray = GetAuthorizationHeaderValues(rawAuthValue);
 
                 if (autherizationHeaderArray != null && autherizationHeaderArray.Length == 4)
                 {
@@ -236,13 +233,14 @@ namespace StandardDot.Authentication.Hmac
                     string nonce = autherizationHeaderArray[2];
                     string requestTimeStamp = autherizationHeaderArray[3];
 
-                    Tuple<bool, string> isValid =
+                    Tuple<bool, HmacIsValidRequestResult> isValid =
                         IsValidRequest(content, resource, resourceRequestMethod, appId, incomingBase64Signature, nonce, requestTimeStamp);
 
                     if (isValid.Item1)
                     {
                         GenericPrincipal currentPrincipal = new GenericPrincipal(new GenericIdentity(appId), null);
-                        return new Tuple<bool, string, GenericPrincipal>(true, null, currentPrincipal);
+                        return new Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal>(true,
+                            new [] {HmacIsValidRequestResult.NoError}, currentPrincipal);
                     }
                     else
                     {
@@ -250,28 +248,48 @@ namespace StandardDot.Authentication.Hmac
                             "\r\nappId - " + appId + "\r\nincomingBase64Signature - " + incomingBase64Signature
                             + "\r\nnonce - " + nonce + "\r\nrequestTimeStamp - " + requestTimeStamp + ". Message - "
                             + isValid.Item2, LogLevel.Info);
-                        return new Tuple<bool, string, GenericPrincipal>(false, isValid.Item2, null);
+                        return new Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal>(false, new [] {isValid.Item2}, null);
                     }
                 }
                 else
                 {
-                    string errorMessage = "Incorrect items found in the Hmac Authorization Value. Parts should be 4 found "
+                    string errorMessage = "Incorrect number of items found in the Hmac Authorization Value. Should be 4 found "
                                                 + (autherizationHeaderArray?.Length.ToString() ?? "0");
                     LoggingService.LogMessage("Bad Hmac Auth", errorMessage, LogLevel.Info);
-                    return new Tuple<bool, string, GenericPrincipal>(false, errorMessage, null);
+                    return new Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal>(false,
+                        new [] {HmacIsValidRequestResult.NotEnoughHeaderValueItems}, null);
                 }
             }
             else
             {
-                string errorMessage = (string.IsNullOrWhiteSpace(hmacAuthenticationValue) ? "No Hmac Authorization Value." : "")
-                                    + (authParts?.Length > 0
-                                        ? "Not enough auth parts. Did you include the namespace and parameter string?"
+                bool noHmacValue = string.IsNullOrWhiteSpace(hmacAuthenticationValue);
+                bool gotWrongNumberOfParts = authParts?.Length != 2;
+                bool badNameSpace = !AuthenticationScheme.Equals(authParts?.FirstOrDefault()?.Trim(), StringComparison.OrdinalIgnoreCase);
+
+                string errorMessage = (noHmacValue ? "No Hmac Authorization Value. " : "")
+                                    + (gotWrongNumberOfParts
+                                        ? "Not enough auth parts. Did you include the namespace and parameter string? "
                                         : "")
-                                    + (AuthenticationScheme.Equals(authParts?[0]?.Trim(), StringComparison.OrdinalIgnoreCase)
-                                        ? "Improper namespace. Did you include it?"
+                                    + (badNameSpace
+                                        ? "Improper namespace. Did you include it? "
                                         : "");
                 LoggingService.LogMessage("Bad Api Auth", errorMessage, LogLevel.Info);
-                return new Tuple<bool, string, GenericPrincipal>(false, errorMessage, null);
+
+                List<HmacIsValidRequestResult> descriptors = new List<HmacIsValidRequestResult>();
+                if (noHmacValue)
+                {
+                    descriptors.Add(HmacIsValidRequestResult.NoHmacHeader);
+                }
+                if (gotWrongNumberOfParts)
+                {
+                    descriptors.Add(HmacIsValidRequestResult.NotEnoughHeaderParts);
+                }
+                if (badNameSpace)
+                {
+                    descriptors.Add(HmacIsValidRequestResult.BadNamespace);
+                }
+                return new Tuple<bool, IEnumerable<HmacIsValidRequestResult>, GenericPrincipal>(false,
+                    descriptors, null);
             }
         }
     }

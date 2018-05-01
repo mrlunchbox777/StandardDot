@@ -36,7 +36,7 @@ namespace StandardDot.CoreServices.UnitTests
                 };
             
             Foobar deserialized;
-            using (Stream currentStream = originalString.GetStreamFromString())
+            using (Stream currentStream = originalString.ToStream())
             {
                 deserialized = service.DeserializeObject<Foobar>(currentStream);
             }

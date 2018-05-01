@@ -13,7 +13,7 @@ namespace StandardDot.CoreExtensions
         /// </summary>
         /// <param name="target">The stream to convert.</param>
         /// <returns>The string pulled from the stream.</returns>
-        public static string GetStringFromStream(this Stream target)
+        public static string GetString(this Stream target)
         {
             if (target.CanSeek)
             {
@@ -30,7 +30,7 @@ namespace StandardDot.CoreExtensions
         /// </summary>
         /// <param name="input">The stream to convert.</param>
         /// <returns>The byte[] pulled from the stream.</returns>
-        public static byte[] GetByteArrayFromStream(this Stream input)
+        public static byte[] ToByteArray(this Stream input)
         {
             if (input.CanSeek)
             {
