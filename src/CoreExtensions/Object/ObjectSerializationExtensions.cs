@@ -33,7 +33,7 @@ namespace StandardDot.CoreExtensions.Object
                 {
                     DataContractJsonSerializer ds = new DataContractJsonSerializer(typeof(T));
                     ds.WriteObject(stream, target);
-                    string jsonString = stream.GetStringFromStream();
+                    string jsonString = stream.GetString();
                     stream.Close();
                     return jsonString;
                 }

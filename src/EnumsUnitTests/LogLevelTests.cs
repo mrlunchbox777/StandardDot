@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
-using StandardDot.Enums;
 using Xunit;
 
-namespace  StandardDot.Enums.UnitTests
+namespace StandardDot.Enums.UnitTests
 {
     public class LogLevelTests
     {

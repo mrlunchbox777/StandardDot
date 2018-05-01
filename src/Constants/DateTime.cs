@@ -8,7 +8,6 @@ namespace StandardDot.Constants
     /// </summary>
     public class DateTime
     {
-        
         /// <summary>
         /// The Unix Epoch (time since Jan 1st 1970 UTC)
         /// </summary>

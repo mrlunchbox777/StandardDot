@@ -25,14 +25,14 @@ namespace StandardDot.CoreExtensions.UnitTests
         [Fact]
         public void GetStreamFromStringWhiteSpace()
         {
-            Assert.Empty(" ".GetStreamFromString().GetByteArrayFromStream());
+            Assert.Empty(" ".ToStream().ToByteArray());
         }
 
         [Fact]
         public void GetStreamFromString()
         {
             string originalString = "foobar";
-            Assert.Equal(originalString, originalString.GetStreamFromString().GetStringFromStream());
+            Assert.Equal(originalString, originalString.ToStream().GetString());
         }
 
         [Fact]
@@ -48,7 +48,7 @@ namespace StandardDot.CoreExtensions.UnitTests
         {
             string originalString = "foobar";
             byte[] originalBytes = Encoding.UTF8.GetBytes(originalString);
-            Assert.Equal(originalString, originalBytes.GetString());
+            Assert.Equal(originalString, StringExtensions.FromBytes(originalBytes));
         }
 
         [Fact]
@@ -56,7 +56,7 @@ namespace StandardDot.CoreExtensions.UnitTests
         {
             byte[] originalBytes = {11, 32, 69};
             string originalString = Convert.ToBase64String(originalBytes);
-            Assert.Equal(originalString, originalBytes.GetArbitraryString());
+            Assert.Equal(originalString, originalBytes.ToArbitraryString());
         }
 
         [Fact]
