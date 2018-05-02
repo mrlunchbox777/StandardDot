@@ -74,5 +74,25 @@ namespace StandardDot.CoreExtensions.UnitTests
             string originalStringB64 = Convert.ToBase64String(originalString.GetBytes());
             Assert.Equal(originalStringB64, originalString.Base64Encode());
         }
+
+        [Fact]
+        public void GetDateTimeFromUnixTimestampStringTest()
+        {
+            string epochPlusAMinueString = "60";
+            DateTime? epochPlusAMinue = Constants.DateTime.UnixEpoch.AddMinutes(1);
+
+            Assert.Equal(epochPlusAMinue, epochPlusAMinueString.GetDateTimeFromUnixTimestampString());
+            Assert.Null(StringExtensions.GetDateTimeFromUnixTimestampString(null));
+        }
+
+        [Fact]
+        public void GetTimeSpanFromUnixTimestampStringTest()
+        {
+            string epochPlusAMinueString = "60";
+            TimeSpan? epochPlusAMinute = TimeSpan.FromSeconds(60);
+
+            Assert.Equal(epochPlusAMinute, epochPlusAMinueString.GetTimeSpanFromUnixTimestampString());
+            Assert.Null(StringExtensions.GetTimeSpanFromUnixTimestampString(null));
+        }
     }
 }

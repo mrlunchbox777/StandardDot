@@ -19,8 +19,7 @@ namespace StandardDot.CoreExtensions
         /// <param name="page">The 0 based page to look at</param>
         /// <typeparam name="T">The type in the IEnumerable</typeparam>
         /// <returns>The object represented by the jsonString.</returns>
-        public static TE Paginate<T, TE>(this TE source, int pageSize, int page)
-            where TE: IEnumerable<T>
+        public static IEnumerable<T> Paginate<T>(this IEnumerable<T> source, int pageSize, int page)
         {
             if (pageSize < 0 || page < 0)
             {
@@ -32,7 +31,7 @@ namespace StandardDot.CoreExtensions
                 return source;
             }
 
-            return (TE)source.Skip(page * pageSize).Take(pageSize);
+            return source.Skip(page * pageSize).Take(pageSize);
         }
     }
 }
