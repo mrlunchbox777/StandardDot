@@ -11,7 +11,7 @@ namespace StandardDot.Authentication.Hmac
     /// </summary>
     public static class HttpClientAuthenticationExtensions
     {
-        private static HmacHeaderGeneratorBase _registeredGenerator = null;
+        private static HmacHeaderGenerator _registeredGenerator = null;
 
         public static bool IsAnyHeaderGeneratorRegisteredProp => _registeredGenerator != null;
 
@@ -30,7 +30,7 @@ namespace StandardDot.Authentication.Hmac
         /// </summary>
         /// <param name="headerGenerator">The header generator to use (this will not be registered)</param>
         /// <returns>If there is a registered header generator</returns>
-        public static bool IsAnyHeaderGeneratorRegistered(this HmacHeaderGeneratorBase headerGenerator)
+        public static bool IsAnyHeaderGeneratorRegistered(this HmacHeaderGenerator headerGenerator)
         {
             return IsAnyHeaderGeneratorRegisteredProp;
         }
@@ -39,7 +39,7 @@ namespace StandardDot.Authentication.Hmac
         /// Registers a header generator, overwrites the currently registered header generator if applicable
         /// </summary>
         /// <param name="headerGenerator">The header generator to register</param>
-        public static void RegisterHeaderGenerator(this HmacHeaderGeneratorBase headerGenerator)
+        public static void RegisterHeaderGenerator(this HmacHeaderGenerator headerGenerator)
         {
             _registeredGenerator = headerGenerator;
         }
@@ -53,7 +53,7 @@ namespace StandardDot.Authentication.Hmac
         /// <param name="content">The content of the request</param>
         /// <param name="headerGenerator">The header generator to use (this will not be registered)</param>
         public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method, string content,
-            HmacHeaderGeneratorBase headerGenerator)
+            HmacHeaderGenerator headerGenerator)
         {
             headerGenerator.AddHmacHeaders(client, requestUri, method, content);
         }
@@ -66,7 +66,7 @@ namespace StandardDot.Authentication.Hmac
         /// <param name="method">The method that the request will be used</param>
         /// <param name="headerGenerator">The header generator to use (this will not be registered)</param>
         public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method,
-            HmacHeaderGeneratorBase headerGenerator)
+            HmacHeaderGenerator headerGenerator)
         {
             client.AddHmacHeadersWithGenerator(requestUri, method, null, headerGenerator);
         }
