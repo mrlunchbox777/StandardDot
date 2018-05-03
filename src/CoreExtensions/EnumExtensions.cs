@@ -18,7 +18,7 @@ namespace StandardDot.CoreExtensions
         /// <param name="target">Target enum</param>
         /// <param name="source">The string that has the enum</param>
         /// <returns>The enum from the string, or null</returns>
-        public static T? TryParseSafe<T>(this T? target, string source)
+        public static T? TryParseEnumSafe<T>(this string source)
             where T : struct, IConvertible
         {
             if (!typeof(T).IsEnum)
@@ -26,9 +26,11 @@ namespace StandardDot.CoreExtensions
                 throw new ArgumentException("T must be an enumerated type");
             }
 
-            target = string.IsNullOrWhiteSpace(source)
+            string trimmedSource = source?.Trim();
+
+            T? target = string.IsNullOrWhiteSpace(trimmedSource)
                 ? null
-                : Enum.TryParse(source, out T val)
+                : Enum.TryParse(trimmedSource, true, out T val)
                     ? val
                     : (T?)null;
                     
