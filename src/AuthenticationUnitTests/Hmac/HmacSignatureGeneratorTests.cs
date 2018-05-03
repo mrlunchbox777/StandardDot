@@ -51,7 +51,7 @@ namespace StandardDot.Authentication.UnitTests
         }
 
         // Maybe put more branching testing in here, but that is pretty well tested with the Authentication Service Tests
-        // It's just for testing the default values (generating a nonce and using utc now as the date time)
+        // It's just missing testing for the default values (generating a nonce and using utc now as the date time)
         
         public virtual string GenerateFullHmacSignature(string nonce, string customNameSpace, DateTime requestTime,
             string requestContentBase64String, string requestUriString, string method, string appId, string secretKey)

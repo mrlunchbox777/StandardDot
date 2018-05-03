@@ -55,6 +55,10 @@ namespace StandardDot.Authentication.Hmac
         public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method, string content,
             HmacHeaderGenerator headerGenerator)
         {
+            if (headerGenerator == null)
+            {
+                throw new NullReferenceException("No valid header generator passed.");
+            }
             headerGenerator.AddHmacHeaders(client, requestUri, method, content);
         }
 
@@ -68,6 +72,10 @@ namespace StandardDot.Authentication.Hmac
         public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method,
             HmacHeaderGenerator headerGenerator)
         {
+            if (headerGenerator == null)
+            {
+                throw new NullReferenceException("No valid header generator passed.");
+            }
             client.AddHmacHeadersWithGenerator(requestUri, method, null, headerGenerator);
         }
 
