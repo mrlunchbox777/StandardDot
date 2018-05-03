@@ -28,8 +28,9 @@ namespace StandardDot.Authentication.Hmac
         /// <param name="method">The method that the request will use</param>
         /// <param name="appId">The appid that will be used to generate headers</param>
         /// <param name="secretKey">The secret key that will be used to generate headers</param>
-        /// <param name="content">The content of the request</param>
-        public virtual string GenerateFullHmacSignature(string requestedResource, string method, string appId, string secretKey, string content = null)
+        /// <param name="content">The content of the request, default null</param>
+        public virtual string GenerateFullHmacSignature(string requestedResource, string method, string appId, string secretKey,
+            string content = null, string nonce = null, DateTime? requestTime = null)
         {
             string requestContentBase64String = string.Empty;
 
@@ -37,10 +38,10 @@ namespace StandardDot.Authentication.Hmac
                 System.Web.HttpUtility.UrlEncode(requestedResource.ToLower());
 
             // Calculate UNIX time
-            string requestTimeStamp = DateTime.UtcNow.UnixTimeStamp().ToString();
+            string requestTimeStamp = (requestTime ?? DateTime.UtcNow).UnixTimeStamp().ToString();
 
             // Create random nonce for each request
-            string nonce = Guid.NewGuid().ToString("N");
+            string nonceToUse = nonce ?? Guid.NewGuid().ToString("N");
 
             // Checking if the request contains body, usually will be null with HTTP GET and DELETE
             if (content != null)
@@ -57,7 +58,7 @@ namespace StandardDot.Authentication.Hmac
 
             // Creating the raw signature string
             string signatureRawData =
-                $"{appId}{method}{requestUriString}{requestTimeStamp}{nonce}{requestContentBase64String}";
+                $"{appId}{method}{requestUriString}{requestTimeStamp}{nonceToUse}{requestContentBase64String}";
 
             byte[] secretKeyByteArray = Convert.FromBase64String(secretKey);
 
@@ -69,7 +70,7 @@ namespace StandardDot.Authentication.Hmac
                 string requestSignatureBase64String = Convert.ToBase64String(signatureBytes);
                 // Setting the values in the Authorization header using custom scheme
                 return CustomHeaderScheme + " " +
-                    $"{appId}:{requestSignatureBase64String}:{nonce}:{requestTimeStamp}";
+                    $"{appId}:{requestSignatureBase64String}:{nonceToUse}:{requestTimeStamp}";
             }
         }
     }
