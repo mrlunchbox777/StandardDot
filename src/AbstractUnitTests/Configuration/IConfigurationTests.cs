@@ -3,9 +3,9 @@ using Moq;
 using StandardDot.Abstract.Caching;
 using Xunit;
 
-namespace Abstract.UnitTests.Caching
+namespace Abstract.UnitTests.Configuration
 {
-    public class ICachedObjectTests
+    public class IConfigurationTests
     {
         [Fact]
         public void Properties()
