@@ -2,7 +2,7 @@ using System;
 using StandardDot.Caching;
 using Xunit;
 
-namespace CachingUnitTests
+namespace StandardDot.Caching.UnitTests
 {
     public class DefaultCachedObjectTests
     {
