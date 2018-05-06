@@ -1,6 +1,8 @@
 using System;
 using Moq;
 using StandardDot.Abstract.Caching;
+using StandardDot.TestClasses.TestConfigurationMetadatas;
+using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 
 namespace Abstract.UnitTests.Configuration
@@ -8,22 +10,25 @@ namespace Abstract.UnitTests.Configuration
     public class IConfigurationMetaDataTests
     {
         [Fact]
-        public void Properties()
+        public void PropertiesFile()
         {
-            Mock<ICachedObject<string>> cachedObjectProxy = new Mock<ICachedObject<string>>(MockBehavior.Strict);
-            cachedObjectProxy.SetupAllProperties();
-            ICachedObject<string> cachedObject = cachedObjectProxy.Object;
-            const string value = "a value";
-            DateTime time = DateTime.UtcNow;
-            DateTime expireTime = DateTime.UtcNow.AddMinutes(5);
-
-            cachedObject.ExpireTime = expireTime;
-            cachedObject.CachedTime = time;
-            cachedObject.Value = value;
-
-            Assert.Equal(expireTime, cachedObject.ExpireTime);
-            Assert.Equal(time, cachedObject.CachedTime);
-            Assert.Equal(value, cachedObject.Value);
+            TestConfigurationMetadata metaData = new TestConfigurationMetadata();
+            Assert.False(metaData.UseStream);
+            Assert.Equal("./testConfigurationJson.json", metaData.ConfigurationLocation);
+            Assert.Equal(typeof(TestConfiguration), metaData.ConfigurationType);
+            Assert.Equal("TestConfiguration", metaData.ConfigurationName);
+            Assert.Null(metaData.GetConfigurationStream); 
+        }
+        
+        [Fact]
+        public void PropertiesStream()
+        {
+            TestConfigurationMetadataStream metaData = new TestConfigurationMetadataStream();
+            Assert.True(metaData.UseStream);
+            Assert.Null(metaData.ConfigurationLocation);
+            Assert.Equal(typeof(TestConfigurationStream), metaData.ConfigurationType);
+            Assert.Equal("TestConfigurationStream", metaData.ConfigurationName);
+            Assert.NotNull(metaData.GetConfigurationStream); 
         }
     }
 }

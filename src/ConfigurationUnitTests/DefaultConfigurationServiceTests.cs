@@ -2,12 +2,12 @@ using System;
 using StandardDot.Abstract.CoreServices.Serialization;
 using StandardDot.Caching;
 using StandardDot.Configuration;
-using StandardDot.ConfigurationUnitTests.TestConfigurationMetadatas;
-using StandardDot.ConfigurationUnitTests.TestConfigurations;
+using StandardDot.TestClasses.TestConfigurationMetadatas;
+using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 using Xunit.Sdk;
 
-namespace StandardDot.ConfigurationUnitTests
+namespace StandardDot.Configuration.UnitTests
 {
     public class DefaultConfigurationServiceTests
     {

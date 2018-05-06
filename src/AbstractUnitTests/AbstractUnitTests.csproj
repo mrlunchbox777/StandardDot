@@ -18,6 +18,7 @@
     <ProjectReference Include="..\Abstract\Abstract.csproj" />
     <ProjectReference Include="..\Enums\Enums.csproj" />
     <ProjectReference Include="..\Dto\Dto.csproj" />
+    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
 
 </Project>

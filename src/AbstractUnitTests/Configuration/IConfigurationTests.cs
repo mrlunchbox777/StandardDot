@@ -1,6 +1,8 @@
 using System;
 using Moq;
 using StandardDot.Abstract.Caching;
+using StandardDot.TestClasses.TestConfigurationMetadatas;
+using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 
 namespace Abstract.UnitTests.Configuration
@@ -10,20 +12,10 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void Properties()
         {
-            Mock<ICachedObject<string>> cachedObjectProxy = new Mock<ICachedObject<string>>(MockBehavior.Strict);
-            cachedObjectProxy.SetupAllProperties();
-            ICachedObject<string> cachedObject = cachedObjectProxy.Object;
-            const string value = "a value";
-            DateTime time = DateTime.UtcNow;
-            DateTime expireTime = DateTime.UtcNow.AddMinutes(5);
-
-            cachedObject.ExpireTime = expireTime;
-            cachedObject.CachedTime = time;
-            cachedObject.Value = value;
-
-            Assert.Equal(expireTime, cachedObject.ExpireTime);
-            Assert.Equal(time, cachedObject.CachedTime);
-            Assert.Equal(value, cachedObject.Value);
+            TestConfiguration configuration = new TestConfiguration();
+            Assert.Null(configuration.ConfigurationMetadata);
+            configuration.ConfigurationMetadata = new TestConfigurationMetadata();
+            Assert.NotNull(configuration.ConfigurationMetadata);
         }
     }
 }
