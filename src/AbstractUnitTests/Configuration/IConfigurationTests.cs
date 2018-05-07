@@ -1,6 +1,4 @@
-using System;
-using Moq;
-using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.Configuration;
 using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
@@ -12,7 +10,7 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void Properties()
         {
-            TestConfiguration configuration = new TestConfiguration();
+            IConfiguration<TestConfiguration, TestConfigurationMetadata> configuration = new TestConfiguration();
             Assert.Null(configuration.ConfigurationMetadata);
             configuration.ConfigurationMetadata = new TestConfigurationMetadata();
             Assert.NotNull(configuration.ConfigurationMetadata);

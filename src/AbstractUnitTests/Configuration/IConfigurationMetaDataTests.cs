@@ -1,6 +1,4 @@
-using System;
-using Moq;
-using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.Configuration;
 using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
@@ -12,7 +10,7 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void PropertiesFile()
         {
-            TestConfigurationMetadata metaData = new TestConfigurationMetadata();
+            IConfigurationMetadata<TestConfiguration, TestConfigurationMetadata> metaData = new TestConfigurationMetadata();
             Assert.False(metaData.UseStream);
             Assert.Equal("./testConfigurationJson.json", metaData.ConfigurationLocation);
             Assert.Equal(typeof(TestConfiguration), metaData.ConfigurationType);
@@ -23,7 +21,7 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void PropertiesStream()
         {
-            TestConfigurationMetadataStream metaData = new TestConfigurationMetadataStream();
+            IConfigurationMetadata<TestConfigurationStream, TestConfigurationMetadataStream> metaData = new TestConfigurationMetadataStream();
             Assert.True(metaData.UseStream);
             Assert.Null(metaData.ConfigurationLocation);
             Assert.Equal(typeof(TestConfigurationStream), metaData.ConfigurationType);
