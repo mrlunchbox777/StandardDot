@@ -125,25 +125,23 @@ namespace StandardDot.Abstract.Configuration
             where Tm: IConfigurationMetadata<T, Tm>, new()
         {
             T configuration = default(T);
-            Stream configurationStream = null;
             
             try
             {
-                configurationStream = configurationMetadata.UseStream
+                using(Stream configurationStream = configurationMetadata.UseStream
                     ? configurationMetadata.GetConfigurationStream()
-                    : File.OpenRead(configurationMetadata.ConfigurationLocation);
-                
-                if (configurationStream == null)
+                    : File.OpenRead(configurationMetadata.ConfigurationLocation))
                 {
-                    throw new InvalidOperationException("Unable to open configuration stream.");
+                    if (configurationStream == null)
+                    {
+                        throw new InvalidOperationException("Unable to open configuration stream.");
+                    }
+                        
+                    configuration = SerializationService.DeserializeObject<T>(configurationStream);
                 }
-                    
-                configuration = SerializationService.DeserializeObject<T>(configurationStream);
-                configurationStream.Dispose();
             }
             catch (Exception ex)
             {
-                configurationStream?.Dispose();
                 throw new InvalidOperationException("Unable to read or deserialize configuration using " +
                     (configurationMetadata.UseStream ? "Stream" : "Filesystem") + ". See Inner Exception for details.", ex);
             }

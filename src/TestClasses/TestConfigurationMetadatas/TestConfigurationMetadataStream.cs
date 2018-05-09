@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using StandardDot.Abstract.Configuration;
 using StandardDot.TestClasses.TestConfigurations;
+using TestClasses;
 
 namespace StandardDot.TestClasses.TestConfigurationMetadatas
 {
@@ -14,10 +15,10 @@ namespace StandardDot.TestClasses.TestConfigurationMetadatas
 
         private void EnsureStream()
         {
-            _currentStream = File.OpenRead("./testConfigurationJson.json");
+            _currentStream = new CheckDisposeStream(File.OpenRead("./testConfigurationJson.json"));
         }
 
-        private Stream _currentStream { get; set; }
+        private CheckDisposeStream _currentStream { get; set; }
 
         public bool StreamGotDisposed { get; set; }
 
@@ -29,7 +30,7 @@ namespace StandardDot.TestClasses.TestConfigurationMetadatas
             {
                 return (() =>
                 {
-                    if (UsedAtLeastOnce && _currentStream == null)
+                    if (UsedAtLeastOnce && (_currentStream == null || _currentStream.HasBeenDisposed))
                     {
                         StreamGotDisposed = true;
                     }

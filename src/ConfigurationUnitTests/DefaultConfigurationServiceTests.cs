@@ -33,11 +33,11 @@ namespace StandardDot.Configuration.UnitTests
             TestConfigurationStream configuration =
                 service.GetConfiguration<TestConfigurationStream, TestConfigurationMetadataStream>(metadata);
             Assert.True(metadata.UsedAtLeastOnce);
-
             CheckConfigurationStream(configuration);
+
+            service.ResetCachedConfigurations();
             TestConfigurationStream configuration2 =
                 service.GetConfiguration<TestConfigurationStream, TestConfigurationMetadataStream>(metadata);
-            
             CheckConfigurationStream(configuration, configuration2);
             Assert.True(metadata.UsedAtLeastOnce);
             Assert.True(metadata.StreamGotDisposed);
