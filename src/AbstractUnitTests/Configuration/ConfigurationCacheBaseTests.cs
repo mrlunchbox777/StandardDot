@@ -1,3 +1,4 @@
+using System;
 using Moq;
 using StandardDot.Abstract.Configuration;
 using Xunit;
@@ -9,7 +10,7 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void Properties()
         {
-            Mock<ConfigurationCacheBase> cacheProxy = new Mock<ConfigurationCacheBase>(MockBehavior.Strict);
+            Mock<ConfigurationCacheBase> cacheProxy = new Mock<ConfigurationCacheBase>(MockBehavior.Strict, null, null, TimeSpan.FromDays(1));
             cacheProxy.SetupGet(x => x.NumberOfConfigurations).Returns(4);
             Assert.Equal(4, cacheProxy.Object.NumberOfConfigurations);
         }
@@ -17,7 +18,7 @@ namespace Abstract.UnitTests.Configuration
         [Fact]
         public void ResetCacheTest()
         {
-            Mock<ConfigurationCacheBase> cacheProxy = new Mock<ConfigurationCacheBase>(MockBehavior.Strict);
+            Mock<ConfigurationCacheBase> cacheProxy = new Mock<ConfigurationCacheBase>(MockBehavior.Strict, null, null, TimeSpan.FromDays(1));
             cacheProxy.Setup(x => x.ResetCache());
             cacheProxy.Object.ResetCache();
             cacheProxy.Verify(x => x.ResetCache());

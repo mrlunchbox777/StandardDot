@@ -24,7 +24,6 @@ namespace StandardDot.Configuration.UnitTests
         }
 
         [Fact]
-        // TODO: Something weird is going on here and it needs to be fixed (the stream isn't ever showing up as disposed)
         public void ProvidingMetadataStream()
         {
             DefaultConfigurationService service = GenerateService();
@@ -38,7 +37,8 @@ namespace StandardDot.Configuration.UnitTests
             service.ResetCachedConfigurations();
             TestConfigurationStream configuration2 =
                 service.GetConfiguration<TestConfigurationStream, TestConfigurationMetadataStream>(metadata);
-            CheckConfigurationStream(configuration, configuration2);
+            CheckConfigurationStream(configuration2);
+            Assert.NotEqual(configuration, configuration2);
             Assert.True(metadata.UsedAtLeastOnce);
             Assert.True(metadata.StreamGotDisposed);
         }
