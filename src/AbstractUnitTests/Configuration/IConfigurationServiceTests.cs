@@ -73,7 +73,7 @@ namespace Abstract.UnitTests.Configuration
             Mock<TestConfigurationMetadata> metaDataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
             Mock<IConfigurationService> cacheProxy = new Mock<IConfigurationService>(MockBehavior.Strict);
             cacheProxy.Setup(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object)).Returns(true);
-            Assert.Equal(true, cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
+            Assert.True(cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
             cacheProxy.Verify(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
         }
 
@@ -82,7 +82,7 @@ namespace Abstract.UnitTests.Configuration
         {
             Mock<IConfigurationService> cacheProxy = new Mock<IConfigurationService>(MockBehavior.Strict);
             cacheProxy.Setup(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(null)).Returns(true);
-            Assert.Equal(true, cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(null));
+            Assert.True(cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(null));
             cacheProxy.Verify(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(null));
         }
     }
