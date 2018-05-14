@@ -18,6 +18,37 @@ namespace StandardDot.CoreExtensions.Object
         /// Creates a copy of the object.
         /// </summary>
         /// <param name="instance">The object to be copied.</param>
+        /// <typeparam name="T">The type of the instance given.</typeparam>
+        /// <returns>A deep copy of the object.</returns>
+        public static T Copy<T>(this T instance)
+        {
+            if (instance == null)
+            {
+                return default(T);
+            }
+            return Copy(instance, typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a deep copy of the object using the supplied object as a target for the copy operation.
+        /// </summary>
+        /// <param name="instance">The object to be copied.</param>
+        /// <param name="copy">The object to copy values to. All fields of this object will be overwritten.</param>
+        /// <typeparam name="T">The type of the instance given.</typeparam>
+        /// <returns>A deep copy of the object.</returns>
+        public static T Copy<T>(this T instance, T copy)
+        {
+            if (instance == null)
+            {
+                return default(T);
+            }
+            return Copy(instance, copy, typeof(T));
+        }
+
+        /// <summary>
+        /// Creates a copy of the object.
+        /// </summary>
+        /// <param name="instance">The object to be copied.</param>
         /// <param name="expectedType">The type that should be found.</param>
         /// <param name="overrideSettings">Settings to override the copy logic.</param>
         /// <typeparam name="T">The type of the instance given.</typeparam>
@@ -255,6 +286,7 @@ namespace StandardDot.CoreExtensions.Object
             {
                 if (((DateTime)(object)instance) == DateTime.MinValue)
                 {
+                    // This is a min value allowed by SQL Server for some datetime fields
                     return (T)(object)(new DateTime(1753, 1, 1));
                 }
             }
