@@ -60,6 +60,21 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 
             for (; i < args.Length; ++i)
             {
+                bool assumeCorrectBecauseGeneric = false;
+                Type parameterType = parameters[i].ParameterType;
+                if (parameterType.IsGenericParameter)
+                {
+                  assumeCorrectBecauseGeneric = !parameterType.IsGenericTypeDefinition;
+                  parameterType = parameterType.IsGenericTypeDefinition
+                    ? parameterType.GetGenericTypeDefinition()
+                    : parameterType;
+                }
+
+                Type argType = args[i].GetType();
+                if (argType.IsGenericParameter)
+                {
+                  argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
+                }
                 if (!parameters[i].ParameterType.GetTypeInfo().IsAssignableFrom(args[i].GetType().GetTypeInfo()))
                 {
                     throw new InvalidOperationException(string.Format("Copyable constructed with invalid type {0} for argument #{2} (should be {1})",
@@ -71,7 +86,11 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
             {
                 if (!parameters[i].IsOptional)
                 {
-                    throw new InvalidOperationException("Copyable constructed with too few arguments.");
+                    throw new InvalidOperationException("Copyable constructed with too few arguments. Method - " + method.Name
+                        + ". Class - " + this.GetType().Name + ". Args - " + args.Length
+                        + "\r\n" + (args?.Any() ?? false ? args.Aggregate((x, y) => x.GetType().Name + ", " + y.GetType().Name) : "No args.")
+                        + ". Params - " + parameters.Length
+                        + "\r\n" + (parameters?.Any() ?? false ? parameters.Aggregate("", (x, y) => x + ", " + y.ParameterType.Name) : "No params."));
                 }
                 constructorTypeArgs.Add(parameters[i].ParameterType);
             }
