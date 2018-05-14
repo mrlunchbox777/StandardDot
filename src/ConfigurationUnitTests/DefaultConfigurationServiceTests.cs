@@ -2,12 +2,12 @@ using System;
 using StandardDot.Abstract.CoreServices.Serialization;
 using StandardDot.Caching;
 using StandardDot.Configuration;
-using StandardDot.ConfigurationUnitTests.TestConfigurationMetadatas;
-using StandardDot.ConfigurationUnitTests.TestConfigurations;
+using StandardDot.TestClasses.TestConfigurationMetadatas;
+using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 using Xunit.Sdk;
 
-namespace StandardDot.ConfigurationUnitTests
+namespace StandardDot.Configuration.UnitTests
 {
     public class DefaultConfigurationServiceTests
     {
@@ -24,7 +24,6 @@ namespace StandardDot.ConfigurationUnitTests
         }
 
         [Fact]
-        // TODO: Something weird is going on here and it needs to be fixed (the stream isn't ever showing up as disposed)
         public void ProvidingMetadataStream()
         {
             DefaultConfigurationService service = GenerateService();
@@ -33,12 +32,13 @@ namespace StandardDot.ConfigurationUnitTests
             TestConfigurationStream configuration =
                 service.GetConfiguration<TestConfigurationStream, TestConfigurationMetadataStream>(metadata);
             Assert.True(metadata.UsedAtLeastOnce);
-
             CheckConfigurationStream(configuration);
+
+            service.ResetCachedConfigurations();
             TestConfigurationStream configuration2 =
                 service.GetConfiguration<TestConfigurationStream, TestConfigurationMetadataStream>(metadata);
-            
-            CheckConfigurationStream(configuration, configuration2);
+            CheckConfigurationStream(configuration2);
+            Assert.NotEqual(configuration, configuration2);
             Assert.True(metadata.UsedAtLeastOnce);
             Assert.True(metadata.StreamGotDisposed);
         }

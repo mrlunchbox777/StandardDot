@@ -15,10 +15,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dto\Dto.csproj" />
-    <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
     <ProjectReference Include="..\Abstract\Abstract.csproj" />
+    <ProjectReference Include="..\Enums\Enums.csproj" />
+    <ProjectReference Include="..\Dto\Dto.csproj" />
     <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
+    <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
+    <ProjectReference Include="..\Caching\Caching.csproj" />
   </ItemGroup>
 
 </Project>

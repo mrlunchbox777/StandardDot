@@ -1,7 +1,7 @@
 using StandardDot.Abstract.Configuration;
-using StandardDot.ConfigurationUnitTests.TestConfigurations;
+using StandardDot.TestClasses.TestConfigurations;
 
-namespace StandardDot.ConfigurationUnitTests.TestConfigurationMetadatas
+namespace StandardDot.TestClasses.TestConfigurationMetadatas
 {
     public class TestConfigurationMetadata2 : ConfigurationMetadataBase<TestConfiguration2, TestConfigurationMetadata2>
     {
