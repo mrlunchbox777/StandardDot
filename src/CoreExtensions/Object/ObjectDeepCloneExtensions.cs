@@ -253,7 +253,6 @@ namespace StandardDot.CoreExtensions.Object
                     gotAType = true;
                 }
 
-
                 if (ShouldUseVisitedGraph(overrideSettings))
                 {
                     visited.Add(instance, copied);
@@ -265,17 +264,21 @@ namespace StandardDot.CoreExtensions.Object
                 }
                 return (T)(object)copied;
             }
+            else if (typeof(IDictionary).IsAssignableFrom(instanceType))
+            {
+                // dictionaries are hard to copy in a parallelized way
+                // maybe do a concurrent dictionary, then to dictionary and cast?
+            }
             else if (typeof(IEnumerable).IsAssignableFrom(instanceType))
             {
-                // we need to find a way for this to handle ICollection and IEnumerable
-                // I'm thinking that we go with an iterator approach find the length, make a new instance with that size
-                // then iterate again and do a clone for each item
+                // This isn't a fully featured solution IEnumerable and ICollection can still be left out
                 Type[] arguments = instanceType.GenericTypeArguments;
                 IEnumerable copied = (IEnumerable)DeduceInstance(instance);
                 if (ShouldUseVisitedGraph(overrideSettings))
                 {
                     visited.Add(instance, copied);
                 }
+                List<object> test = new List<object>();
                 MethodInfo castMethod = typeof(Enumerable).GetMethod("Cast", BindingFlags.Static | BindingFlags.Public);
                 MethodInfo castGenericMethod = castMethod.MakeGenericMethod(arguments);
                 IEnumerable<dynamic> casted = (dynamic)castGenericMethod.Invoke(null, new object[] { ((IEnumerable)instance) });
@@ -326,7 +329,7 @@ namespace StandardDot.CoreExtensions.Object
                 return default(T);
             }
 
-            BindingFlags flags = overrideSettings?.Any(s => s.IncludeNonPublic) ?? false
+            BindingFlags flags = overrideSettings?.Any(s => s.IncludeNonPublic) ?? true
                 ? BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance
                 : BindingFlags.Public | BindingFlags.Instance;
 
