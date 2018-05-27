@@ -201,10 +201,11 @@ namespace StandardDot.CoreExtensions.Object
             {
                 return instance;
             }
-
-            if (instanceType.IsPointer || instanceType == typeof(Pointer) || instanceType.IsPrimitive || instanceType == typeof(string) || instanceType == typeof(decimal) || instanceType.IsValueType)
+            
+            Tuple<bool, T> primitiveValue = instance.DeduceInstanceForTypeIfValueType();
+            if (primitiveValue.Item1)
             {
-                return instance; // Pointers, primitive types and strings are considered immutable
+                return primitiveValue.Item2;
             }
 
             if (instanceType.IsArray)
@@ -266,8 +267,7 @@ namespace StandardDot.CoreExtensions.Object
             }
             else if (typeof(IDictionary).IsAssignableFrom(instanceType))
             {
-                // dictionaries are hard to copy in a parallelized way
-                // maybe do a concurrent dictionary, then to dictionary and cast?
+                return Clone(instance, visited, DeduceInstance(instance), expectedType, overrideSettings);
             }
             else if (typeof(IEnumerable).IsAssignableFrom(instanceType))
             {
@@ -647,8 +647,11 @@ namespace StandardDot.CoreExtensions.Object
                 return instance;
             }
 
-            if (instanceType.IsPointer || instanceType == typeof(Pointer) || instanceType.IsPrimitive || instanceType == typeof(string) || instanceType == typeof(decimal) || instanceType.IsValueType)
-                return instance; // Pointers, primitive types and strings are considered immutable
+            Tuple<bool, T> primitiveValue = instance.DeduceInstanceForTypeIfValueType();
+            if (primitiveValue.Item1)
+            {
+                return primitiveValue.Item2;
+            }
 
             if (instanceType.IsArray)
             {
@@ -657,6 +660,25 @@ namespace StandardDot.CoreExtensions.Object
                 return (T)(object)copied;
             }
             return DeduceInstance(instance);
+        }
+
+        /// <summary>
+        /// Checks if the instance is a value type, and returns the value if it is
+        /// </summary>
+        /// <param name="instance">The object to be copied.</param>
+        /// <typeparam name="T">The type of the instance given.</typeparam>
+        /// <returns>If the instance is a value type, and the value if it is.</returns>
+        private static Tuple<bool, T> DeduceInstanceForTypeIfValueType<T>(this T instance)
+        {
+            Type instanceType = instance.GetType();
+            if (instanceType.IsPointer || instanceType == typeof(Pointer) || instanceType.IsPrimitive
+                || instanceType == typeof(string) || instanceType == typeof(decimal)
+                || (instanceType.IsValueType && !instanceType.IsGenericType))
+            {
+                return new Tuple<bool, T>(true, instance); // Pointers, primitive types and strings are considered immutable
+            }
+
+            return new Tuple<bool, T>(false, default(T));
         }
 
         /// <summary>
