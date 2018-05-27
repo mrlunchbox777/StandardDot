@@ -1,14 +1,15 @@
+using StandardDot.CoreServices.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace StandardDot.CoreExtensions.UnitTests
+namespace StandardDot.CoreServices.Extensions.UnitTests
 {
     public class IEnumerableExtensionsTests
     {
         [Fact]
-        public void PaginateTest()
+        public void PaginateOldSchoolTest()
         {
             int regularPageSize = 10;
             List<int> list = GetCollection(regularPageSize);
@@ -22,7 +23,7 @@ namespace StandardDot.CoreExtensions.UnitTests
             
             for (; pageCount <= pages; pageCount++)
             {
-                currentPage = list.Paginate(regularPageSize, pageCount).ToList();
+                currentPage = list.Paginate(regularPageSize).GetPage(pageCount).ToList();
                 if (pageCount == pages)
                 {
                     gotAnIncompletePage = true;
@@ -35,7 +36,7 @@ namespace StandardDot.CoreExtensions.UnitTests
             }
             Assert.True(gotAnIncompletePage);
             Assert.Equal(pages, pageCount - 1);
-            Assert.Empty(list.Paginate(regularPageSize, ++pageCount));
+            Assert.Empty(list.Paginate(regularPageSize).GetPage(++pageCount));
         }
 
         private Random _random = new Random();
