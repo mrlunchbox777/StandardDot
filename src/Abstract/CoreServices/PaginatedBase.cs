@@ -39,13 +39,10 @@ namespace Abstract.CoreServices
             private set { _currentPageIndex = value; }
         }
 
-        public virtual IPage<T> GetNext
+        public virtual IPage<T> GetNext()
         {
-            get
-            {
-                CurrentPageIndex++;
-                return Current;
-            }
+            CurrentPageIndex++;
+            return Current;
         }
 
         public virtual IEnumerable<T> Collate()
@@ -70,9 +67,9 @@ namespace Abstract.CoreServices
         public virtual IEnumerator<IPage<T>> GetEnumerator()
         {
             Reset();
-            while ((Current?.Any() ?? false) && CurrentPageIndex != -1)
+            while ((Current?.Any() ?? false) || CurrentPageIndex == -1)
             {
-                yield return GetNext;
+                yield return GetNext();
             }
             Reset();
         }

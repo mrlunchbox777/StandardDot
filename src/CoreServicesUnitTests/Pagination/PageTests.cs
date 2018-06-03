@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Xunit;
 
-namespace StandardDot.CoreServices.UnitTests.Extensions
+namespace StandardDot.CoreServices.Pagination.UnitTests
 {
     public class IEnumerableExtensionsTests
     {

@@ -6,7 +6,7 @@ namespace Abstract.CoreServices
     {
          IPaginated<T> ParentCollection { get; }
 
-         IPage<T> GetNext { get; }
+         IPage<T> GetNext();
 
          int PageIndex { get; }
     }

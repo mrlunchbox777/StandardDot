@@ -16,7 +16,10 @@ namespace Abstract.CoreServices
 
         public virtual IPaginated<T> ParentCollection { get; }
 
-        public virtual IPage<T> GetNext => ParentCollection.GetPage(PageIndex + 1);
+        public virtual IPage<T> GetNext()
+        {
+            return ParentCollection.GetPage(PageIndex + 1);
+        }
 
         public virtual int PageIndex { get; }
 

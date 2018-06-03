@@ -16,6 +16,6 @@ namespace Abstract.CoreServices
 
          int CurrentPageIndex { get; }
 
-         IPage<T> GetNext { get; }
+         IPage<T> GetNext();
     }
 }
