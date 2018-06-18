@@ -15,7 +15,8 @@
 // Install addins.
 #addin nuget:?package=Polly // For timeout / retry
 #addin "nuget:?package=NuGet.Core"
-//#addin Cake.Ftp
+// #addin Cake.Ftp
+#addin "nuget:?package=FluentFTP"
 
 // Install tools. We aren't running tests right now
 //#tool "nuget:?package=xunit.runner.console&version=2.1.0"
@@ -27,12 +28,15 @@
 
 // Using statements
 using Polly;
+using FluentFTP;
+using System.Net;
 using System.Xml;
 using System.IO;
 using System.Environment;
 using System.Collections;
 using System.Threading;
 using System.Linq;
+using System.Security;
 
 ///////////////////////////////////////////////////////////////////////////////
 // SETUP / TEARDOWN
@@ -53,7 +57,7 @@ Setup(context =>
     Information("Step up a directory in configure space = " + stepUpADirectoryInConfigureSpace);
     // Do init here
     cakeConfig = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
-    string nugetInfo = ("Standard Dot || " + (!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
+    string nugetInfo = ("Building || " + (!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
     Information("--------------------------------------------------------------------------------");
     Information("BUILD info = " + nugetInfo + " version - " + cakeConfig.ProjectInfo.projectVersion + ".");
     Information("--------------------------------------------------------------------------------");
@@ -107,14 +111,74 @@ Task("CopyOutputToLocalDirectory")
 // FTP COPY
 //////////////////////////////////////////////////////////////////////
 
+// make sure to set this in your cakeConfig.ConfigurableSettings
+// cakeConfig.ConfigurableSettings.ftpHost = "";
+// cakeConfig.ConfigurableSettings.ftpRemoteDir = ""
+// cakeConfig.ConfigurableSettings.ftpUsername = ""
+// cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation = ""
 
-// Task("UploadFile")
-//   .Does(() => {
-//     var fileToUpload = File("some.txt");
-//     var settings = new FtpSettings()
-//     {
-//         Username = "some-user",
-//         Password = "some-password"
-//     };
-//     FtpUploadFile("ftp://myserver/random/test.htm", fileToUpload, settings);
-// });
+Task("DeleteRemoteDir")
+  .Does(() => {
+    Information("--------------------------------------------------------------------------------");
+    Information("Deleting the remote directory");
+    Information("--------------------------------------------------------------------------------");
+    FtpClient client = new FtpClient(cakeConfig.ConfigurableSettings.ftpHost);
+    var secure = new SecureString();
+    foreach (char c in System.IO.File.ReadAllText(cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation))
+    {
+        secure.AppendChar(c);
+    }
+    client.Credentials = new NetworkCredential(cakeConfig.ConfigurableSettings.ftpUsername, secure);
+    client.Connect();
+    client.DeleteDirectory(cakeConfig.ConfigurableSettings.ftpRemoteDir);
+    client.Disconnect();
+    Information("--------------------------------------------------------------------------------");
+    Information("Deleted the remote directory");
+    Information("--------------------------------------------------------------------------------");
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Ensure the project built correctly",
+            "Ensure no files are locked",
+            "Ensure 'cakeConfig.ConfigurableSettings.ftpRemoteDir' is set in the cakeConfig.ConfigurableSettings"
+        },
+        true
+        );
+});
+
+Task("UploadDir")
+  .Does(() => {
+    Information("--------------------------------------------------------------------------------");
+    Information("Uploading a directory");
+    Information("--------------------------------------------------------------------------------");
+    string sourceDir = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir;
+    FtpClient client = new FtpClient(cakeConfig.ConfigurableSettings.ftpHost);
+    var secure = new SecureString();
+    foreach (char c in System.IO.File.ReadAllText(cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation))
+    {
+        secure.AppendChar(c);
+    }
+    client.Credentials = new NetworkCredential(cakeConfig.ConfigurableSettings.ftpUsername, secure);
+    client.Connect();
+    client.RetryAttempts = 3;
+    cakeConfig.CakeMethods.UploadDirectory(cakeConfig, client, sourceDir, sourceDir);
+    client.Disconnect();
+    Information("--------------------------------------------------------------------------------");
+    Information("Uploaded a directory");
+    Information("--------------------------------------------------------------------------------");
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Ensure the project built correctly",
+            "Ensure no files are locked",
+            "Ensure 'cakeConfig.ConfigurableSettings.ftpRemoteDir' is set in the cakeConfig.ConfigurableSettings"
+        },
+        true
+        );
+});
