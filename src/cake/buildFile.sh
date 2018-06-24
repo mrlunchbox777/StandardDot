@@ -44,8 +44,10 @@ containsElement ()
 
 ensureCakeAndNuget ()
 {
+    echo "Script dir - $SCRIPT_DIR"
     # Make sure the tools folder exist.
     if [ ! -d "$TOOLS_DIR" ]; then
+        echo "made tools dir"
         mkdir "$TOOLS_DIR"
     fi
 
