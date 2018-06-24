@@ -11,16 +11,12 @@ SCRIPT="build.cake"
 CAKE_ARGUMENTS=()
 PSScriptRoot="${1:-${WORKSPACE:-default}}"
 CakeTarget="${2:-Bake-Cake}"
-CakeDirectory="$3"
-if [ -z "$3" ]; then
-    $CakeDirectory="$3"
-else
-    $CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
-fi
+CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
+$CakeDirectory="${3:-$CakeDirectory}"
 
 # Define directories.
 SCRIPT_DIR="$PSScriptRoot"
-TOOL_DIR="$SCRIPT_DIR/tools"
+TOOLS_DIR="$SCRIPT_DIR/tools"
 ADDINS_DIR="$TOOLS_DIR/Addins"
 MODULES_DIR="$TOOLS_DIR/Modules"
 NUGET_EXE="$TOOLS_DIR/nuget.exe"
