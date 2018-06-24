@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 joinPath()
 {
-    local $BASEPATH=$1
-    local $SUBDIR=$2
+    local $BASEPATH="$1"
+    local $SUBDIR="$2"
     echo ${BASEPATH%%+(/)}${BASEPATH:+/}$SUBDIR
 }
 
@@ -11,22 +11,24 @@ SCRIPT="build.cake"
 CAKE_ARGUMENTS=()
 PSScriptRoot="${1:-${WORKSPACE:-default}}"
 CakeTarget="${2:-Bake-Cake}"
-CakeDirectory="${3}"
-if [ -z "$CakeDirectory" ]; then
+CakeDirectory="$3"
+if [ -z "$3" ]; then
+    $CakeDirectory="$3"
+else
     $CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
 fi
 
 # Define directories.
 SCRIPT_DIR="$PSScriptRoot"
-TOOL_DIR=$SCRIPT_DIR/tools
-ADDINS_DIR=$TOOLS_DIR/Addins
-MODULES_DIR=$TOOLS_DIR/Modules
-NUGET_EXE=$TOOLS_DIR/nuget.exe
-CAKE_EXE=$TOOLS_DIR/Cake/Cake.exe
-PACKAGES_CONFIG=$TOOLS_DIR/packages.config
-PACKAGES_CONFIG_MD5=$TOOLS_DIR/packages.config.md5sum
-ADDINS_PACKAGES_CONFIG=$ADDINS_DIR/packages.config
-MODULES_PACKAGES_CONFIG=$MODULES_DIR/packages.config
+TOOL_DIR="$SCRIPT_DIR/tools"
+ADDINS_DIR="$TOOLS_DIR/Addins"
+MODULES_DIR="$TOOLS_DIR/Modules"
+NUGET_EXE="$TOOLS_DIR/nuget.exe"
+CAKE_EXE="$TOOLS_DIR/Cake/Cake.exe"
+PACKAGES_CONFIG="$TOOLS_DIR/packages.config"
+PACKAGES_CONFIG_MD5="$TOOLS_DIR/packages.config.md5sum"
+ADDINS_PACKAGES_CONFIG="$ADDINS_DIR/packages.config"
+MODULES_PACKAGES_CONFIG="$MODULES_DIR/packages.config"
 
 # Define md5sum or md5 depending on Linux/OSX
 MD5_EXE=
