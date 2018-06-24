@@ -1,7 +1,29 @@
 #!/usr/bin/env bash
+joinPath()
+{
+    local $BASEPATH=$1
+    local $SUBDIR=$2
+    echo ${BASEPATH%%+(/)}${BASEPATH:+/}$SUBDIR
+}
+
+# Define default arguments.
+SCRIPT="build.cake"
+CAKE_ARGUMENTS=()
+PSScriptRoot="${1:-${WORKSPACE:-default}}"
+CakeTarget="${2:-default}"
+if [ -z "$CakeTarget" ]; then
+    $CakeTarget="Bake-Cake"
+fi
+CakeDirectory="${3:-default}"
+if [ -z "$CakeDirectory" ]; then
+    $CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
+fi
 
 # Define directories.
 SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+if [ -z "$SCRIPT_DIR" ]; then
+    $SCRIPT_DIR="$PSScriptRoot"
+fi
 TOOL_DIR=$SCRIPT_DIR/tools
 ADDINS_DIR=$TOOLS_DIR/Addins
 MODULES_DIR=$TOOLS_DIR/Modules
@@ -19,13 +41,6 @@ if [[ "$(uname -s)" == "Darwin" ]]; then
 else
     MD5_EXE="md5sum"
 fi
-
-# Define default arguments.
-SCRIPT="build.cake"
-CAKE_ARGUMENTS=()
-PSScriptRoot="${1:-${WORKSPACE:-default}}"
-CakeTarget="${2:-default}"
-CakeDirectory="${3:-default}"
 
 ##########################################################################
 # This is the Cake bootstrapper script for Linux and OS X.
@@ -47,8 +62,8 @@ ensureCakeAndNuget ()
     echo "Script dir - $SCRIPT_DIR"
     # Make sure the tools folder exist.
     if [ ! -d "$TOOLS_DIR" ]; then
-        echo "made tools dir"
         mkdir "$TOOLS_DIR"
+        echo "made tools dir"
     fi
 
     # Make sure that packages.config exist.
@@ -198,12 +213,6 @@ startRunning()
     fi
 }
 
-joinPath()
-{
-    local $BASEPATH=$1
-    local $SUBDIR=$2
-    echo ${BASEPATH%%+(/)}${BASEPATH:+/}$SUBDIR
-}
 
 findAndRunCakeScript ()
 {
