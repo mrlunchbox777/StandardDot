@@ -13,20 +13,17 @@ PSScriptRoot="${1:-${WORKSPACE:-default}}"
 if [ -z "$PSScriptRoot" ]; then
     $PSScriptRoot="$WORKSPACE"
 fi
-CakeTarget="${2:-default}"
+CakeTarget="${2:-''}"
 if [ -z "$CakeTarget" ]; then
     $CakeTarget="Bake-Cake"
 fi
-CakeDirectory="${3:-default}"
+CakeDirectory="${3:-''}"
 if [ -z "$CakeDirectory" ]; then
     $CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
 fi
 
 # Define directories.
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
-if [ -z "$SCRIPT_DIR" ]; then
-    $SCRIPT_DIR="$PSScriptRoot"
-fi
+SCRIPT_DIR="$PSScriptRoot"
 TOOL_DIR=$SCRIPT_DIR/tools
 ADDINS_DIR=$TOOLS_DIR/Addins
 MODULES_DIR=$TOOLS_DIR/Modules
@@ -66,7 +63,7 @@ ensureCakeAndNuget ()
     # Make sure the tools folder exist.
     if [ ! -d "$TOOLS_DIR" ]; then
         mkdir "$TOOLS_DIR"
-        echo "made tools dir"
+        echo "made tools dir - $TOOLS_DIR"
     fi
 
     # Make sure that packages.config exist.
