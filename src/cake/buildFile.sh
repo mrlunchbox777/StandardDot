@@ -142,12 +142,12 @@ startRunning()
     echo "Current script root - $PSScriptRoot"
     if [ ! -z "$PSScriptRoot" ]; then
         echo "Modifying script root"
-        $PSScriptRoot=$(pwd)
+        PSScriptRoot=$(pwd)
     fi
 
     if [ -d "$PSScriptRoot" && [ ! ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
         echo "Picking parent folder because no cake file was found in root"
-        $PSScriptRoot=$(dirname "$PSScriptRoot")
+        PSScriptRoot=$(dirname "$PSScriptRoot")
     fi
     echo "Final script root - $PSScriptRoot"
 
@@ -185,7 +185,7 @@ startRunning()
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
-            PROJECTNAME = ADDR[0]
+            PROJECTNAME=ADDR[0]
             if [ containsElement "$PROJECTNAME" "$alreadyBuilt" ]; then
                 continue
             else
@@ -217,11 +217,11 @@ findAndRunCakeScript ()
     local PROJECTNAME="$6"
     local BaseDirToLink="$7"
 
-    local Script = ""
+    local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
     EnsureTypeScript
     
-    local $NewCakeDir = "C:\devLink"
+    local NewCakeDir="C:\devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
             echo "Found a symLink, removing..."
@@ -237,7 +237,7 @@ findAndRunCakeScript ()
         ln -s "$BaseDirToLink" "$NewCakeDir"
         if [ ! "$BaseDirToLink" -ef "$CAKEDIR" ]; then
             echo "Adding the project directory to the junction cake dir"
-            $NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
+            NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
         fi
     else
         echo "Can't find cake dir, skipping link"
@@ -250,13 +250,13 @@ findAndRunCakeScript ()
     fi
 
     if [ -d "$NewCakeDir"  && [ ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
-        if [ -n $CakeTarget || [ $CakeTarget =~ "Build" ] ]; then
+        if [ -n "$CakeTarget" || [ "$CakeTarget" =~ "Build" ] ]; then
             echo "Looking for Build.Cake"
 
             # we are going to need this for sonarqube
             #EnsureJava
             export WORKSPACE="C:\devLink"
-            $Script=$(ls -d1 "$PSScriptRoot/*.cake" | head -1)
+            Script=$(ls -d1 "$PSScriptRoot/*.cake" | head -1)
         else
             echo "Can't find Cakefile for " + "$CakeTarget" + " in " + "$CAKEDIR" + "... Abandoning ship!"
             return
@@ -274,9 +274,9 @@ findAndRunCakeScript ()
     # Start Cake
     echo "Running build script..."# Start Cake
     exec mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
-    LASTEXITCODE=$?
+    LASTEXITCODE="$?"
 
-    if [ $LASTEXITCODE != 0 ]; then
+    if [ "$LASTEXITCODE" != 0 ]; then
         echo "Found error, exiting. - $LASTEXITCODE error - $allOutput"
         exit 1
     else
