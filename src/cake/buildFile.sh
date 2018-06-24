@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 joinPath()
 {
-    local $BASEPATH="$1"
-    local $SUBDIR="$2"
+    local BASEPATH="$1"
+    local SUBDIR="$2"
     echo ${BASEPATH%%+(/)}${BASEPATH:+/}$SUBDIR
 }
 
@@ -12,7 +12,7 @@ CAKE_ARGUMENTS=()
 PSScriptRoot="${1:-${WORKSPACE:-default}}"
 CakeTarget="${2:-Bake-Cake}"
 CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
-$CakeDirectory="${3:-$CakeDirectory}"
+CakeDirectory="${3:-${CakeDirectory:-default}}"
 
 # Define directories.
 SCRIPT_DIR="$PSScriptRoot"
@@ -140,34 +140,35 @@ ensureOthers ()
 startRunning()
 {
     echo "Current script root - $PSScriptRoot"
-    if [ ! -z $PSScriptRoot ]; then
+    if [ ! -z "$PSScriptRoot" ]; then
         echo "Modifying script root"
         $PSScriptRoot=$(pwd)
     fi
 
-    if [ -d $PSScriptRoot && [ ! ls $PSScriptRoot | grep ".cake" -c > 0 ] ]; then
+    if [ -d "$PSScriptRoot" && [ ! ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
         echo "Picking parent folder because no cake file was found in root"
         $PSScriptRoot=$(dirname "$PSScriptRoot")
     fi
-    echo "Final script root - " $PSScriptRoot
+    echo "Final script root - $PSScriptRoot"
 
     # get changes
     diff=()
-    if [ -z $CI_COMMIT_REF_NAME || [ $CI_COMMIT_REF_NAME != "master" && $CI_COMMIT_REF_NAME != "develop" ]]; then
+    if [ -z "$CI_COMMIT_REF_NAME" || [ "$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ]]; then
         exit
     fi
 
-    if [ ! -z $CI_COMMIT_SHA ]; then
+    if [ ! -z $"CI_COMMIT_SHA" ]; then
         echo "Found git commits, running commit work."
-        $allParents=$(git rev-list --first-parent $CI_COMMIT_REF_NAME)
-        $allDiffs=$(git diff --no-commit-id --name-only -r $allParents[1])
+        allParents=$(git rev-list --first-parent "$CI_COMMIT_REF_NAME")
+        importantParent=$allParents[1]
+        allDiffs=$(git diff --no-commit-id --name-only -r "$importantParent")
 
         for thing in $allDiffs; do
             # Gets every file from commit and adds it to $diff
-            $diff+=$thing
+            diff+=$thing
         done
     else
-        echo "Found no git commits, running " + $CakeTarget +" work."
+        echo "Found no git commits, running $CakeTarget work."
     fi
 
     #(Bake-Cake, Half-Baked)
@@ -180,18 +181,18 @@ startRunning()
     alreadyBuilt=() # Memoize so we don't build twice
     for change in $diff; do
         echo $change
-        if [ ! -z $change && [ $change | grep "Tests" -c < 1 ] && [ $change | grep ".sql" -c < 1 ]; then
+        if [ ! -z "$change" && [ "$change" | grep "Tests" -c < 1 ] && [ "$change" | grep ".sql" -c < 1 ]; then
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
-            $PROJECTNAME = ADDR[0]
+            PROJECTNAME = ADDR[0]
             if [ containsElement "$PROJECTNAME" "$alreadyBuilt" ]; then
                 continue
             else
-                $alreadyBuilt+=$PROJECTNAME
+                alreadyBuilt+=$PROJECTNAME
             fi
 
-            findAndRunCakeScript $PROJECTNAME $CakeTarget $Target $Configuration $Verbosity $PROJECTNAME $PSScriptRoot
+            findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
         fi
     done
     
@@ -199,25 +200,25 @@ startRunning()
     if [ -z "$CI_COMMIT_SHA" ]; then
         ADDR=()
         IFS='/' read -ra ADDR <<< "$change"
-        $PROJECTNAME=$ADDR[-1]
+        PROJECTNAME=$ADDR[-1]
         # Still need the find and run cake script in this
-        findAndRunCakeScript $CakeDirectory $CakeTarget $Target $Configuration $Verbosity $PROJECTNAME $PSScriptRoot
+        findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
     fi
 }
 
 
 findAndRunCakeScript ()
 {
-    local $CAKEDIR=$1
-    local $CakeTarget=$2
-    local $Target=$3
-    local $Configuration=$4
-    local $Verbosity=$5
-    local $PROJECTNAME=$6
-    local $BaseDirToLink=$7
+    local CAKEDIR="$1"
+    local CakeTarget="$2"
+    local Target="$3"
+    local Configuration="$4"
+    local Verbosity="$5"
+    local PROJECTNAME="$6"
+    local BaseDirToLink="$7"
 
-    local $Script = ""
-    echo "Looking for a .cake file in " + "$CAKEDIR" + "."
+    local Script = ""
+    echo "Looking for a .cake file in $CAKEDIR."
     EnsureTypeScript
     
     local $NewCakeDir = "C:\devLink"
@@ -236,7 +237,7 @@ findAndRunCakeScript ()
         ln -s "$BaseDirToLink" "$NewCakeDir"
         if [ ! "$BaseDirToLink" -ef "$CAKEDIR" ]; then
             echo "Adding the project directory to the junction cake dir"
-            $NewCakeDir=$(joinPath $NewCakeDir $PROJECTNAME)
+            $NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
         fi
     else
         echo "Can't find cake dir, skipping link"
@@ -248,13 +249,13 @@ findAndRunCakeScript ()
         echo "Creating link successful - $NewCakeDir"
     fi
 
-    if [ -d "$NewCakeDir"  && [ ls $PSScriptRoot | grep ".cake" -c > 0 ] ]; then
+    if [ -d "$NewCakeDir"  && [ ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
         if [ -n $CakeTarget || [ $CakeTarget =~ "Build" ] ]; then
             echo "Looking for Build.Cake"
 
             # we are going to need this for sonarqube
             #EnsureJava
-            export $WORKSPACE="C:\devLink"
+            export WORKSPACE="C:\devLink"
             $Script=$(ls -d1 "$PSScriptRoot/*.cake" | head -1)
         else
             echo "Can't find Cakefile for " + "$CakeTarget" + " in " + "$CAKEDIR" + "... Abandoning ship!"
@@ -271,12 +272,12 @@ findAndRunCakeScript ()
     EnsureNugetAndCake
 
     # Start Cake
-    Write-Host "Running build script..."# Start Cake
+    echo "Running build script..."# Start Cake
     exec mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
-    $LASTEXITCODE=$?
+    LASTEXITCODE=$?
 
     if [ $LASTEXITCODE != 0 ]; then
-        echo "Found error, exiting. - " + $LASTEXITCODE + " error - " + $allOutput
+        echo "Found error, exiting. - $LASTEXITCODE error - $allOutput"
         exit 1
     else
         echo "No error found"
