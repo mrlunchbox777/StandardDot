@@ -10,14 +10,8 @@ joinPath()
 SCRIPT="build.cake"
 CAKE_ARGUMENTS=()
 PSScriptRoot="${1:-${WORKSPACE:-default}}"
-if [ -z "$PSScriptRoot" ]; then
-    $PSScriptRoot="$WORKSPACE"
-fi
-CakeTarget="${2:-''}"
-if [ -z "$CakeTarget" ]; then
-    $CakeTarget="Bake-Cake"
-fi
-CakeDirectory="${3:-''}"
+CakeTarget="${2:-Bake-Cake}"
+CakeDirectory="${3}"
 if [ -z "$CakeDirectory" ]; then
     $CakeDirectory=$(joinPath $PSScriptRoot "Cake/")
 fi
