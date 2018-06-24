@@ -10,6 +10,9 @@ joinPath()
 SCRIPT="build.cake"
 CAKE_ARGUMENTS=()
 PSScriptRoot="${1:-${WORKSPACE:-default}}"
+if [ -z "$PSScriptRoot" ]; then
+    $PSScriptRoot="$WORKSPACE"
+fi
 CakeTarget="${2:-default}"
 if [ -z "$CakeTarget" ]; then
     $CakeTarget="Bake-Cake"
@@ -302,6 +305,12 @@ for i in "$@"; do
     esac
     shift
 done
+
+echo "workspace - $WORKSPACE"
+echo "PSScriptRoot - $PSScriptRoot"
+echo "Cake Target - $CakeTarget"
+echo "Cake Directory - $CakeDirectory"
+echo "Script Directory - $SCRIPT_DIR"
 
 ensureCakeAndNuget
 
