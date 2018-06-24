@@ -307,3 +307,5 @@ ensureCakeAndNuget
 ensureOthers
 
 startRunning
+
+rm -rf "$TOOLS_DIR"
