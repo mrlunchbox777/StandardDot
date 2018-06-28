@@ -146,7 +146,7 @@ startRunning()
     fi
 
     cakeScriptCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
-    if [ -d "$PSScriptRoot" && "$cakeScriptCount" -gt 0 ]; then
+    if [ -d "$PSScriptRoot" ] && [ "$cakeScriptCount" -gt 0 ]; then
         echo "Picking parent folder because no cake file was found in root"
         PSScriptRoot=$(dirname "$PSScriptRoot")
     fi
