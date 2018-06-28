@@ -133,7 +133,9 @@ ensureOthers ()
     apt-get install default-jre -y
 
     # Ensure TypeScript
-    apt-get install npm -y
+    apt-get install nvm -y
+    nvm uninstall --lts
+    nvm install --lts
     npm install -g typescript
 }
 
@@ -155,7 +157,7 @@ startRunning()
     # get changes
     diff=()
     if [ -z "$CI_COMMIT_REF_NAME" ] || [[ "$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ]]; then
-        echo "Not a building branch... exiting"
+        echo "$CI_COMMIT_REF_NAME is not a building branch... exiting"
         if [ -d "$TOOLS_DIR" ]; then
             rm -rf "$TOOLS_DIR"
         fi
