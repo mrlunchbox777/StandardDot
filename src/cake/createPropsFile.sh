@@ -3,6 +3,8 @@ if [ -f /var/lib/jenkins/.standarddotbuild.props ]; then
 	rm /var/lib/jenkins/.standarddotbuild.props
 fi
 
+echo "Creating Build props"
+
 sudo touch /var/lib/jenkins/.standarddotbuild.props
 
 # Branch
