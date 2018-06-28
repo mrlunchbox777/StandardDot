@@ -140,12 +140,13 @@ ensureOthers ()
 startRunning()
 {
     echo "Current script root - $PSScriptRoot"
-    if [ ! -z "$PSScriptRoot" ]; then
+    if [ -z "$PSScriptRoot" ]; then
         echo "Modifying script root"
         PSScriptRoot=$(pwd)
     fi
 
-    if [ -d "$PSScriptRoot" && [ ! ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
+    cakeScriptCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
+    if [ -d "$PSScriptRoot" && "$cakeScriptCount" -gt 0 ]; then
         echo "Picking parent folder because no cake file was found in root"
         PSScriptRoot=$(dirname "$PSScriptRoot")
     fi
@@ -153,7 +154,7 @@ startRunning()
 
     # get changes
     diff=()
-    if [ -z "$CI_COMMIT_REF_NAME" || [ "$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ]]; then
+    if [ -z "$CI_COMMIT_REF_NAME" || ("$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" )]; then
         exit
     fi
 
@@ -219,7 +220,6 @@ findAndRunCakeScript ()
 
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
-    EnsureTypeScript
     
     local NewCakeDir="C:\devLink"
     if [ -d "$NewCakeDir" ]; then
@@ -249,8 +249,9 @@ findAndRunCakeScript ()
         echo "Creating link successful - $NewCakeDir"
     fi
 
-    if [ -d "$NewCakeDir"  && [ ls "$PSScriptRoot" | grep ".cake" -c > 0 ] ]; then
-        if [ -n "$CakeTarget" || [ "$CakeTarget" =~ "Build" ] ]; then
+    cakeFileCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
+    if [ -d "$NewCakeDir"  && "$cakeFileCount" -gt 0 ]; then
+        if [ -n "$CakeTarget" || "$CakeTarget" =~ "Build" ]; then
             echo "Looking for Build.Cake"
 
             # we are going to need this for sonarqube
