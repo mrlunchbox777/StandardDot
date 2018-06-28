@@ -133,7 +133,7 @@ ensureOthers ()
     apt-get install default-jre -y
 
     # Ensure TypeScript
-    apt-get install nvm -y
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
     nvm uninstall --lts
     nvm install --lts
     npm install -g typescript
