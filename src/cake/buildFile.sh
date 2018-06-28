@@ -154,7 +154,7 @@ startRunning()
 
     # get changes
     diff=()
-    if [ -z "$CI_COMMIT_REF_NAME" || ("$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" )]; then
+    if [ -z "$CI_COMMIT_REF_NAME" || ("$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ) ]; then
         exit
     fi
 
