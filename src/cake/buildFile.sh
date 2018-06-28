@@ -154,7 +154,7 @@ startRunning()
 
     # get changes
     diff=()
-    if [ -z "$CI_COMMIT_REF_NAME" || ("$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ) ]; then
+    if [ -z "$CI_COMMIT_REF_NAME" ] || [[ "$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ]]; then
         exit
     fi
 
@@ -182,7 +182,7 @@ startRunning()
     alreadyBuilt=() # Memoize so we don't build twice
     for change in $diff; do
         echo $change
-        if [ ! -z "$change" && [ "$change" | grep "Tests" -c < 1 ] && [ "$change" | grep ".sql" -c < 1 ]; then
+        if [ ! -z "$change" ] && [ $("$change" | grep "Tests" -c) -lt 1 ] && [ $("$change" | grep ".sql" -c) -lt 1 ]; then
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
