@@ -523,3 +523,82 @@ Task("Check-Quality-Gate")
         false
         );
 });
+
+//////////////////////////////////////////////////////////////
+// Deploy Nuget
+//////////////////////////////////////////////////////////////
+
+Task("PackNugetPackage")
+    .Does(() =>
+{
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Pack Nuget Package.");
+    }
+    var nuGetPackSettings   = new NuGetPackSettings {
+        Id                          = cakeConfig.Nuget.Id ?? "TestNuget",
+        Version                     = cakeConfig.Nuget.Version ?? "0.0.0.1",
+        Title                       = cakeConfig.Nuget.nugetTitle ?? "The tile of the package",
+        Authors                     = cakeConfig.Nuget.nugetAuthors ?? new[] {"John Doe"},
+        Owners                      = cakeConfig.Nuget.nugetOwners ?? new[] {"Contoso"},
+        Description                 = cakeConfig.Nuget.nugetDescription ?? "The description of the package",
+        Summary                     = cakeConfig.Nuget.nugetSummary ?? "Excellent summary of what the package does",
+        ProjectUrl                  = cakeConfig.Nuget.nugetProjectUrl ?? new Uri("https://github.com/SomeUser/TestNuget/"),
+        IconUrl                     = cakeConfig.Nuget.nugetIconUrl ?? new Uri("http://cdn.rawgit.com/SomeUser/TestNuget/master/icons/testnuget.png"),
+        LicenseUrl                  = cakeConfig.Nuget.licenseUrl ?? new Uri("https://github.com/SomeUser/TestNuget/blob/master/LICENSE.md"),
+        Copyright                   = cakeConfig.Nuget.copyright ?? "Some company 2015",
+        ReleaseNotes                = cakeConfig.Nuget.releaseNotes ?? new [] {"Bug fixes", "Issue fixes", "Typos"},
+        Tags                        = cakeConfig.Nuget.tags ?? new [] {"Cake", "Script", "Build"},
+        RequireLicenseAcceptance    = cakeConfig.Nuget.requireLicenseAcceptance ?? false,
+        Symbols                     = cakeConfig.Nuget.symbols ?? false,
+        NoPackageAnalysis           = cakeConfig.Nuget.noPackageAnalysis ?? true,
+        Files                       = cakeConfig.Nuget.files
+                                        // ?? new [] {
+                                        //     new NuSpecContent {Source = "bin/TestNuget.dll", Target = "bin"},
+                                        // }
+                                        ,
+        BasePath                    = cakeConfig.Nuget.basePath ?? "./src/TestNuget/bin/release",
+        OutputDirectory             = cakeConfig.Nuget.outputDirectory ?? "./nuget"
+        IncludeReferencedProjects   = cakeConfig.Nuget.nugetIncludeReferencedProjects ?? false;
+    };
+
+    Context.NuGetPack(cakeConfig.Nuget.NugetPackPath ?? "./nuspec/TestNuget.nuspec", nuGetPackSettings);
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Ensure nuspec is possible",
+            "Ensure the nuget server is up",
+            "Ensure nuget got installed"
+        },
+        true
+        );
+});
+
+Task("DeployNugetPackage")
+    .Does(() =>
+{
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Deploy Nuget Package.");
+    }
+    NuGetPush(cakeConfig.Nuget.NugetPackPath, new NuGetPushSettings {
+        Source = cakeConfig.Nuget.nugetServerFeed ?? "http://example.com/nugetfeed",
+        ApiKey = cakeConfig.Nuget.nugetAPIKey
+    });
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Ensure nuspec exists",
+            "Ensure the nuget server is up",
+            "Ensure nuget got installed",
+            "Ensure NUGET_APIKEY is an environmental variable"
+        },
+        true
+        );
+});

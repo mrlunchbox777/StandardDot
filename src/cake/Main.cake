@@ -61,7 +61,7 @@ Setup(context =>
     Information("Step up a directory in configure space = " + stepUpADirectoryInConfigureSpace);
     // Do init here
     cakeConfig = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
-    nugetInfo = ("Guru Technologies || " + (!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
+    nugetInfo = ((!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
     slackInfo = (cakeConfig.ProjectInfo.EnvironmentName) + " Deploy - " + cakeConfig.ProjectInfo.projectName + ". Other Info - " + nugetInfo;
     Information("--------------------------------------------------------------------------------");
     Information("BUILD info = " + nugetInfo + " version - " + cakeConfig.ProjectInfo.projectVersion + ".");
