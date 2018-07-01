@@ -553,6 +553,7 @@ Task("PackNugetPackage")
         Symbols                     = cakeConfig.Nuget.symbols ?? false,
         NoPackageAnalysis           = cakeConfig.Nuget.noPackageAnalysis ?? true,
         Files                       = cakeConfig.Nuget.files
+                                        // we want a null here if it is null
                                         // ?? new [] {
                                         //     new NuSpecContent {Source = "bin/TestNuget.dll", Target = "bin"},
                                         // }
