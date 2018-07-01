@@ -8,11 +8,11 @@ echo "Creating Build props"
 sudo touch /var/lib/jenkins/.standarddotbuild.props
 
 # Branch
-currentString="sudo echo \"CI_COMMIT_REF_NAME=$GIT_BRANCH\" >> /var/lib/jenkins/.standarddotbuild.props"
+currentString="sudo echo \"CI_COMMIT_REF_NAME=${GIT_BRANCH}\" >> /var/lib/jenkins/.standarddotbuild.props"
 sudo sh -c "$currentString"
 
 # Commit
-currentString="sudo echo \"CI_COMMIT_SHA=$GIT_COMMIT\" >> /var/lib/jenkins/.standarddotbuild.props"
+currentString="sudo echo \"CI_COMMIT_SHA=${GIT_COMMIT}\" >> /var/lib/jenkins/.standarddotbuild.props"
 sudo sh -c "$currentString"
 
 # Nuget
@@ -20,7 +20,7 @@ currentString="sudo echo \"CAKE_ROSLYN_NUGETSOURCE=https://www.nuget.org\" >> /v
 sudo sh -c "$currentString"
 
 # Repository URL
-currentString="sudo echo \"CI_REPOSITORY_URL=$GIT_URL\" >> /var/lib/jenkins/.standarddotbuild.props"
+currentString="sudo echo \"CI_REPOSITORY_URL=${GIT_URL}\" >> /var/lib/jenkins/.standarddotbuild.props"
 sudo sh -c "$currentString"
 
 # WORKSPACE this is the same for gitlab and jenkins
