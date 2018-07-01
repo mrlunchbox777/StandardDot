@@ -10,8 +10,13 @@ public class MSBuildInfo
     }
     public string MSBuildVersion = "15.0";
     public string platform = "\"Any CPU\"";
+    public bool? forceFlatten { get; set; }
     public bool shouldFlatten(bool runningTests = false) {
         // PDB files allow for proper test coverage, so use debug when testing
+        if (forceFlatten != null)
+        {
+            return ((bool)forceFlatten);
+        }
         return runningTests ? false : true;
     }
 }

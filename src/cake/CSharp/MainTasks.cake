@@ -1,6 +1,8 @@
 #addin nuget:?package=Polly // For timeout / retry
 #addin "nuget:?package=NuGet.Core"
 //#addin "Cake.Powershell"
+#addin "Cake.IIS"
+#addin "nuget:?package=System.ServiceProcess.ServiceController"
 
 //#tool "nuget:?package=Microsoft.TypeScript.Compiler&version=2.7.2"
 
@@ -11,6 +13,10 @@
 Task("Restore-CSharp-Nuget-Packages")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Restore Packages.");
+    }
     var maxRetryCount = 5;
     var toolTimeout = 1d;
     Policy
@@ -54,6 +60,10 @@ Task("Build-Project")
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Build Project.");
+    }
     if (cakeConfig.MSBuildInfo.shouldFlatten(false))
     {
         MSBuild(cakeConfig.ProjectInfo.projectFile, new MSBuildSettings()
@@ -97,6 +107,10 @@ Task("Build-Project")
 Task("CopyWebConfig")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config.");
+    }
     // get the web.config
     string origWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config.example";
     string newWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config";
@@ -117,9 +131,40 @@ Task("CopyWebConfig")
         );
 });
 
+Task("CopyWebConfigToOutput")
+    .Does(() =>
+{
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config To Output.");
+    }
+    // get the web.config
+    string origWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config";
+    string newWebConfigLocation = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\Web.config";
+    Information("--------------------------------------------------------------------------------");
+    Information("Copying - " + origWebConfigLocation + " -> " + newWebConfigLocation);
+    Information("--------------------------------------------------------------------------------");
+    CopyFile(origWebConfigLocation, newWebConfigLocation);
+})
+
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Ensure that there is a good web.config"
+        },
+        true
+        );
+});
+
 Task("RemoveWebConfig")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Remove Web Config.");
+    }
     // remove the web.config
     string webConfigLocation = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
@@ -142,6 +187,10 @@ Task("RemoveWebConfig")
 Task("SassCompile")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Sass Compile.");
+    }
     Information("--------------------------------------------------------------------------------");
     Information("Compiling Sass - ");
     Information("--------------------------------------------------------------------------------");
@@ -166,6 +215,10 @@ Task("SassCompile")
 Task("TypeScriptCompile")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Type Script Compile.");
+    }
     Information("--------------------------------------------------------------------------------");
     Information("Compiling TSC - ");
     Information("--------------------------------------------------------------------------------");
@@ -198,6 +251,10 @@ Task("Build-Unit-Tests")
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Build Unit Tests.");
+    }
     MSBuild(cakeConfig.ProjectInfo.projectSolution, new MSBuildSettings()
         .WithTarget(cakeConfig.UnitTests.unitTestProjectName.Replace('.','_'))
         .SetConfiguration(cakeConfig.MSBuildInfo.msbuildConfig(true))
@@ -226,6 +283,10 @@ Task("Run-Unit-Tests")
     .IsDependentOn("Build-Unit-Tests")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Run Unit Tests.");
+    }
     string targetDir = cakeConfig.UnitTests.unitTestDirectoryPath.FullPath + "/bin/" + cakeConfig.MSBuildInfo.msbuildConfig(true);
     IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + cakeConfig.UnitTests.unitTestProjectName + ".dll")};
     OpenCoverSettings settings = new OpenCoverSettings();
@@ -258,6 +319,70 @@ Task("Run-Unit-Tests")
         );
 });
 
+Task("StopAnApplicationPool")
+    .Does(() =>
+{
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Stopping IIS.");
+    }
+    if (cakeConfig.ConfigurableSettings.restartIIS) {
+        if (cakeConfig.ConfigurableSettings.useRemoteServer)
+        {
+            StopPool(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationPoolName);
+            StopSite(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationSiteName);
+        } else
+        {
+            StopPool(cakeConfig.ConfigurableSettings.applicationPoolName);
+            StopSite(cakeConfig.ConfigurableSettings.applicationSiteName);
+        }
+    }
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Did all the settings load?",
+            "Did you set the pool and site name?",
+            "Is IIS running?"
+        },
+        true
+        );
+});
+
+Task("StartAnApplicationPool")
+    .Does(() =>
+{
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting IIS.");
+    }
+    if (cakeConfig.ConfigurableSettings.restartIIS) {
+        if (cakeConfig.ConfigurableSettings.useRemoteServer)
+        {
+            StartPool(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationPoolName);
+            StartSite(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationSiteName);
+        } else
+        {
+            StartPool(cakeConfig.ConfigurableSettings.applicationPoolName);
+            StartSite(cakeConfig.ConfigurableSettings.applicationSiteName);
+        }
+    }
+})
+    .ReportError(exception =>
+{
+    cakeConfig.DispalyException(
+        exception,
+        new string[] {
+            "Did all the settings load?",
+            "Did you set the pool and site name?",
+            "Is IIS running?"
+        },
+        true
+        );
+});
+
 //////////////////////////////////////////////////////////////
 // SonarQube Tasks (We aren't going to use these right now)
 //////////////////////////////////////////////////////////////
@@ -265,6 +390,10 @@ Task("Run-Unit-Tests")
 Task("Start-SonarQube")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting SonarQube.");
+    }
     // using (var process = StartAndReturnProcess(
     //     "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
     //     new ProcessSettings()
@@ -316,6 +445,10 @@ Task("Start-SonarQube")
 Task("End-SonarQube")
     .Does(() =>
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Complete SonarQube Analysis.");
+    }
     // using (var process = StartAndReturnProcess(
     //         "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
     //         new ProcessSettings()
@@ -360,6 +493,10 @@ Task("Check-Quality-Gate")
     .WithCriteria(() => !String.IsNullOrEmpty(cakeConfig.UnitTests.sqAnalysisUrl))
     .Does(() => 
 {
+    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    {
+        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Check Quality Gate.");
+    }
     // cakeConfig.UnitTests.qualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.sqAnalysisUrl);
     // int timeoutCount = 0;
     // while(!cakeConfig.UnitTests.qualityGateReady) // Giving it up to two minutes to complete

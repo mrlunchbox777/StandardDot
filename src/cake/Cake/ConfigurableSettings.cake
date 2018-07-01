@@ -6,6 +6,12 @@ public class ConfigurableSettings
 
     private ICakeContext Context { get; set; }
 
+    public bool doLocalCopyWork { get; set; }
+
+    public bool deleteLocalCopyDirBeforeCopy { get; set; }
+
+    public bool doFtpWork { get; set; }
+
     public string localCopyTargetDirectory { get; set; }
 
     public string specificWebsiteOutputDir { get; set; }
@@ -18,17 +24,43 @@ public class ConfigurableSettings
 
     public string ftpSecurePasswordLocation { get; set; }
 
-    public string NugetAuthor { get; set; }
+    public byte[] ftpAesKey => System.Convert.FromBase64String(Context.EnvironmentVariable("FTPAesKey"));
 
-    public string NugetOwner { get; set; }
+    public int ftpDeleteRetryAttempts { get; set; }
 
-    public string NugetServer { get; set; }
+    public int ftpUploadRetryAttempts { get; set; }
 
-    public string NugetTitle { get; set; }
+    public int ftpSocketPollInterval { get; set; }
 
-    public string NugetDescription { get; set; }
+    public int ftpConnectTimeout { get; set; }
 
-    public string NugetSummary { get; set; }
+    public int ftpReadTimeout { get; set; }
 
-    public string NugetIconUrl { get; set; }
+    public int ftpDataConnectionConnectTimeout { get; set; }
+
+    public int ftpDataConnectionReadTimeout { get; set; }
+
+    public string slackChannel { get; set; }
+
+    public bool postSlackStartAndStop { get; set; }
+
+    public bool postSlackSteps { get; set; }
+
+    public bool postSlackErrors { get; set; }
+
+    public string airbrakeProjectId { get; set; }
+
+    public string airbrakeUserName { get; set; }
+
+    public string airbrakeEmail { get; set; }
+
+    public bool restartIIS { get; set; }
+
+    public bool useRemoteServer { get; set; }
+
+    public string remoteIISServerName { get; set; }
+
+    public string applicationPoolName { get; set; }
+
+    public string applicationSiteName { get; set; }
 }

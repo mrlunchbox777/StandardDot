@@ -12,6 +12,14 @@ public class ProjectInfo
 
     public bool IsProduction { get; set; }
 
+    public string EnvironmentName
+    {
+        get
+        {
+            return IsProduction ? "production" : "beta";
+        }
+    }
+
     bool StepUpADirectoryInConfigureSpace { get; set; }
 
     private FilePath _projectSolution;

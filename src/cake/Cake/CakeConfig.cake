@@ -4,6 +4,9 @@
 #load "ProjectInfo.cake"
 #load "ConfigurableSettings.cake"
 #load "CakeMethods.cake"
+#load "FtpHelper.cake"
+#load "Slack.cake"
+#load "Airbrake.cake"
 
 public class CakeConfig
 {
@@ -12,6 +15,9 @@ public class CakeConfig
         ProjectInfo = new ProjectInfo(context, StepUpADirectoryInConfigureSpace);
         ConfigurableSettings = new ConfigurableSettings(context);
         CakeMethods = new CakeMethods(context);
+        Slack = new CustomSlack(context);
+        Airbrake = new Airbrake(context);
+        FtpHelper = new FtpHelper();
         if (GetNuget){
             Nuget = new Nuget(context);
         }
@@ -30,7 +36,10 @@ public class CakeConfig
     public MSBuildInfo MSBuildInfo { get; set; }
     public ProjectInfo ProjectInfo { get; set; }
     public ConfigurableSettings ConfigurableSettings { get; set; }
+    public FtpHelper FtpHelper { get; set; }
     public CakeMethods CakeMethods { get; set; }
+    public CustomSlack Slack { get; set; }
+    public Airbrake Airbrake { get; set; }
     private ICakeContext context { get; set; }
 
     private void GetProjectInfo()
@@ -48,6 +57,11 @@ public class CakeConfig
 
     public void DispalyException(Exception exception, string[] potentialFixes, bool readLog, string searchKeyword = null, string exceptionTitle = null)
     {
+        if (ConfigurableSettings.postSlackErrors)
+        {
+            CakeMethods.SendSlackNotification(this, "ERROR DURING DEPLOY - Exception - " + exception.Message);
+        }
+
         string tabbedWhiteSpace = "        ";
         exceptionTitle = exceptionTitle ?? "CAKE EXCEPTION";
         searchKeyword = searchKeyword ?? exception.Message;

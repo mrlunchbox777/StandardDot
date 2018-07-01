@@ -57,6 +57,7 @@
         Write-Host "Found no git commits, running " + $CakeTarget +" work."
     }
 
+    $env:CAKE_ROSLYN_NUGETSOURCE = "https://www.nuget.org"
     #(Bake-Cake, Half-Baked)
     $Target = "Bake-Cake"
     $Configuration = "Release"
@@ -94,6 +95,76 @@
         $PROJECTNAME = $CakeDirectory.Split('/')[-1]
         $PROJECTNAME = $PROJECTNAME.Split('\')[-1]
         FindAndRunCakeScript $CakeDirectory $CakeTarget $Target $Configuration $Verbosity $PROJECTNAME $PSScriptRoot
+    }
+}
+
+function EnsureJava () {
+    # JAVA_HOME for SonarQube
+    Write-Host "JAVA_HOME = $env:JAVA_HOME"
+    $jreRegex = "j((dk)|(re))(?<majorVersion>[\d\.]+)?(?<minorVersion>_[\d]*)"
+    if ([System.String]::IsNullOrEmpty($env:JAVA_HOME) -or $env:JAVA_HOME -notmatch $jreRegex)
+    {
+        Write-Host "JRE not found, trying to locate..."
+        $javaPath = "C:\Program Files\Java"
+        if (Test-Path "C:\Program Files (x86)\Java")
+        {
+            $javaPath = "C:\Program Files (x86)\Java"
+            Get-ChildItem -Path "C:\Program Files (x86)\Java" | Where-Object {$_.BaseName -match $jreRegex} | Out-Null
+        }
+        if (Test-Path "C:\Program Files\Java")
+        {
+            $javaPath = "C:\Program Files\Java"
+            Get-ChildItem -Path "C:\Program Files\Java" | Where-Object {$_.BaseName -match $jreRegex} | Out-Null
+        }    
+        $majorVersion = ($Matches['majorVersion'] | Measure-Object -Maximum).Maximum
+        $minVersion = ($Matches['minorVersion'] | Measure-Object -Maximum).Maximum
+        $highestJavaPath = "$javaPath\jre$($majorVersion)_$($minVersion)"
+        if (Test-Path $highestJavaPath)
+        {
+            [System.Environment]::SetEnvironmentVariable("JAVA_HOME", $highestJavaPath, [System.EnvironmentVariableTarget]::Process)
+            Write-Host "JAVA_HOME = $env:JAVA_HOME"
+        }
+        else
+        {
+            Write-Host "JAVA_HOME not found, downloading JAVA"
+            EnsureChocolatey
+            $existingPaths = $Env:Path -Split ';' | Where-Object { ![System.String]::IsNullOrEmpty($_) } | Where-Object { Test-Path $_ }
+
+            # Try find some java
+            Write-Verbose -Message "Trying to find java.exe in PATH..."
+            $Java_EXE_IN_PATH = Get-ChildItem -Path $existingPaths | Where-Object {$_.Name -eq "java.exe"} | Select -First 1
+            if ($Java_EXE_IN_PATH -ne $null -and (Test-Path $Java_EXE_IN_PATH.FullName))
+            {
+                Write-Verbose -Message "Found in PATH at $($Java_EXE_IN_PATH.FullName). Updating...."
+                
+                # Updating that sweet, sweet java
+                Write-Verbose -Message "Updating Java..."
+                try
+                {
+                    choco.exe upgrade jdk8 -y
+                }
+                catch
+                {
+                    Throw "Could not update Java."
+                }
+            }
+            else
+            {
+                # Download that sweet, sweet java
+                Write-Verbose -Message "Downloading Java..."
+                try
+                {
+                    choco.exe install jdk8 -y
+                }
+                catch
+                {
+                    Throw "Could not download Java."
+                }
+            }
+            
+            # Cool refresh PATH
+            RefreshEnv.cmd
+        }
     }
 }
 
@@ -169,76 +240,6 @@ function FindAndRunCakeScript ([string]$CAKEDIR, [string]$CakeTarget, [string]$T
         EXIT $LASTEXITCODE;
     } else {
         Write-Host "No error found"
-    }
-}
-
-function EnsureJava () {
-    # JAVA_HOME for SonarQube
-    Write-Host "JAVA_HOME = $env:JAVA_HOME"
-    $jreRegex = "j((dk)|(re))(?<majorVersion>[\d\.]+)?(?<minorVersion>_[\d]*)"
-    if ([System.String]::IsNullOrEmpty($env:JAVA_HOME) -or $env:JAVA_HOME -notmatch $jreRegex)
-    {
-        Write-Host "JRE not found, trying to locate..."
-        $javaPath = "C:\Program Files\Java"
-        if (Test-Path "C:\Program Files (x86)\Java")
-        {
-            $javaPath = "C:\Program Files (x86)\Java"
-            Get-ChildItem -Path "C:\Program Files (x86)\Java" | Where-Object {$_.BaseName -match $jreRegex} | Out-Null
-        }
-        if (Test-Path "C:\Program Files\Java")
-        {
-            $javaPath = "C:\Program Files\Java"
-            Get-ChildItem -Path "C:\Program Files\Java" | Where-Object {$_.BaseName -match $jreRegex} | Out-Null
-        }    
-        $majorVersion = ($Matches['majorVersion'] | Measure-Object -Maximum).Maximum
-        $minVersion = ($Matches['minorVersion'] | Measure-Object -Maximum).Maximum
-        $highestJavaPath = "$javaPath\jre$($majorVersion)_$($minVersion)"
-        if (Test-Path $highestJavaPath)
-        {
-            [System.Environment]::SetEnvironmentVariable("JAVA_HOME", $highestJavaPath, [System.EnvironmentVariableTarget]::Process)
-            Write-Host "JAVA_HOME = $env:JAVA_HOME"
-        }
-        else
-        {
-            Write-Host "JAVA_HOME not found, downloading JAVA"
-            EnsureChocolatey
-            $existingPaths = $Env:Path -Split ';' | Where-Object { ![System.String]::IsNullOrEmpty($_) } | Where-Object { Test-Path $_ }
-
-            # Try find some java
-            Write-Verbose -Message "Trying to find java.exe in PATH..."
-            $Java_EXE_IN_PATH = Get-ChildItem -Path $existingPaths | Where-Object {$_.Name -eq "java.exe"} | Select -First 1
-            if ($Java_EXE_IN_PATH -ne $null -and (Test-Path $Java_EXE_IN_PATH.FullName))
-            {
-                Write-Verbose -Message "Found in PATH at $($Java_EXE_IN_PATH.FullName). Updating...."
-                
-                # Updating that sweet, sweet java
-                Write-Verbose -Message "Updating Java..."
-                try
-                {
-                    choco.exe upgrade jdk8 -y
-                }
-                catch
-                {
-                    Throw "Could not update Java."
-                }
-            }
-            else
-            {
-                # Download that sweet, sweet java
-                Write-Verbose -Message "Downloading Java..."
-                try
-                {
-                    choco.exe install jdk8 -y
-                }
-                catch
-                {
-                    Throw "Could not download Java."
-                }
-            }
-            
-            # Cool refresh PATH
-            RefreshEnv.cmd
-        }
     }
 }
 
@@ -389,9 +390,8 @@ function EnsureTypeScript (){
             Throw "Could not download Typescript."
         }
     }
-    npm install -g typescript
+    npm install typescript -g
 }
-
 function EnsureChocolatey() {
     if($env:HasRunChocolatelyUpdate){}
     else
