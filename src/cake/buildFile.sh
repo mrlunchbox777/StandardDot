@@ -166,9 +166,8 @@ startRunning()
 
     if [ ! -z $"CI_COMMIT_SHA" ]; then
         echo "Found git commits, running commit work."
-        allParents=$(git rev-list --first-parent "$CI_COMMIT_REF_NAME")
-        importantParent=$allParents[1]
-        allDiffs=$(git diff --no-commit-id --name-only -r "$importantParent")
+        parent=$(git rev-list --first-parent "$CI_COMMIT_REF_NAME" -n 1)
+        allDiffs=$(git diff --no-commit-id --name-only -r "$parent")
 
         for thing in $allDiffs; do
             # Gets every file from commit and adds it to $diff
