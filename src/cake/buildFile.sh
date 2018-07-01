@@ -156,7 +156,7 @@ startRunning()
 
     # get changes
     diff=()
-    if [ -z "$CI_COMMIT_REF_NAME" ] || [[ "$CI_COMMIT_REF_NAME" != "master" && "$CI_COMMIT_REF_NAME" != "develop" ]]; then
+    if [ -z "$CI_COMMIT_REF_NAME" ] || [[ "$CI_COMMIT_REF_NAME" != "origin/master" && "$CI_COMMIT_REF_NAME" != "origin/develop" ]]; then
         echo "$CI_COMMIT_REF_NAME is not a building branch... exiting"
         if [ -d "$TOOLS_DIR" ]; then
             rm -rf "$TOOLS_DIR"
