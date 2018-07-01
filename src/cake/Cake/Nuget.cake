@@ -14,9 +14,9 @@ public class Nuget
         this.nugetServer = "nuget.org";
         this.nugetServerFeed = "nuget.org/nugetfeed";
 
-        this.NugetPackPath = Context.ProjectInfo.projectDirectory + "/" + Context.ProjectInfo.projectName + ".nuspec";
+        this.NugetPackPath = Context.ProjectInfo.ProjectDirectory + "/" + Context.ProjectInfo.ProjectName + ".nuspec";
 
-        this.Id = Context.ProjectInfo.projectName;
+        this.Id = Context.ProjectInfo.ProjectName;
         this.Version = "1.0.0.0";
         this.nugetTitle = this.Id;
         this.nugetAuthors = new List<string>(){ "Standard Dot" };
@@ -32,8 +32,8 @@ public class Nuget
         this.symbols = false;
         this.noNugetPackageAnalysis = false;
         this.files = null;
-        this.basePath = Config.ProjectInfo.workspace + "/bin/" + Config.MSBuildInfo.msbuildConfig() + "/";
-        this.outputDirectory = Config.ProjectInfo.workspace;
+        this.basePath = Config.ProjectInfo.Workspace + "/bin/" + Config.MSBuildInfo.msbuildConfig() + "/";
+        this.outputDirectory = Config.ProjectInfo.Workspace;
 
         this.nugetIncludeReferencedProjects = true;
     }

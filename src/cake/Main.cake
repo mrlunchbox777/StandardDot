@@ -62,9 +62,9 @@ Setup(context =>
     // Do init here
     cakeConfig = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
     nugetInfo = ((!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
-    slackInfo = (cakeConfig.ProjectInfo.EnvironmentName) + " Deploy - " + cakeConfig.ProjectInfo.projectName + ". Other Info - " + nugetInfo;
+    slackInfo = (cakeConfig.ProjectInfo.EnvironmentName) + " Deploy - " + cakeConfig.ProjectInfo.ProjectName + ". Other Info - " + nugetInfo;
     Information("--------------------------------------------------------------------------------");
-    Information("BUILD info = " + nugetInfo + " version - " + cakeConfig.ProjectInfo.projectVersion + ".");
+    Information("BUILD info = " + nugetInfo + " version - " + cakeConfig.Nuget.Version + ".");
     Information("--------------------------------------------------------------------------------");
 });
 

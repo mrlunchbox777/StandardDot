@@ -1,11 +1,11 @@
 public class CustomSlack
 {
     public CustomSlack(ICakeContext context){
-        this.Context = context;
-        SlackHookUri = Context.EnvironmentVariable("slackhookuri");
+        this._context = context;
+        SlackHookUri = _context.EnvironmentVariable("slackhookuri");
     }
 
-    private ICakeContext Context { get; set; }
+    private ICakeContext _context { get; set; }
 
     public string SlackHookUri { get; set; }
 }

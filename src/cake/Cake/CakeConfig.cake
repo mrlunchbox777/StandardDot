@@ -22,7 +22,7 @@ public class CakeConfig
             Nuget = new Nuget(context);
         }
         if (HandleUnitTests){
-            UnitTests = new UnitTests(context, ProjectInfo.projectName.ToString(), ProjectInfo.projectDirectory.ToString());
+            UnitTests = new UnitTests(context, ProjectInfo.ProjectName.ToString(), ProjectInfo.ProjectDirectory.ToString());
         }
         MSBuildInfo = new MSBuildInfo(context);
 
@@ -45,8 +45,7 @@ public class CakeConfig
     private void GetProjectInfo()
     {
         context.Information("----------------------------------------------------------------------");    
-        ProjectInfo.projectVersion = "1.0.0"; // Figure out a versioning system maybe CI_JOB_ID ?
-        context.Information("-- Project Version is for: " + ProjectInfo.projectVersion); 
+        context.Information("-- Project Version is for: " + Nuget.Version); 
         context.Information("----------------------------------------------------------------------");
     }
 

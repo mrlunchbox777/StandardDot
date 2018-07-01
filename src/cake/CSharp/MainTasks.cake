@@ -32,7 +32,7 @@ Task("Restore-CSharp-Nuget-Packages")
                 toolTimeout+=0.5;
             }})
         .Execute(()=> {
-            NuGetRestore(cakeConfig.ProjectInfo.projectSolution, new NuGetRestoreSettings {
+            NuGetRestore(cakeConfig.ProjectInfo.ProjectSolution, new NuGetRestoreSettings {
                 // we don't want to define a source atm
                 // Source = new List<string> {
                 //     cakeConfig.Nuget.nugetServerURL
@@ -66,8 +66,8 @@ Task("Build-Project")
     }
     if (cakeConfig.MSBuildInfo.shouldFlatten(false))
     {
-        MSBuild(cakeConfig.ProjectInfo.projectFile, new MSBuildSettings()
-            //.WithTarget(cakeConfig.ProjectInfo.projectName) //.Replace('.','_')
+        MSBuild(cakeConfig.ProjectInfo.ProjectFile, new MSBuildSettings()
+            //.WithTarget(cakeConfig.ProjectInfo.ProjectName) //.Replace('.','_')
             .SetConfiguration("Release")
             .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
             .WithProperty("VisualStudioVersion", cakeConfig.MSBuildInfo.MSBuildVersion)
@@ -80,8 +80,8 @@ Task("Build-Project")
     }
     else
     {
-        MSBuild(cakeConfig.ProjectInfo.projectFile, new MSBuildSettings()
-            //.WithTarget(cakeConfig.ProjectInfo.projectName) //.Replace('.','_')
+        MSBuild(cakeConfig.ProjectInfo.ProjectFile, new MSBuildSettings()
+            //.WithTarget(cakeConfig.ProjectInfo.ProjectName) //.Replace('.','_')
             .SetConfiguration(cakeConfig.MSBuildInfo.msbuildConfig(false))
             .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
             .WithProperty("VisualStudioVersion", cakeConfig.MSBuildInfo.MSBuildVersion)
@@ -112,8 +112,8 @@ Task("CopyWebConfig")
         cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config.");
     }
     // get the web.config
-    string origWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config.example";
-    string newWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config";
+    string origWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config.example";
+    string newWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
     Information("Copying - " + origWebConfigLocation + " -> " + newWebConfigLocation);
     Information("--------------------------------------------------------------------------------");
@@ -139,7 +139,7 @@ Task("CopyWebConfigToOutput")
         cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config To Output.");
     }
     // get the web.config
-    string origWebConfigLocation = cakeConfig.ProjectInfo.projectDirectory + "\\Web.config";
+    string origWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config";
     string newWebConfigLocation = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
     Information("Copying - " + origWebConfigLocation + " -> " + newWebConfigLocation);
@@ -247,7 +247,7 @@ Task("TypeScriptCompile")
 //////////////////////////////////////////////////////////////
 
 Task("Build-Unit-Tests")
-    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.unitTestDirectoryPath))
+    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
@@ -255,8 +255,8 @@ Task("Build-Unit-Tests")
     {
         cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Build Unit Tests.");
     }
-    MSBuild(cakeConfig.ProjectInfo.projectSolution, new MSBuildSettings()
-        .WithTarget(cakeConfig.UnitTests.unitTestProjectName.Replace('.','_'))
+    MSBuild(cakeConfig.ProjectInfo.ProjectSolution, new MSBuildSettings()
+        .WithTarget(cakeConfig.UnitTests.UnitTestProjectName.Replace('.','_'))
         .SetConfiguration(cakeConfig.MSBuildInfo.msbuildConfig(true))
         .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
         .WithProperty("Configuration", cakeConfig.MSBuildInfo.msbuildConfig(true))
@@ -279,7 +279,7 @@ Task("Build-Unit-Tests")
 });
 
 Task("Run-Unit-Tests")
-    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.unitTestDirectoryPath))
+    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
     .IsDependentOn("Build-Unit-Tests")
     .Does(() =>
 {
@@ -287,8 +287,8 @@ Task("Run-Unit-Tests")
     {
         cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Run Unit Tests.");
     }
-    string targetDir = cakeConfig.UnitTests.unitTestDirectoryPath.FullPath + "/bin/" + cakeConfig.MSBuildInfo.msbuildConfig(true);
-    IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + cakeConfig.UnitTests.unitTestProjectName + ".dll")};
+    string targetDir = cakeConfig.UnitTests.UnitTestDirectoryPath.FullPath + "/bin/" + cakeConfig.MSBuildInfo.msbuildConfig(true);
+    IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + cakeConfig.UnitTests.UnitTestProjectName + ".dll")};
     OpenCoverSettings settings = new OpenCoverSettings();
     settings.ArgumentCustomization = args => args.Append(string.Concat("-targetdir:\"" + targetDir + "\""));
     settings.ArgumentCustomization = args => args.Append(string.Concat("-register")); // Magic!
@@ -296,14 +296,14 @@ Task("Run-Unit-Tests")
         tool.XUnit2(
             targetDLLs,
             new XUnit2Settings {
-                OutputDirectory = cakeConfig.ProjectInfo.projectDirectory,
+                OutputDirectory = cakeConfig.ProjectInfo.ProjectDirectory,
                 XmlReport = true,
                 Parallelism = ParallelismOption.All, // Like Sanic
                 ShadowCopy = false
             });
         },
-        cakeConfig.UnitTests.coverageReportFilePath,
-        settings.WithFilter("+[" + cakeConfig.ProjectInfo.projectName + "*]*")
+        cakeConfig.UnitTests.CoverageReportFilePath,
+        settings.WithFilter("+[" + cakeConfig.ProjectInfo.ProjectName + "*]*")
     );
 })
     .ReportError(exception =>
@@ -401,21 +401,21 @@ Task("Start-SonarQube")
     //             arguments => {
     //                 arguments
     //                     .Append("begin")
-    //                     .AppendSwitchQuoted(@"/k", ":", cakeConfig.ProjectInfo.projectName)
-    //                     .AppendSwitchQuoted(@"/n", ":", cakeConfig.ProjectInfo.projectName)
-    //                     .AppendSwitchQuoted(@"/v", ":", cakeConfig.ProjectInfo.projectVersion);
+    //                     .AppendSwitchQuoted(@"/k", ":", cakeConfig.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/n", ":", cakeConfig.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/v", ":", cakeConfig.Nuget.Version);
     //                 if (!string.IsNullOrEmpty(EnvironmentVariable("SONARQUBE_KEY")))
     //                 {
     //                     arguments
     //                         .AppendSwitchQuoted(@"/d", ":", "sonar.login=" + EnvironmentVariable("SONARQUBE_KEY"));
     //                 }
-    //                 if (DirectoryExists(cakeConfig.UnitTests.unitTestDirectoryPath))
+    //                 if (DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
     //                 {
     //                     arguments
-    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.opencover.reportsPaths=" + cakeConfig.UnitTests.coverageReportFilePath)
-    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.xunit.reportsPaths=" + cakeConfig.UnitTests.xUnitOutputFile);
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.opencover.reportsPaths=" + cakeConfig.UnitTests.CoverageReportFilePath)
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.xunit.reportsPaths=" + cakeConfig.UnitTests.XUnitOutputFile);
     //                 }
-    //                 if (!string.IsNullOrEmpty(cakeConfig.UnitTests.jsTestPath))
+    //                 if (!string.IsNullOrEmpty(cakeConfig.UnitTests.JsTestPath))
     //                 {
     //                     arguments
     //                         .AppendSwitchQuoted("/d",":", "sonar.javascript.lcov.reportPath=jsTests.lcov");
@@ -469,10 +469,10 @@ Task("End-SonarQube")
     //     Information("Aggregating.....");      
     //     string filename = string.Format("reallyLameFileToNeed{0}.txt",Guid.NewGuid());  
     //     System.IO.File.WriteAllLines(filename, stdout);
-    //     cakeConfig.UnitTests.sqAnalysisUrl = GetSonarQubeURL(System.IO.File.ReadAllLines(filename));
+    //     cakeConfig.UnitTests.SqAnalysisUrl = GetSonarQubeURL(System.IO.File.ReadAllLines(filename));
     //     DeleteFile(filename);
     //     Information("--------------------------------------------------------------------------------");
-    //     Information("Check " + cakeConfig.UnitTests.sqAnalysisUrl + " for a sonarqube update status.");
+    //     Information("Check " + cakeConfig.UnitTests.SqAnalysisUrl + " for a sonarqube update status.");
     //     Information("--------------------------------------------------------------------------------");
     //}
 })
@@ -490,24 +490,24 @@ Task("End-SonarQube")
 });
 
 Task("Check-Quality-Gate")
-    .WithCriteria(() => !String.IsNullOrEmpty(cakeConfig.UnitTests.sqAnalysisUrl))
+    .WithCriteria(() => !String.IsNullOrEmpty(cakeConfig.UnitTests.SqAnalysisUrl))
     .Does(() => 
 {
     if (cakeConfig.ConfigurableSettings.postSlackSteps)
     {
         cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Check Quality Gate.");
     }
-    // cakeConfig.UnitTests.qualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.sqAnalysisUrl);
+    // cakeConfig.UnitTests.QualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.SqAnalysisUrl);
     // int timeoutCount = 0;
-    // while(!cakeConfig.UnitTests.qualityGateReady) // Giving it up to two minutes to complete
+    // while(!cakeConfig.UnitTests.QualityGateReady) // Giving it up to two minutes to complete
     // {
-    //     if (cakeConfig.UnitTests.maxQualityGateTimeoutCount < timeoutCount) throw new CakeException("Could not get quality gate from SonarQube");
-    //     cakeConfig.UnitTests.qualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.sqAnalysisUrl);
+    //     if (cakeConfig.UnitTests.MaxQualityGateTimeoutCount < timeoutCount) throw new CakeException("Could not get quality gate from SonarQube");
+    //     cakeConfig.UnitTests.QualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.SqAnalysisUrl);
     //     System.Threading.Thread.Sleep(cakeConfig.UnitTests.QualityGateSleepLengthPerCount);
     //     timeoutCount++;
     // }
-    // cakeConfig.UnitTests.qualityGateStatus = CheckQualityGate(cakeConfig.ProjectInfo.projectName);
-    // if (string.IsNullOrEmpty(cakeConfig.UnitTests.qualityGateStatus))
+    // cakeConfig.UnitTests.QualityGateStatus = CheckQualityGate(cakeConfig.ProjectInfo.ProjectName);
+    // if (string.IsNullOrEmpty(cakeConfig.UnitTests.QualityGateStatus))
     // {
     //     Environment.Exit(1);
     // }

@@ -8,16 +8,16 @@ using Cake.Slack;
 public class CakeMethods
 {
     public CakeMethods(ICakeContext context) {
-        Context = context;
+        _context = context;
     }
 
-    private ICakeContext Context { get; set; }
+    private ICakeContext _context { get; set; }
 
     public void SendSlackNotification(CakeConfig cakeConfig, string message, string channel = null)
     {
         try {
             var slackhookuri = cakeConfig.Slack.SlackHookUri;
-            var postMessageResult = Context.Slack().Chat.PostMessage(
+            var postMessageResult = _context.Slack().Chat.PostMessage(
                         channel: channel ?? cakeConfig.ConfigurableSettings.slackChannel,
                         text: message,
                         messageSettings: new SlackChatMessageSettings { IncomingWebHookUrl = slackhookuri }
@@ -25,11 +25,11 @@ public class CakeMethods
 
             if (postMessageResult.Ok)
             {
-                Context.Information("Message successfully sent");
+                _context.Information("Message successfully sent");
             }
             else
             {
-                Context.Error("Failed to send message: {0}", postMessageResult.Error);
+                _context.Error("Failed to send message: {0}", postMessageResult.Error);
             }
         } catch (Exception ex) {
             cakeConfig.DispalyException(
@@ -59,13 +59,13 @@ public class CakeMethods
                 {
                     targetDir += additionalPath;
                 }
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Starting Local Copy - " + currentFolderToCopy);
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.CopyDirectory(cakeConfig.ProjectInfo.projectDirectory + "\\" + currentFolderToCopy, targetDir);
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Local Copy Complete");
-                Context.Information("--------------------------------------------------------------------------------");
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Starting Local Copy - " + currentFolderToCopy);
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.CopyDirectory(cakeConfig.ProjectInfo.ProjectDirectory + "\\" + currentFolderToCopy, targetDir);
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Local Copy Complete");
+                _context.Information("--------------------------------------------------------------------------------");
         } catch (Exception ex) {
             cakeConfig.DispalyException(
                 ex,
@@ -91,13 +91,13 @@ public class CakeMethods
                     throw new CakeException("No local copy target directory variable set. Please pass - 'currentFolderToCopy' - in your build.");
                 }
                 string targetFile = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\" + currentFileToCopy;
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Starting Local Copy - " + currentFileToCopy);
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.CopyFile(cakeConfig.ProjectInfo.projectDirectory + "\\" + currentFileToCopy, targetFile);
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Local Copy Complete");
-                Context.Information("--------------------------------------------------------------------------------");
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Starting Local Copy - " + currentFileToCopy);
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.CopyFile(cakeConfig.ProjectInfo.ProjectDirectory + "\\" + currentFileToCopy, targetFile);
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Local Copy Complete");
+                _context.Information("--------------------------------------------------------------------------------");
         } catch (Exception ex) {
             cakeConfig.DispalyException(
                 ex,
@@ -122,9 +122,9 @@ public class CakeMethods
                 {
                     throw new CakeException("No local directory set. Please pass - 'localDirectory' - in your build.");
                 }
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Uploading Directory - " + localDirectory);
-                Context.Information("--------------------------------------------------------------------------------");
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Uploading Directory - " + localDirectory);
+                _context.Information("--------------------------------------------------------------------------------");
                 // files first
                 string[] files = System.IO.Directory.GetFiles(localDirectory);
                 string remoteDir = cakeConfig.ConfigurableSettings.ftpRemoteDir + localDirectory.Replace(projectDirectory, "").Replace("\\", "/");
@@ -135,9 +135,9 @@ public class CakeMethods
                 {
                     UploadDirectory(cakeConfig, client, directory, projectDirectory);
                 }
-                Context.Information("--------------------------------------------------------------------------------");
-                Context.Information("Upload Complete - " + localDirectory);
-                Context.Information("--------------------------------------------------------------------------------");
+                _context.Information("--------------------------------------------------------------------------------");
+                _context.Information("Upload Complete - " + localDirectory);
+                _context.Information("--------------------------------------------------------------------------------");
         } catch (Exception ex) {
             cakeConfig.DispalyException(
                 ex,
