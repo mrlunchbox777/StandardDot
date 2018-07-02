@@ -166,7 +166,7 @@ startRunning()
 
     if [ ! -z $"CI_COMMIT_SHA" ]; then
         echo "Found git commits, running commit work."
-        parent=$(git rev-list --first-parent "$CI_COMMIT_REF_NAME" -n 1)
+        parent=$(git rev-list --first-parent "$CI_COMMIT_SHA" -n 1)
         echo "parent sha - $parent"
         allDiffs=$(git diff --no-commit-id --name-only -r "$parent")
         echo "all the diffs - ${allDiffs[*]}"

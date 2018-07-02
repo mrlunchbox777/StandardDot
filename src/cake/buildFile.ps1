@@ -45,7 +45,7 @@
     if (-not [System.String]::isNullOrEmpty($env:CI_COMMIT_SHA))
     {
         Write-Host "Found git commits, running commit work."
-        $allParents = iex "& git rev-list --first-parent $env:CI_COMMIT_REF_NAME";
+        $allParents = iex "& git rev-list --first-parent $env:CI_COMMIT_SHA";
 
         ForEach ($thing in & 'git' diff --no-commit-id --name-only -r $allParents[1])
         { # Gets every file from commit and adds it to $diff
