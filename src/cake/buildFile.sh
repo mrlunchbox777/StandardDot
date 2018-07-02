@@ -197,7 +197,7 @@ startRunning()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
             PROJECTNAME="${ADDR[0]}"
-            if [ containsElement "$PROJECTNAME" "$alreadyBuilt" ]; then
+            if [ $(containsElement "$PROJECTNAME" "$alreadyBuilt") ]; then
                 continue
             else
                 alreadyBuilt+=$PROJECTNAME
@@ -260,8 +260,8 @@ findAndRunCakeScript ()
     fi
 
     cakeFileCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
-    if [ -d "$NewCakeDir"  && "$cakeFileCount" -gt 0 ]; then
-        if [ -n "$CakeTarget" || "$CakeTarget" =~ "Build" ]; then
+    if [ -d "$NewCakeDir" ] && [ "$cakeFileCount" -gt 0 ]; then
+        if [ -n "$CakeTarget" ] || [ "$CakeTarget" =~ "Build" ]; then
             echo "Looking for Build.Cake"
 
             # we are going to need this for sonarqube
