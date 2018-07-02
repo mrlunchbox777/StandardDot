@@ -184,6 +184,7 @@ startRunning()
     Verbosity="Diagnostic"
 
     # run if there are changes
+    echo "number of changes - ${#diff[@]}"
     alreadyBuilt=() # Memoize so we don't build twice
     for change in $diff; do
         echo $change
