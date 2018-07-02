@@ -534,6 +534,10 @@ Task("PackNugetPackage")
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Pack Nuget Package.");
     }
+    if (!Config.Nuget.CreateNugetPackage)
+    {
+        return;
+    }
     var nuGetPackSettings   = new NuGetPackSettings {
         Id                          = Config.Nuget.Id ?? "TestNuget",
         Version                     = Config.Nuget.Version ?? "0.0.0.1",
@@ -583,6 +587,10 @@ Task("DeployNugetPackage")
     if (Config.Slack.PostSlackSteps)
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Deploy Nuget Package.");
+    }
+    if (!Config.Nuget.CreateNugetPackage)
+    {
+        return;
     }
     NuGetPush(Config.Nuget.PackPath, new NuGetPushSettings {
         Source = Config.Nuget.ServerFeed ?? "http://example.com/nugetfeed",

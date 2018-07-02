@@ -52,6 +52,8 @@ public class Nuget
     
     public string PackPath { get; set; }
 
+    public bool CreateNugetPackage { get; set; }
+
     // Nuspec Settings
     public string Id { get; set; }
 
