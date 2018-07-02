@@ -262,24 +262,24 @@ findAndRunCakeScript ()
     cakeFileCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
     if [ -d "$NewCakeDir" ] && [ "$cakeFileCount" -gt 0 ]; then
         if [ -n "$CakeTarget" ] || [ "$CakeTarget" =~ "Build" ]; then
-            echo "Looking for Build.Cake"
+            echo "Looking for Build.Cake in $CAKEDIR"
 
             # we are going to need this for sonarqube
             #EnsureJava
             export WORKSPACE="~\devLink"
-            Script=$(ls -d1 "$PSScriptRoot/*.cake" | head -1)
+            Script=$(ls -d1 "$NewCakeDir/*.cake" | head -1)
         else
-            echo "Can't find Cakefile for " + "$CakeTarget" + " in " + "$CAKEDIR" + "... Abandoning ship!"
+            echo "Can't find Cakefile for $CakeTarget in $CAKEDIR... Abandoning ship!"
             return
         fi
     fi
 
     if [ -z "$Script" ]; then
-        echo "Can't find Cakefile in " + "$CAKEDIR" + "... Abandoning ship!"
+        echo "Can't find Cakefile in $CAKEDIR... Abandoning ship!"
         return
     fi
 
-    echo "Preparing to run build script at " + "$Script" + "..."
+    echo "Preparing to run build script at $Script..."
     EnsureNugetAndCake
 
     # Start Cake
