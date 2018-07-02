@@ -13,9 +13,9 @@
 Task("Restore-CSharp-Nuget-Packages")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Restore Packages.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Restore Packages.");
     }
     var maxRetryCount = 5;
     var toolTimeout = 1d;
@@ -32,19 +32,18 @@ Task("Restore-CSharp-Nuget-Packages")
                 toolTimeout+=0.5;
             }})
         .Execute(()=> {
-            NuGetRestore(cakeConfig.ProjectInfo.ProjectSolution, new NuGetRestoreSettings {
-                // we don't want to define a source atm
-                // Source = new List<string> {
-                //     cakeConfig.Nuget.nugetServerURL
-                // },
+            NuGetRestore(Config.ProjectInfo.ProjectSolution, new NuGetRestoreSettings {
+                Source = new List<string> {
+                    Config.Nuget.Server
+                },
                 ToolTimeout = TimeSpan.FromMinutes(toolTimeout),
-                PackagesDirectory = cakeConfig.Nuget.packagesDirectory
+                PackagesDirectory = Config.Nuget.PackagesDirectory
             });
         });
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Check that packages are available",
@@ -60,19 +59,19 @@ Task("Build-Project")
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Build Project.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Build Project.");
     }
-    if (cakeConfig.MSBuildInfo.shouldFlatten(false))
+    if (Config.MSBuildInfo.ShouldFlatten(false))
     {
-        MSBuild(cakeConfig.ProjectInfo.ProjectFile, new MSBuildSettings()
-            //.WithTarget(cakeConfig.ProjectInfo.ProjectName) //.Replace('.','_')
+        MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
+            //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
             .SetConfiguration("Release")
-            .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
-            .WithProperty("VisualStudioVersion", cakeConfig.MSBuildInfo.MSBuildVersion)
+            .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+            .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
             .WithProperty("PipelineDependsOnBuild", "false")
-            .WithProperty("OutputPath", cakeConfig.ProjectInfo.FlattenOutputDirectory)
+            .WithProperty("OutputPath", Config.ProjectInfo.FlattenOutputDirectory)
             .WithProperty("ExcludeFilesFromDeployment", "\"**\\*.svn\\**\\*.*;Web.*.config;*.cs;*\\*.cs;*\\*\\*.cs;*\\*\\*\\*.cs;*.csproj\"")
             .UseToolVersion(MSBuildToolVersion.Default)
             .SetVerbosity(Verbosity.Minimal)
@@ -80,11 +79,11 @@ Task("Build-Project")
     }
     else
     {
-        MSBuild(cakeConfig.ProjectInfo.ProjectFile, new MSBuildSettings()
-            //.WithTarget(cakeConfig.ProjectInfo.ProjectName) //.Replace('.','_')
-            .SetConfiguration(cakeConfig.MSBuildInfo.msbuildConfig(false))
-            .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
-            .WithProperty("VisualStudioVersion", cakeConfig.MSBuildInfo.MSBuildVersion)
+        MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
+            //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
+            .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(false))
+            .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+            .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
             .UseToolVersion(MSBuildToolVersion.Default)
             .SetVerbosity(Verbosity.Minimal)
             .SetMaxCpuCount(1));
@@ -93,7 +92,7 @@ Task("Build-Project")
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Check for c# syntax/runtime errors",
@@ -107,13 +106,13 @@ Task("Build-Project")
 Task("CopyWebConfig")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Copy Web Config.");
     }
     // get the web.config
-    string origWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config.example";
-    string newWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config";
+    string origWebConfigLocation = Config.ProjectInfo.ProjectDirectory + "\\Web.config.example";
+    string newWebConfigLocation = Config.ProjectInfo.ProjectDirectory + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
     Information("Copying - " + origWebConfigLocation + " -> " + newWebConfigLocation);
     Information("--------------------------------------------------------------------------------");
@@ -122,7 +121,7 @@ Task("CopyWebConfig")
 
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure that there is a good web.config"
@@ -134,13 +133,13 @@ Task("CopyWebConfig")
 Task("CopyWebConfigToOutput")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Copy Web Config To Output.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Copy Web Config To Output.");
     }
     // get the web.config
-    string origWebConfigLocation = cakeConfig.ProjectInfo.ProjectDirectory + "\\Web.config";
-    string newWebConfigLocation = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\Web.config";
+    string origWebConfigLocation = Config.ProjectInfo.ProjectDirectory + "\\Web.config";
+    string newWebConfigLocation = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.ConfigurableSettings.SpecificWebsiteOutputDir + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
     Information("Copying - " + origWebConfigLocation + " -> " + newWebConfigLocation);
     Information("--------------------------------------------------------------------------------");
@@ -149,7 +148,7 @@ Task("CopyWebConfigToOutput")
 
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure that there is a good web.config"
@@ -161,12 +160,12 @@ Task("CopyWebConfigToOutput")
 Task("RemoveWebConfig")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Remove Web Config.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Remove Web Config.");
     }
     // remove the web.config
-    string webConfigLocation = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\Web.config";
+    string webConfigLocation = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.ConfigurableSettings.SpecificWebsiteOutputDir + "\\Web.config";
     Information("--------------------------------------------------------------------------------");
     Information("Deleting - " + webConfigLocation);
     Information("--------------------------------------------------------------------------------");
@@ -175,7 +174,7 @@ Task("RemoveWebConfig")
 
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure that there is a good web.config"
@@ -187,9 +186,9 @@ Task("RemoveWebConfig")
 Task("SassCompile")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Sass Compile.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Sass Compile.");
     }
     Information("--------------------------------------------------------------------------------");
     Information("Compiling Sass - ");
@@ -203,7 +202,7 @@ Task("SassCompile")
 
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure that there is a good web.config"
@@ -215,9 +214,9 @@ Task("SassCompile")
 Task("TypeScriptCompile")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Type Script Compile.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Type Script Compile.");
     }
     Information("--------------------------------------------------------------------------------");
     Information("Compiling TSC - ");
@@ -232,7 +231,7 @@ Task("TypeScriptCompile")
 
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure that there is a good web.config"
@@ -247,27 +246,27 @@ Task("TypeScriptCompile")
 //////////////////////////////////////////////////////////////
 
 Task("Build-Unit-Tests")
-    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
+    .WithCriteria(() => DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Build Unit Tests.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Build Unit Tests.");
     }
-    MSBuild(cakeConfig.ProjectInfo.ProjectSolution, new MSBuildSettings()
-        .WithTarget(cakeConfig.UnitTests.UnitTestProjectName.Replace('.','_'))
-        .SetConfiguration(cakeConfig.MSBuildInfo.msbuildConfig(true))
-        .WithProperty("Platform", cakeConfig.MSBuildInfo.platform)        
-        .WithProperty("Configuration", cakeConfig.MSBuildInfo.msbuildConfig(true))
-        .WithProperty("VisualStudioVersion", cakeConfig.MSBuildInfo.MSBuildVersion)
+    MSBuild(Config.ProjectInfo.ProjectSolution, new MSBuildSettings()
+        .WithTarget(Config.UnitTests.UnitTestProjectName.Replace('.','_'))
+        .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(true))
+        .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+        .WithProperty("Configuration", Config.MSBuildInfo.MsBuildConfig(true))
+        .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
         .UseToolVersion(MSBuildToolVersion.Default)
         .SetVerbosity(Verbosity.Minimal)
         .SetMaxCpuCount(1));
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Check for xunit syntax/runtime errors",
@@ -279,16 +278,16 @@ Task("Build-Unit-Tests")
 });
 
 Task("Run-Unit-Tests")
-    .WithCriteria(() => DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
+    .WithCriteria(() => DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
     .IsDependentOn("Build-Unit-Tests")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Run Unit Tests.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Run Unit Tests.");
     }
-    string targetDir = cakeConfig.UnitTests.UnitTestDirectoryPath.FullPath + "/bin/" + cakeConfig.MSBuildInfo.msbuildConfig(true);
-    IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + cakeConfig.UnitTests.UnitTestProjectName + ".dll")};
+    string targetDir = Config.UnitTests.UnitTestDirectoryPath.FullPath + "/bin/" + Config.MSBuildInfo.MsBuildConfig(true);
+    IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + Config.UnitTests.UnitTestProjectName + ".dll")};
     OpenCoverSettings settings = new OpenCoverSettings();
     settings.ArgumentCustomization = args => args.Append(string.Concat("-targetdir:\"" + targetDir + "\""));
     settings.ArgumentCustomization = args => args.Append(string.Concat("-register")); // Magic!
@@ -296,19 +295,19 @@ Task("Run-Unit-Tests")
         tool.XUnit2(
             targetDLLs,
             new XUnit2Settings {
-                OutputDirectory = cakeConfig.ProjectInfo.ProjectDirectory,
+                OutputDirectory = Config.ProjectInfo.ProjectDirectory,
                 XmlReport = true,
                 Parallelism = ParallelismOption.All, // Like Sanic
                 ShadowCopy = false
             });
         },
-        cakeConfig.UnitTests.CoverageReportFilePath,
-        settings.WithFilter("+[" + cakeConfig.ProjectInfo.ProjectName + "*]*")
+        Config.UnitTests.CoverageReportFilePath,
+        settings.WithFilter("+[" + Config.ProjectInfo.ProjectName + "*]*")
     );
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Check for xunit syntax/runtime errors",
@@ -322,25 +321,25 @@ Task("Run-Unit-Tests")
 Task("StopAnApplicationPool")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Stopping IIS.");
+        Config.CakeMethods.SendSlackNotification(Config, "Stopping IIS.");
     }
-    if (cakeConfig.ConfigurableSettings.restartIIS) {
-        if (cakeConfig.ConfigurableSettings.useRemoteServer)
+    if (Config.ConfigurableSettings.RestartIIS) {
+        if (Config.ConfigurableSettings.UseRemoteServer)
         {
-            StopPool(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationPoolName);
-            StopSite(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationSiteName);
+            StopPool(Config.ConfigurableSettings.RemoteIISServerName, Config.ConfigurableSettings.ApplicationPoolName);
+            StopSite(Config.ConfigurableSettings.RemoteIISServerName, Config.ConfigurableSettings.ApplicationSiteName);
         } else
         {
-            StopPool(cakeConfig.ConfigurableSettings.applicationPoolName);
-            StopSite(cakeConfig.ConfigurableSettings.applicationSiteName);
+            StopPool(Config.ConfigurableSettings.ApplicationPoolName);
+            StopSite(Config.ConfigurableSettings.ApplicationSiteName);
         }
     }
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Did all the settings load?",
@@ -354,25 +353,25 @@ Task("StopAnApplicationPool")
 Task("StartAnApplicationPool")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting IIS.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting IIS.");
     }
-    if (cakeConfig.ConfigurableSettings.restartIIS) {
-        if (cakeConfig.ConfigurableSettings.useRemoteServer)
+    if (Config.ConfigurableSettings.RestartIIS) {
+        if (Config.ConfigurableSettings.UseRemoteServer)
         {
-            StartPool(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationPoolName);
-            StartSite(cakeConfig.ConfigurableSettings.remoteIISServerName, cakeConfig.ConfigurableSettings.applicationSiteName);
+            StartPool(Config.ConfigurableSettings.RemoteIISServerName, Config.ConfigurableSettings.ApplicationPoolName);
+            StartSite(Config.ConfigurableSettings.RemoteIISServerName, Config.ConfigurableSettings.ApplicationSiteName);
         } else
         {
-            StartPool(cakeConfig.ConfigurableSettings.applicationPoolName);
-            StartSite(cakeConfig.ConfigurableSettings.applicationSiteName);
+            StartPool(Config.ConfigurableSettings.ApplicationPoolName);
+            StartSite(Config.ConfigurableSettings.ApplicationSiteName);
         }
     }
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Did all the settings load?",
@@ -390,9 +389,9 @@ Task("StartAnApplicationPool")
 Task("Start-SonarQube")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting SonarQube.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting SonarQube.");
     }
     // using (var process = StartAndReturnProcess(
     //     "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
@@ -401,21 +400,21 @@ Task("Start-SonarQube")
     //             arguments => {
     //                 arguments
     //                     .Append("begin")
-    //                     .AppendSwitchQuoted(@"/k", ":", cakeConfig.ProjectInfo.ProjectName)
-    //                     .AppendSwitchQuoted(@"/n", ":", cakeConfig.ProjectInfo.ProjectName)
-    //                     .AppendSwitchQuoted(@"/v", ":", cakeConfig.Nuget.Version);
+    //                     .AppendSwitchQuoted(@"/k", ":", Config.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/n", ":", Config.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/v", ":", Config.Nuget.Version);
     //                 if (!string.IsNullOrEmpty(EnvironmentVariable("SONARQUBE_KEY")))
     //                 {
     //                     arguments
     //                         .AppendSwitchQuoted(@"/d", ":", "sonar.login=" + EnvironmentVariable("SONARQUBE_KEY"));
     //                 }
-    //                 if (DirectoryExists(cakeConfig.UnitTests.UnitTestDirectoryPath))
+    //                 if (DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
     //                 {
     //                     arguments
-    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.opencover.reportsPaths=" + cakeConfig.UnitTests.CoverageReportFilePath)
-    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.xunit.reportsPaths=" + cakeConfig.UnitTests.XUnitOutputFile);
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.opencover.reportsPaths=" + Config.UnitTests.CoverageReportFilePath)
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.xunit.reportsPaths=" + Config.UnitTests.XUnitOutputFile);
     //                 }
-    //                 if (!string.IsNullOrEmpty(cakeConfig.UnitTests.JsTestPath))
+    //                 if (!string.IsNullOrEmpty(Config.UnitTests.JsTestPath))
     //                 {
     //                     arguments
     //                         .AppendSwitchQuoted("/d",":", "sonar.javascript.lcov.reportPath=jsTests.lcov");
@@ -431,7 +430,7 @@ Task("Start-SonarQube")
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure java is installed on the machine",
@@ -445,9 +444,9 @@ Task("Start-SonarQube")
 Task("End-SonarQube")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Complete SonarQube Analysis.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Complete SonarQube Analysis.");
     }
     // using (var process = StartAndReturnProcess(
     //         "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
@@ -469,16 +468,16 @@ Task("End-SonarQube")
     //     Information("Aggregating.....");      
     //     string filename = string.Format("reallyLameFileToNeed{0}.txt",Guid.NewGuid());  
     //     System.IO.File.WriteAllLines(filename, stdout);
-    //     cakeConfig.UnitTests.SqAnalysisUrl = GetSonarQubeURL(System.IO.File.ReadAllLines(filename));
+    //     Config.UnitTests.SqAnalysisUrl = GetSonarQubeURL(System.IO.File.ReadAllLines(filename));
     //     DeleteFile(filename);
     //     Information("--------------------------------------------------------------------------------");
-    //     Information("Check " + cakeConfig.UnitTests.SqAnalysisUrl + " for a sonarqube update status.");
+    //     Information("Check " + Config.UnitTests.SqAnalysisUrl + " for a sonarqube update status.");
     //     Information("--------------------------------------------------------------------------------");
     //}
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure java is installed on the machine",
@@ -490,31 +489,31 @@ Task("End-SonarQube")
 });
 
 Task("Check-Quality-Gate")
-    .WithCriteria(() => !String.IsNullOrEmpty(cakeConfig.UnitTests.SqAnalysisUrl))
+    .WithCriteria(() => !String.IsNullOrEmpty(Config.UnitTests.SqAnalysisUrl))
     .Does(() => 
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Check Quality Gate.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Check Quality Gate.");
     }
-    // cakeConfig.UnitTests.QualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.SqAnalysisUrl);
+    // Config.UnitTests.QualityGateReady = IsAnalysisComplete(Config.UnitTests.SqAnalysisUrl);
     // int timeoutCount = 0;
-    // while(!cakeConfig.UnitTests.QualityGateReady) // Giving it up to two minutes to complete
+    // while(!Config.UnitTests.QualityGateReady) // Giving it up to two minutes to complete
     // {
-    //     if (cakeConfig.UnitTests.MaxQualityGateTimeoutCount < timeoutCount) throw new CakeException("Could not get quality gate from SonarQube");
-    //     cakeConfig.UnitTests.QualityGateReady = IsAnalysisComplete(cakeConfig.UnitTests.SqAnalysisUrl);
-    //     System.Threading.Thread.Sleep(cakeConfig.UnitTests.QualityGateSleepLengthPerCount);
+    //     if (Config.UnitTests.MaxQualityGateTimeoutCount < timeoutCount) throw new CakeException("Could not get quality gate from SonarQube");
+    //     Config.UnitTests.QualityGateReady = IsAnalysisComplete(Config.UnitTests.SqAnalysisUrl);
+    //     System.Threading.Thread.Sleep(Config.UnitTests.QualityGateSleepLengthPerCount);
     //     timeoutCount++;
     // }
-    // cakeConfig.UnitTests.QualityGateStatus = CheckQualityGate(cakeConfig.ProjectInfo.ProjectName);
-    // if (string.IsNullOrEmpty(cakeConfig.UnitTests.QualityGateStatus))
+    // Config.UnitTests.QualityGateStatus = CheckQualityGate(Config.ProjectInfo.ProjectName);
+    // if (string.IsNullOrEmpty(Config.UnitTests.QualityGateStatus))
     // {
     //     Environment.Exit(1);
     // }
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure sonarqube is available and not too busy",
@@ -531,43 +530,43 @@ Task("Check-Quality-Gate")
 Task("PackNugetPackage")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Pack Nuget Package.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Pack Nuget Package.");
     }
     var nuGetPackSettings   = new NuGetPackSettings {
-        Id                          = cakeConfig.Nuget.Id ?? "TestNuget",
-        Version                     = cakeConfig.Nuget.Version ?? "0.0.0.1",
-        Title                       = cakeConfig.Nuget.nugetTitle ?? "The tile of the package",
-        Authors                     = cakeConfig.Nuget.nugetAuthors ?? new[] {"John Doe"},
-        Owners                      = cakeConfig.Nuget.nugetOwners ?? new[] {"Contoso"},
-        Description                 = cakeConfig.Nuget.nugetDescription ?? "The description of the package",
-        Summary                     = cakeConfig.Nuget.nugetSummary ?? "Excellent summary of what the package does",
-        ProjectUrl                  = cakeConfig.Nuget.nugetProjectUrl ?? new Uri("https://github.com/SomeUser/TestNuget/"),
-        IconUrl                     = cakeConfig.Nuget.nugetIconUrl ?? new Uri("http://cdn.rawgit.com/SomeUser/TestNuget/master/icons/testnuget.png"),
-        LicenseUrl                  = cakeConfig.Nuget.licenseUrl ?? new Uri("https://github.com/SomeUser/TestNuget/blob/master/LICENSE.md"),
-        Copyright                   = cakeConfig.Nuget.copyright ?? "Some company 2015",
-        ReleaseNotes                = cakeConfig.Nuget.releaseNotes ?? new [] {"Bug fixes", "Issue fixes", "Typos"},
-        Tags                        = cakeConfig.Nuget.tags ?? new [] {"Cake", "Script", "Build"},
-        RequireLicenseAcceptance    = cakeConfig.Nuget.requireLicenseAcceptance ?? false,
-        Symbols                     = cakeConfig.Nuget.symbols ?? false,
-        NoPackageAnalysis           = cakeConfig.Nuget.noPackageAnalysis ?? true,
-        Files                       = cakeConfig.Nuget.files
+        Id                          = Config.Nuget.Id ?? "TestNuget",
+        Version                     = Config.Nuget.Version ?? "0.0.0.1",
+        Title                       = Config.Nuget.Title ?? "The tile of the package",
+        Authors                     = Config.Nuget.Authors ?? new[] {"John Doe"},
+        Owners                      = Config.Nuget.Owners ?? new[] {"Contoso"},
+        Description                 = Config.Nuget.Description ?? "The description of the package",
+        Summary                     = Config.Nuget.Summary ?? "Excellent summary of what the package does",
+        ProjectUrl                  = Config.Nuget.ProjectUrl ?? new Uri("https://github.com/SomeUser/TestNuget/"),
+        IconUrl                     = Config.Nuget.IconUrl ?? new Uri("http://cdn.rawgit.com/SomeUser/TestNuget/master/icons/testnuget.png"),
+        LicenseUrl                  = Config.Nuget.LicenseUrl ?? new Uri("https://github.com/SomeUser/TestNuget/blob/master/LICENSE.md"),
+        Copyright                   = Config.Nuget.Copyright ?? "Some company 2015",
+        ReleaseNotes                = Config.Nuget.ReleaseNotes ?? new [] {"Bug fixes", "Issue fixes", "Typos"},
+        Tags                        = Config.Nuget.Tags ?? new [] {"Cake", "Script", "Build"},
+        RequireLicenseAcceptance    = Config.Nuget.RequireLicenseAcceptance,
+        Symbols                     = Config.Nuget.Symbols,
+        NoPackageAnalysis           = Config.Nuget.NoPackageAnalysis,
+        Files                       = Config.Nuget.Files
                                         // we want a null here if it is null
                                         // ?? new [] {
                                         //     new NuSpecContent {Source = "bin/TestNuget.dll", Target = "bin"},
                                         // }
                                         ,
-        BasePath                    = cakeConfig.Nuget.basePath ?? "./src/TestNuget/bin/release",
-        OutputDirectory             = cakeConfig.Nuget.outputDirectory ?? "./nuget"
-        IncludeReferencedProjects   = cakeConfig.Nuget.nugetIncludeReferencedProjects ?? false;
+        BasePath                    = Config.Nuget.BasePath ?? "./src/TestNuget/bin/release",
+        OutputDirectory             = Config.Nuget.OutputDirectory ?? "./nuget"
+        IncludeReferencedProjects   = Config.Nuget.IncludeReferencedProjects;
     };
 
-    Context.NuGetPack(cakeConfig.Nuget.NugetPackPath ?? "./nuspec/TestNuget.nuspec", nuGetPackSettings);
+    Context.NuGetPack(Config.Nuget.PackPath ?? "./nuspec/TestNuget.nuspec", nuGetPackSettings);
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure nuspec is possible",
@@ -581,18 +580,18 @@ Task("PackNugetPackage")
 Task("DeployNugetPackage")
     .Does(() =>
 {
-    if (cakeConfig.ConfigurableSettings.postSlackSteps)
+    if (Config.Slack.PostSlackSteps)
     {
-        cakeConfig.CakeMethods.SendSlackNotification(cakeConfig, "Starting Deploy Nuget Package.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Deploy Nuget Package.");
     }
-    NuGetPush(cakeConfig.Nuget.NugetPackPath, new NuGetPushSettings {
-        Source = cakeConfig.Nuget.nugetServerFeed ?? "http://example.com/nugetfeed",
-        ApiKey = cakeConfig.Nuget.nugetAPIKey
+    NuGetPush(Config.Nuget.PackPath, new NuGetPushSettings {
+        Source = Config.Nuget.ServerFeed ?? "http://example.com/nugetfeed",
+        ApiKey = Config.Nuget.ApiKey
     });
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure nuspec exists",

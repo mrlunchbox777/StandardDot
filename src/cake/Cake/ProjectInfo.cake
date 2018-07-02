@@ -1,8 +1,8 @@
 public class ProjectInfo
 {
-    public ProjectInfo(ICakeContext context, bool StepUpADirectoryInConfigureSpace = false){
+    public ProjectInfo(ICakeContext context, bool stepUpADirectoryInConfigureSpace = false){
         this._context = context;
-        this.StepUpADirectoryInConfigureSpace = StepUpADirectoryInConfigureSpace;
+        this._stepUpADirectoryInConfigureSpace = stepUpADirectoryInConfigureSpace;
         this.IsProduction = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("master");
         this.IsBeta = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("beta");
         this.IsQa = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("qa");
@@ -12,7 +12,7 @@ public class ProjectInfo
             || this.IsIntegration || this.IsDevelopment);
     }
 
-    private bool StepUpADirectoryInConfigureSpace { get; set; }
+    private bool _stepUpADirectoryInConfigureSpace { get; set; }
 
     private FilePath _projectSolution;
 
@@ -65,7 +65,7 @@ public class ProjectInfo
         {
             return _context.HasEnvironmentVariable("WORKSPACE")
                 ? _context.MakeAbsolute(_context.Directory(_context.EnvironmentVariable("WORKSPACE")))
-                : _context.MakeAbsolute(_context.Directory(StepUpADirectoryInConfigureSpace ? "../" : "./"));
+                : _context.MakeAbsolute(_context.Directory(_stepUpADirectoryInConfigureSpace ? "../" : "./"));
         }
     }
 

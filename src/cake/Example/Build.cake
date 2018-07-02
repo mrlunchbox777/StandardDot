@@ -37,34 +37,34 @@ Task("Setup-Environment")
     .Does(() =>
     {
         // setting the build directory
-        cakeConfig.ConfigurableSettings.localCopyTargetDirectory = @"";
-        cakeConfig.ConfigurableSettings.specificWebsiteOutputDir = @"";
+        Config.ConfigurableSettings.LocalCopyTargetDirectory = @"";
+        Config.ConfigurableSettings.SpecificWebsiteOutputDir = @"";
 
-        cakeConfig.ConfigurableSettings.ftpHost = "";
-        cakeConfig.ConfigurableSettings.ftpRemoteDir = "";
-        cakeConfig.ConfigurableSettings.ftpUsername = "";
-        cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation = @"";
+        Config.FtpHelper.Host = "";
+        Config.FtpHelper.RemoteDir = "";
+        Config.FtpHelper.Username = "";
+        Config.FtpHelper.SecurePasswordLocation = @"";
 
-        cakeConfig.ConfigurableSettings.doLocalCopyWork = !cakeConfig.ProjectInfo.IsProduction;
-        cakeConfig.ConfigurableSettings.doFtpWork = cakeConfig.ProjectInfo.IsProduction;
+        Config.ConfigurableSettings.DoLocalCopyWork = !Config.ProjectInfo.IsProduction;
+        Config.ConfigurableSettings.DoFtpWork = Config.ProjectInfo.IsProduction;
 
-        cakeConfig.ConfigurableSettings.slackChannel = "";
-        cakeConfig.ConfigurableSettings.postSlackStartAndStop = true;
-        cakeConfig.ConfigurableSettings.postSlackSteps = true;
-        cakeConfig.ConfigurableSettings.postSlackErrors = true;
+        Config.Slack.SlackChannel = "";
+        Config.Slack.PostSlackStartAndStop = true;
+        Config.Slack.PostSlackSteps = true;
+        Config.Slack.PostSlackErrors = true;
 
-        cakeConfig.ConfigurableSettings.deleteLocalCopyDirBeforeCopy = true;
+        Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = true;
 
-        cakeConfig.ConfigurableSettings.airbrakeProjectId = "";
-        cakeConfig.ConfigurableSettings.airbrakeUserName = "";
-        cakeConfig.ConfigurableSettings.airbrakeEmail = "";
-        cakeConfig.Airbrake.AirbrakeProjectKey = "";
+        Config.Airbrake.ProjectId = "";
+        Config.Airbrake.UserName = "";
+        Config.Airbrake.Email = "";
+        Config.Airbrake.ProjectKey = "";
         
-        cakeConfig.ConfigurableSettings.applicationPoolName = "";
-        cakeConfig.ConfigurableSettings.applicationSiteName = "";
-        cakeConfig.ConfigurableSettings.restartIIS = true;
-        cakeConfig.ConfigurableSettings.useRemoteServer = false;
-        cakeConfig.ConfigurableSettings.remoteIISServerName = "";
+        Config.ConfigurableSettings.ApplicationPoolName = "";
+        Config.ConfigurableSettings.ApplicationSiteName = "";
+        Config.ConfigurableSettings.RestartIIS = true;
+        Config.ConfigurableSettings.UseRemoteServer = false;
+        Config.ConfigurableSettings.RemoteIISServerName = "";
     });
 
 Task("Cleanup-Environment")
@@ -72,8 +72,8 @@ Task("Cleanup-Environment")
     // .IsDependentOn("CopyWebConfigToOutput")
     .Does(() =>
     {
-        cakeConfig.CakeMethods.CopyFolderFromProjectRootToOutput(cakeConfig, "Content");
-        cakeConfig.CakeMethods.CopyFolderFromProjectRootToOutput(cakeConfig, "fonts");
+        Config.CakeMethods.CopyFolderFromProjectRootToOutput(Config, "Content");
+        Config.CakeMethods.CopyFolderFromProjectRootToOutput(Config, "fonts");
         // some cleanup stuff
     });
 

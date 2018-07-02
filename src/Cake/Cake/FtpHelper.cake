@@ -6,6 +6,30 @@ using System.Globalization;
 
 public class FtpHelper
 {
+    public string Host { get; set; }
+
+    public string RemoteDir { get; set; }
+    
+    public string Username { get; set; }
+
+    public string SecurePasswordLocation { get; set; }
+
+    public byte[] AesKey => System.Convert.FromBase64String(Context.EnvironmentVariable("FTPAesKey"));
+
+    public int DeleteRetryAttempts { get; set; }
+
+    public int UploadRetryAttempts { get; set; }
+
+    public int SocketPollInterval { get; set; }
+
+    public int ConnectTimeout { get; set; }
+
+    public int ReadTimeout { get; set; }
+
+    public int DataConnectionConnectTimeout { get; set; }
+
+    public int DataConnectionReadTimeout { get; set; }
+
     // psProtectedString - this is the output from
     //   powershell> $psProtectedString = ConvertFrom-SecureString -SecureString $aSecureString -key (1..16)
     // key - make sure you add size checking 

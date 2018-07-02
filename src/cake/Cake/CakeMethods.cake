@@ -18,7 +18,7 @@ public class CakeMethods
         try {
             var slackhookuri = cakeConfig.Slack.SlackHookUri;
             var postMessageResult = _context.Slack().Chat.PostMessage(
-                        channel: channel ?? cakeConfig.ConfigurableSettings.slackChannel,
+                        channel: channel ?? cakeConfig.Slack.SlackChannel,
                         text: message,
                         messageSettings: new SlackChatMessageSettings { IncomingWebHookUrl = slackhookuri }
                 );
@@ -47,14 +47,14 @@ public class CakeMethods
     public void CopyFolderFromProjectRootToOutput(CakeConfig cakeConfig, string currentFolderToCopy, string additionalPath = null)
     {
         // make sure to set this in your cakeConfig.ConfigurableSettings
-        // cakeConfig.ConfigurableSettings.specificWebsiteOutputDir = ""
+        // cakeConfig.ConfigurableSettings.SpecificWebsiteOutputDir = ""
         try
         {
                 if (string.IsNullOrWhiteSpace(currentFolderToCopy))
                 {
                     throw new CakeException("No local copy target directory variable set. Please pass - 'currentFolderToCopy' - in your build.");
                 }
-                string targetDir = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\" + currentFolderToCopy;
+                string targetDir = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.SpecificWebsiteOutputDir + "\\" + currentFolderToCopy;
                 if (!string.IsNullOrWhiteSpace(additionalPath))
                 {
                     targetDir += additionalPath;
@@ -83,14 +83,14 @@ public class CakeMethods
     public void CopyFileFromProjectRootToOutput(CakeConfig cakeConfig, string currentFileToCopy)
     {
         // make sure to set this in your cakeConfig.ConfigurableSettings
-        // cakeConfig.ConfigurableSettings.specificWebsiteOutputDir = ""
+        // cakeConfig.ConfigurableSettings.SpecificWebsiteOutputDir = ""
         try
         {
                 if (string.IsNullOrWhiteSpace(currentFileToCopy))
                 {
                     throw new CakeException("No local copy target directory variable set. Please pass - 'currentFolderToCopy' - in your build.");
                 }
-                string targetFile = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir + "\\" + currentFileToCopy;
+                string targetFile = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.SpecificWebsiteOutputDir + "\\" + currentFileToCopy;
                 _context.Information("--------------------------------------------------------------------------------");
                 _context.Information("Starting Local Copy - " + currentFileToCopy);
                 _context.Information("--------------------------------------------------------------------------------");
@@ -115,7 +115,7 @@ public class CakeMethods
     public void UploadDirectory(CakeConfig cakeConfig, FtpClient client, string localDirectory, string projectDirectory)
     {
         // make sure to set this in your cakeConfig.ConfigurableSettings
-        // cakeConfig.ConfigurableSettings.ftpRemoteDir = ""
+        // cakeConfig.FtpHelper.RemoteDir = ""
         try
         {
                 if (string.IsNullOrWhiteSpace(localDirectory))
@@ -127,7 +127,7 @@ public class CakeMethods
                 _context.Information("--------------------------------------------------------------------------------");
                 // files first
                 string[] files = System.IO.Directory.GetFiles(localDirectory);
-                string remoteDir = cakeConfig.ConfigurableSettings.ftpRemoteDir + localDirectory.Replace(projectDirectory, "").Replace("\\", "/");
+                string remoteDir = cakeConfig.FtpHelper.RemoteDir + localDirectory.Replace(projectDirectory, "").Replace("\\", "/");
                 client.UploadFiles(files, remoteDir, FtpExists.Overwrite, true, FtpVerify.Retry);
                 // directories second
                 string[] directories = System.IO.Directory.GetDirectories(localDirectory);
@@ -144,7 +144,7 @@ public class CakeMethods
                 new string[] {
                     "Ensure the project built correctly",
                     "Ensure no files are locked",
-                    "Ensure 'ftpRemoteDir' is set in the cakeConfig.ConfigurableSettings"
+                    "Ensure 'RemoteDir' is set in the Config.FtpHelper"
                 },
                 true
                 );
