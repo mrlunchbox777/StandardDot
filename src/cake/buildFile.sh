@@ -211,7 +211,7 @@ startRunning()
     if [ -z "$CI_COMMIT_SHA" ]; then
         ADDR=()
         IFS='/' read -ra ADDR <<< "$change"
-        PROJECTNAME=$ADDR[-1]
+        PROJECTNAME="${ADDR[-1]}"
         # Still need the find and run cake script in this
         findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
     fi
