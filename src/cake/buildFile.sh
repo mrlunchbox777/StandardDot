@@ -196,7 +196,7 @@ startRunning()
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
-            PROJECTNAME=ADDR[0]
+            PROJECTNAME="${ADDR[0]}"
             if [ containsElement "$PROJECTNAME" "$alreadyBuilt" ]; then
                 continue
             else
