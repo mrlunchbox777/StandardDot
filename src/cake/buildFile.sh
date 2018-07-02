@@ -192,7 +192,7 @@ startRunning()
     alreadyBuilt=() # Memoize so we don't build twice
     for change in $diff; do
         echo $change
-        if [ ! -z "$change" ] && [ $("$change" | grep "Tests" -c) -lt 1 ] && [ $("$change" | grep ".sql" -c) -lt 1 ]; then
+        if [ ! -z "$change" ] && [ $(echo "$change" | grep "Tests" -c) -lt 1 ] && [ $(echo "$change" | grep ".sql" -c) -lt 1 ]; then
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
@@ -231,7 +231,7 @@ findAndRunCakeScript ()
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
     
-    local NewCakeDir="C:\devLink"
+    local NewCakeDir="~\devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
             echo "Found a symLink, removing..."
@@ -266,7 +266,7 @@ findAndRunCakeScript ()
 
             # we are going to need this for sonarqube
             #EnsureJava
-            export WORKSPACE="C:\devLink"
+            export WORKSPACE="~\devLink"
             Script=$(ls -d1 "$PSScriptRoot/*.cake" | head -1)
         else
             echo "Can't find Cakefile for " + "$CakeTarget" + " in " + "$CAKEDIR" + "... Abandoning ship!"
