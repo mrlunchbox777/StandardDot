@@ -1,30 +1,97 @@
 public class Nuget
 {
     public Nuget(ICakeContext context, CakeConfig cakeConfig){
-        this.Context = context;
-        this.Config = cakeConfig;
+        this._context = context;
+        this._config = cakeConfig;
+
         string description = ("repo - "
-                                    + (!string.IsNullOrEmpty(this.Context.EnvironmentVariable("CI_REPOSITORY_URL")) ? this.Context.EnvironmentVariable("CI_REPOSITORY_URL") : "Unknown")
+                                    + (!string.IsNullOrEmpty(this._context.EnvironmentVariable("CI_REPOSITORY_URL")) ? this._context.EnvironmentVariable("CI_REPOSITORY_URL") : "Unknown")
                                     + ", commit - "
-                                    + (!string.IsNullOrEmpty(this.Context.EnvironmentVariable("CI_COMMIT_SHA")) ? this.Context.EnvironmentVariable("CI_COMMIT_SHA") : "Unknown")
+                                    + (!string.IsNullOrEmpty(this._context.EnvironmentVariable("CI_COMMIT_SHA")) ? this._context.EnvironmentVariable("CI_COMMIT_SHA") : "Unknown")
                                     ).ToString();
-        this.nugetSummary = this.nugetSummary == "Unknown" ? description : this.nugetSummary;
-        this.nugetDescription = this.nugetDescription == "Unknown" ? description : this.nugetDescription;
+        this.Summary = string.IsNullOrWhiteSpace(this.Summary) ? description : this.Summary;
+        this.Description = string.IsNullOrWhiteSpace(this.Description) ? description : this.Description;
+        this.Server = "nuget.org";
+        this.ServerFeed = "https://api.nuget.org/v3/index.json";
+
+        this.PackPath = _context.ProjectInfo.ProjectDirectory + "/" + _context.ProjectInfo.ProjectName + ".nuspec";
+
+        this.Id = _context.ProjectInfo.ProjectName;
+        this.Version = "1.0.0.0";
+        this.Title = this.Id;
+        this.Authors = new List<string>(){ "Standard Dot" };
+        this.Owners = new List<string>(){ "Standard Dot" };
+        this.ProjectUrl = string.IsNullOrWhiteSpace(EnvironmentVariable("CI_REPOSITORY_URL")) ? "" : new Uri(EnvironmentVariable("CI_REPOSITORY_URL"));
+        this.IconUrl = new Uri(
+            "https://github.com/mrlunchbox777/StandardDot/blob/master/defaultNugetIcon.png");
+        this.LicenseUrl = new Uri("https://github.com/IQAndreas/markdown-licenses/blob/master/mit.md");
+        this.Copyright = "Standard Dot " + DateTime.Now.Year.ToString();
+        this.ReleaseNotes = new List<string>(){ "General Updates" };
+        this.Tags = new List<string>(){ "Build" };
+        this.RequireLicenseAcceptance = false;
+        this.Symbols = false;
+        this.NoPackageAnalysis = false;
+        this.Files = null;
+        this.BasePath = _config.ProjectInfo.Workspace + "/bin/" + _config.MSBuildInfo.MsBuildConfig() + "/";
+        this.OutputDirectory = _config.ProjectInfo.Workspace;
+
+        this.IncludeReferencedProjects = true;
     }
 
-    private ICakeContext Context { get; set; }
-    private CakeConfig Config { get; set; }
-    public string nugetServerURL = this.Config.ConfigurableSettings.NugetServer ?? "nuget.org";
-    public string nugetAPIKey { get { return Context.EnvironmentVariable("NUGET_APIKEY"); } }
-    public DirectoryPath packagesDirectory { get { return Context.MakeAbsolute(Context.Directory("../packages")); } }
+    private ICakeContext _context { get; set; }
+
+    private CakeConfig _config { get; set; }
+
+    public string ApiKey { get { return _context.EnvironmentVariable("NUGET_APIKEY"); } }
+
+    public DirectoryPath PackagesDirectory { get { return _context.MakeAbsolute(_context.Directory("../packages")); } }
+
+    public string Server { get; set; }
+
+    public string ServerFeed { get; set; }
+    
+    public string PackPath { get; set; }
+
+    public bool CreateNugetPackage { get; set; }
 
     // Nuspec Settings
-    public string nugetTitle = this.Config.ConfigurableSettings.NugetTitle ?? "A Standard Dot Package";
-    public List<string> nugetAuthors = new List<string>(){ this.Config.ConfigurableSettings.NugetAuthor ?? "Standard Dot" };
-    public List<string> nugetOwners = new List<string>(){ this.Config.ConfigurableSettings.NugetOwner ?? "Standard Dot" };
-    public string nugetDescription = this.Config.ConfigurableSettings.NugetDescription ?? "Unknown";
-    public string nugetSummary = this.Config.ConfigurableSettings.NugetSummary ?? "Unknown";
-    public bool nugetIncludeReferencedProjects = true;
-    public Uri nugetIconUrl = new Uri(this.Config.ConfigurableSettings.NugetIconUrl ??
-        "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/NuGet_project_logo.svg/220px-NuGet_project_logo.svg.png");
+    public string Id { get; set; }
+
+    public string Version { get; set; }
+
+    public string Title { get; set; }
+
+    public IEnumerable<string> Authors { get; set; }
+
+    public IEnumerable<string> Owners { get; set; }
+
+    public string Description { get; set; }
+
+    public string Summary { get; set; }
+
+    public Uri ProjectUrl { get; set; }
+
+    public Uri IconUrl { get; set; }
+
+    public Uri LicenseUrl { get; set; }
+
+    public string Copyright { get; set; }
+
+    public IEnumerable<string> ReleaseNotes { get; set; }
+
+    public IEnumerable<string> Tags { get; set; }
+
+    public bool RequireLicenseAcceptance { get; set; }
+
+    public bool Symbols { get; set; }
+
+    public bool NoPackageAnalysis { get; set; }
+
+    public IEnumerable<NuSpecContent> Files { get; set; }
+
+    public string BasePath { get; set; }
+
+    public string OutputDirectory { get; set; }
+
+    public bool IncludeReferencedProjects { get; set; }
 }

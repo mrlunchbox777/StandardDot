@@ -17,8 +17,8 @@
 Task("Bake-Cake")
     .IsDependentOn("Setup-Environment")
     .IsDependentOn("StartingUpNotification")    
-    // .IsDependentOn("Build-Unit-Tests")
-    // .IsDependentOn("Run-Unit-Tests")
+    .IsDependentOn("Build-Unit-Tests")
+    .IsDependentOn("Run-Unit-Tests")
     // .IsDependentOn("Start-SonarQube")
     // .IsDependentOn("TypeScriptCompile")   
     // .IsDependentOn("SassCompile")   
@@ -26,63 +26,46 @@ Task("Bake-Cake")
     // .IsDependentOn("End-SonarQube")
     // .IsDependentOn("Check-Quality-Gate")
     .IsDependentOn("Cleanup-Environment")
-    .IsDependentOn("CopyOutputToLocalDirectory")
-    .IsDependentOn("DeleteRemoteDir")
-    .IsDependentOn("UploadDir")
-    .IsDependentOn("SendAnAirbrakeDeploy")
-    // .IsDependentOn("PackNugetPackage")
-    // .IsDependentOn("DeployNugetPackage")
+    // .IsDependentOn("CopyOutputToLocalDirectory")
+    // .IsDependentOn("DeleteRemoteDir")
+    // .IsDependentOn("UploadDir")
+    // .IsDependentOn("SendAnAirbrakeDeploy")
+    .IsDependentOn("PackNugetPackage")
+    .IsDependentOn("DeployNugetPackage")
 ;
 
 Task("Setup-Environment")
-    .IsDependentOn("CopyWebConfig")
     .Does(() =>
     {
         // setting the build directory
         Config.ConfigurableSettings.LocalCopyTargetDirectory = @"";
         Config.ConfigurableSettings.SpecificWebsiteOutputDir = @"";
 
-        Config.FtpHelper.Host = "";
-        Config.FtpHelper.RemoteDir = "";
-        Config.FtpHelper.Username = "";
-        Config.FtpHelper.SecurePasswordLocation = @"";
-
-        Config.ConfigurableSettings.DoLocalCopyWork = !Config.ProjectInfo.IsProduction;
-        Config.ConfigurableSettings.DoFtpWork = Config.ProjectInfo.IsProduction;
+        Config.ConfigurableSettings.DoLocalCopyWork = false;
+        Config.ConfigurableSettings.DoFtpWork = false;
 
         Config.Slack.SlackChannel = "";
-        Config.Slack.PostSlackStartAndStop = true;
-        Config.Slack.PostSlackSteps = true;
-        Config.Slack.PostSlackErrors = true;
+        Config.Slack.PostSlackStartAndStop = false;
+        Config.Slack.PostSlackSteps = false;
+        Config.Slack.PostSlackErrors = false;
 
-        Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = true;
+        Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = false;
 
-        Config.Airbrake.ProjectId = "";
-        Config.Airbrake.UserName = "";
-        Config.Airbrake.Email = "";
-        Config.Airbrake.ProjectKey = "";
-        
-        Config.ConfigurableSettings.ApplicationPoolName = "";
-        Config.ConfigurableSettings.ApplicationSiteName = "";
-        Config.ConfigurableSettings.RestartIIS = true;
-        Config.ConfigurableSettings.UseRemoteServer = false;
-        Config.ConfigurableSettings.RemoteIISServerName = "";
-
-        Config.Nuget.CreateNugetPackage = false;
+        Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
         // Config.Nuget.PackPath = "";
-        Config.Nuget.Id = "";
+        Config.Nuget.Id = "StandardDot.Abstract";
         Config.Nuget.Version = "0.0.0.1";
         // Config.Nuget.Title = "";
-        Config.Nuget.Authors = new List<string>() { "" };
-        Config.Nuget.Owners = new List<string>() { "" };
-        Config.Nuget.Description = "";
-        Config.Nuget.Summary = "";
+        Config.Nuget.Authors = new List<string>() { "Andrew Shoell" };
+        Config.Nuget.Owners = new List<string>() { "Andrew Shoell" };
+        Config.Nuget.Description = "Abstractions for the Standard Dot Libraries.";
+        Config.Nuget.Summary = "Abstractions for the Standard Dot Libraries.";
         // Config.Nuget.ProjectUrl = new Uri("");
-        // Config.Nuget.IconUrl = new Uri("");
-        // Config.Nuget.LicenseUrl = new Uri("");
-        Config.Nuget.Copyright = "";
-        Config.Nuget.ReleaseNotes = new List<string>() { "" };
-        Config.Nuget.Tags = new List<string>() { "" };
+        Config.Nuget.IconUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png");
+        Config.Nuget.LicenseUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md");
+        Config.Nuget.Copyright = "Copyright (c) 2018 Andrew Shoell";
+        Config.Nuget.ReleaseNotes = new List<string>() { "Intial Release" };
+        Config.Nuget.Tags = new List<string>() { "Library" };
         Config.Nuget.RequireLicenseAcceptance = false;
         Config.Nuget.Symbols = false;
         Config.Nuget.NoPackageAnalysis = false;
@@ -96,12 +79,8 @@ Task("Setup-Environment")
     });
 
 Task("Cleanup-Environment")
-    .IsDependentOn("RemoveWebConfig")
-    // .IsDependentOn("CopyWebConfigToOutput")
     .Does(() =>
     {
-        Config.CakeMethods.CopyFolderFromProjectRootToOutput(Config, "Content");
-        Config.CakeMethods.CopyFolderFromProjectRootToOutput(Config, "fonts");
         // some cleanup stuff
     });
 

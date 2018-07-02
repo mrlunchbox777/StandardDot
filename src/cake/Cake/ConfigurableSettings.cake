@@ -1,34 +1,28 @@
 public class ConfigurableSettings
 {
     public ConfigurableSettings(ICakeContext context) {
-        this.Context = context;
+        this._context = context;
     }
 
-    private ICakeContext Context { get; set; }
+    private ICakeContext _context { get; set; }
 
-    public string localCopyTargetDirectory { get; set; }
+    public bool DoLocalCopyWork { get; set; }
 
-    public string specificWebsiteOutputDir { get; set; }
+    public bool DeleteLocalCopyDirBeforeCopy { get; set; }
 
-    public string ftpHost { get; set; }
+    public bool DoFtpWork { get; set; }
 
-    public string ftpRemoteDir { get; set; }
-    
-    public string ftpUsername { get; set; }
+    public string LocalCopyTargetDirectory { get; set; }
 
-    public string ftpSecurePasswordLocation { get; set; }
+    public string SpecificWebsiteOutputDir { get; set; }
 
-    public string NugetAuthor { get; set; }
+    public bool RestartIIS { get; set; }
 
-    public string NugetOwner { get; set; }
+    public bool UseRemoteServer { get; set; }
 
-    public string NugetServer { get; set; }
+    public string RemoteIISServerName { get; set; }
 
-    public string NugetTitle { get; set; }
+    public string ApplicationPoolName { get; set; }
 
-    public string NugetDescription { get; set; }
-
-    public string NugetSummary { get; set; }
-
-    public string NugetIconUrl { get; set; }
+    public string ApplicationSiteName { get; set; }
 }

@@ -17,6 +17,8 @@
 #addin "nuget:?package=NuGet.Core"
 // #addin Cake.Ftp
 #addin "nuget:?package=FluentFTP"
+#addin "Cake.Slack"
+#addin "Cake.Http"
 
 // Install tools. We aren't running tests right now
 //#tool "nuget:?package=xunit.runner.console&version=2.1.0"
@@ -42,25 +44,36 @@ using System.Security;
 // SETUP / TEARDOWN
 ///////////////////////////////////////////////////////////////////////////////
 
-public CakeConfig cakeConfig;
+public CakeConfig Config;
+private string _nugetInfo;
+private string _slackInfo;
 
-bool? StepUpADirectoryInConfigureSpace = null;
+private bool? _stepUpADirectoryInConfigureSpace = null;
 
 Setup(context =>
 {
     bool stepUpADirectoryInConfigureSpace = true;
     try {
-        if ((((bool?)StepUpADirectoryInConfigureSpace) != default(bool?)) && ((bool)(StepUpADirectoryInConfigureSpace ?? true) == default(bool))){
-            stepUpADirectoryInConfigureSpace = (bool)StepUpADirectoryInConfigureSpace;
+        if ((((bool?)_stepUpADirectoryInConfigureSpace) != default(bool?)) && ((bool)(_stepUpADirectoryInConfigureSpace ?? true) == default(bool))){
+            stepUpADirectoryInConfigureSpace = (bool)_stepUpADirectoryInConfigureSpace;
         }
     } catch (Exception) {}
     Information("Step up a directory in configure space = " + stepUpADirectoryInConfigureSpace);
     // Do init here
-    cakeConfig = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
-    string nugetInfo = ("Building || " + (!string.IsNullOrEmpty(cakeConfig.Nuget.nugetDescription) ? cakeConfig.Nuget.nugetDescription : "Didn't work"));
+    Config = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
+    _nugetInfo = ((!string.IsNullOrEmpty(Config.Nuget.Description) ? Config.Nuget.Description : "Didn't work"));
+    _slackInfo = (Config.ProjectInfo.EnvironmentName) + " Deploy - " + Config.ProjectInfo.ProjectName + ". Other Info - " + _nugetInfo;
     Information("--------------------------------------------------------------------------------");
-    Information("BUILD info = " + nugetInfo + " version - " + cakeConfig.ProjectInfo.projectVersion + ".");
+    Information("BUILD info = " + _nugetInfo + " version - " + Config.Nuget.Version + ".");
     Information("--------------------------------------------------------------------------------");
+});
+
+Teardown(context =>
+{
+    if (Config.Slack.PostSlackStartAndStop)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Finished " + _slackInfo);
+    }
 });
 
 //////////////////////////////////////////////////////////////////////
@@ -69,38 +82,74 @@ Setup(context =>
 
 
 
+Task("StartingUpNotification")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackStartAndStop)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting " + _slackInfo);
+    }
+
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Failed to send a slack message, is the hook uri correct?",
+            "Failed to send a slack message, is slack down?"
+        },
+        true
+        );
+});
+
+
+
 //////////////////////////////////////////////////////////////////////
 // LOCAL COPY
 //////////////////////////////////////////////////////////////////////
 
-// make sure to set this in your cakeConfig.ConfigurableSettings
-// cakeConfig.ConfigurableSettings.localCopyTargetDirectory = "";
-// cakeConfig.ConfigurableSettings.specificWebsiteOutputDir = ""
+// make sure to set this in your Config.ConfigurableSettings
+// Config.ConfigurableSettings.LocalCopyTargetDirectory = "";
+// Config.ConfigurableSettings.SpecificWebsiteOutputDir = ""
 
 Task("CopyOutputToLocalDirectory")
     .Does(() =>
 {
-    if (string.IsNullOrWhiteSpace(cakeConfig.ConfigurableSettings.localCopyTargetDirectory))
+    if (Config.Slack.PostSlackSteps)
     {
-        throw new CakeException("No local copy target directory variable set. Please set - 'cakeConfig.ConfigurableSettings.localCopyTargetDirectory' - in your build.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Copy Output To Local Directory.");
     }
-    string sourceDir = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir;
+    if (!Config.ConfigurableSettings.DoLocalCopyWork)
+    {
+        return;
+    }
+    if (string.IsNullOrWhiteSpace(Config.ConfigurableSettings.LocalCopyTargetDirectory))
+    {
+        throw new CakeException("No local copy target directory variable set. Please set - 'Config.ConfigurableSettings.localCopyTargetDirectory' - in your build.");
+    }
+    if (Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy && DirectoryExists(Config.ConfigurableSettings.LocalCopyTargetDirectory))
+    {
+        DeleteDirectory(Config.ConfigurableSettings.LocalCopyTargetDirectory, true);
+    }
+    EnsureDirectoryExists(Config.ConfigurableSettings.LocalCopyTargetDirectory);
+    string sourceDir = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.ConfigurableSettings.SpecificWebsiteOutputDir;
     Information("--------------------------------------------------------------------------------");
     Information("Starting Local Copy");
     Information("--------------------------------------------------------------------------------");
-    CopyDirectory(sourceDir, cakeConfig.ConfigurableSettings.localCopyTargetDirectory);
+    CopyDirectory(sourceDir, Config.ConfigurableSettings.LocalCopyTargetDirectory);
     Information("--------------------------------------------------------------------------------");
     Information("Local Copy Complete");
     Information("--------------------------------------------------------------------------------");
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure the project built correctly",
             "Ensure no files are locked",
-            "Ensure 'cakeConfig.ConfigurableSettings.localCopyTargetDirectory' is set in the cakeConfig.ConfigurableSettings"
+            "Ensure 'Config.ConfigurableSettings.LocalCopyTargetDirectory' is set in the Config.ConfigurableSettings"
         },
         true
         );
@@ -111,26 +160,47 @@ Task("CopyOutputToLocalDirectory")
 // FTP COPY
 //////////////////////////////////////////////////////////////////////
 
-// make sure to set this in your cakeConfig.ConfigurableSettings
-// cakeConfig.ConfigurableSettings.ftpHost = "";
-// cakeConfig.ConfigurableSettings.ftpRemoteDir = ""
-// cakeConfig.ConfigurableSettings.ftpUsername = ""
-// cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation = ""
+// make sure to set this in your Config.ConfigurableSettings
+// Config.FtpHelper.Host = "";
+// Config.FtpHelper.RemoteDir = ""
+// Config.FtpHelper.Username = ""
+// Config.FtpHelper.SecurePasswordLocation = ""
 
 Task("DeleteRemoteDir")
   .Does(() => {
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Delete Remote Directory.");
+    }
+    if (!Config.ConfigurableSettings.DoFtpWork)
+    {
+        return;
+    }
     Information("--------------------------------------------------------------------------------");
     Information("Deleting the remote directory");
     Information("--------------------------------------------------------------------------------");
-    FtpClient client = new FtpClient(cakeConfig.ConfigurableSettings.ftpHost);
-    var secure = new SecureString();
-    foreach (char c in System.IO.File.ReadAllText(cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation))
-    {
-        secure.AppendChar(c);
-    }
-    client.Credentials = new NetworkCredential(cakeConfig.ConfigurableSettings.ftpUsername, secure);
+    FtpClient client = new FtpClient(Config.FtpHelper.Host);
+    var secure = Config.FtpHelper.DecryptPassword(Config.FtpHelper.SecurePasswordLocation, Config.FtpHelper.AesKey);
+    client.Credentials = new NetworkCredential(Config.FtpHelper.Username, secure);
+    client.SocketPollInterval = Config.FtpHelper.SocketPollInterval;
+    client.ConnectTimeout = Config.FtpHelper.ConnectTimeout;
+    client.ReadTimeout = Config.FtpHelper.ReadTimeout;
+    client.DataConnectionConnectTimeout = Config.FtpHelper.DataConnectionConnectTimeout;
+    client.DataConnectionReadTimeout = Config.FtpHelper.DataConnectionReadTimeout;
+    client.RetryAttempts = Config.FtpHelper.DeleteRetryAttempts;
     client.Connect();
-    client.DeleteDirectory(cakeConfig.ConfigurableSettings.ftpRemoteDir);
+    try
+    {
+        client.DeleteDirectory(Config.FtpHelper.RemoteDir, FtpListOption.AllFiles);
+    } catch (FluentFTP.FtpCommandException ex)
+    {
+        // if we couldn't find it, that's ok
+        if (!ex.Message.Contains("cannot find the"))
+        {
+            client.Disconnect();
+            throw;
+        }
+    }
     client.Disconnect();
     Information("--------------------------------------------------------------------------------");
     Information("Deleted the remote directory");
@@ -138,12 +208,12 @@ Task("DeleteRemoteDir")
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure the project built correctly",
             "Ensure no files are locked",
-            "Ensure 'cakeConfig.ConfigurableSettings.ftpRemoteDir' is set in the cakeConfig.ConfigurableSettings"
+            "Ensure 'Config.FtpHelper.RemoteDir' is set in the Config.FtpHelper"
         },
         true
         );
@@ -151,20 +221,35 @@ Task("DeleteRemoteDir")
 
 Task("UploadDir")
   .Does(() => {
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting FTP Upload.");
+    }
+    if (!Config.ConfigurableSettings.DoFtpWork)
+    {
+        return;
+    }
     Information("--------------------------------------------------------------------------------");
     Information("Uploading a directory");
     Information("--------------------------------------------------------------------------------");
-    string sourceDir = cakeConfig.ProjectInfo.FlattenOutputDirectory + "\\" + cakeConfig.ConfigurableSettings.specificWebsiteOutputDir;
-    FtpClient client = new FtpClient(cakeConfig.ConfigurableSettings.ftpHost);
-    var secure = new SecureString();
-    foreach (char c in System.IO.File.ReadAllText(cakeConfig.ConfigurableSettings.ftpSecurePasswordLocation))
-    {
-        secure.AppendChar(c);
-    }
-    client.Credentials = new NetworkCredential(cakeConfig.ConfigurableSettings.ftpUsername, secure);
+    string sourceDir = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.FtpHelper.SpecificWebsiteOutputDir;
+    FtpClient client = new FtpClient(Config.FtpHelper.Host);
+    var secure = Config.FtpHelper.DecryptPassword(Config.FtpHelper.SecurePasswordLocation, Config.FtpHelper.AesKey);
+    client.Credentials = new NetworkCredential(Config.FtpHelper.Username, secure);
+    client.SocketPollInterval = Config.FtpHelper.SocketPollInterval;
+    client.ConnectTimeout = Config.FtpHelper.ConnectTimeout;
+    client.ReadTimeout = Config.FtpHelper.ReadTimeout;
+    client.DataConnectionConnectTimeout = Config.FtpHelper.DataConnectionConnectTimeout;
+    client.DataConnectionReadTimeout = Config.FtpHelper.DataConnectionReadTimeout;
+    client.RetryAttempts = Config.FtpHelper.UploadRetryAttempts;
     client.Connect();
-    client.RetryAttempts = 3;
-    cakeConfig.CakeMethods.UploadDirectory(cakeConfig, client, sourceDir, sourceDir);
+    try
+    {
+        Config.CakeMethods.UploadDirectory(Config, client, sourceDir, sourceDir);
+    } catch (Exception)
+    {
+        client.Disconnect();
+    }
     client.Disconnect();
     Information("--------------------------------------------------------------------------------");
     Information("Uploaded a directory");
@@ -172,12 +257,58 @@ Task("UploadDir")
 })
     .ReportError(exception =>
 {
-    cakeConfig.DispalyException(
+    Config.DispalyException(
         exception,
         new string[] {
             "Ensure the project built correctly",
             "Ensure no files are locked",
-            "Ensure 'cakeConfig.ConfigurableSettings.ftpRemoteDir' is set in the cakeConfig.ConfigurableSettings"
+            "Ensure 'Config.FtpHelper.RemoteDir' is set in the Config.FtpHelper"
+        },
+        true
+        );
+});
+
+//////////////////////////////////////////////////////////////////////
+// Airbrake Deploy
+//////////////////////////////////////////////////////////////////////
+
+Task("SendAnAirbrakeDeploy")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Send An Airbrake Deploy.");
+    }
+
+    Information("--------------------------------------------------------------------------------");
+    Information("Starting Send An Airbrake Deploy");
+    Information("--------------------------------------------------------------------------------");
+    var settings = new HttpSettings
+    {
+        Headers = new Dictionary<string, string>
+        {
+            { "Content-Type", "application/json" }
+        },
+    };
+    settings.SetRequestBody("{\"environment\":\"" + Config.ProjectInfo.EnvironmentName + "\",\"username\":\""
+        + Config.Airbrake.UserName + "\",\"email\":\"" + Config.Airbrake.Email + "\","
+        + "\"repository\":\"" + EnvironmentVariable("CI_REPOSITORY_URL") + "/" + EnvironmentVariable("CI_COMMIT_REF_NAME") + "\",\"revision\":\""
+        + EnvironmentVariable("CI_COMMIT_SHA") + "\",\"version\":\"v2.0\"}");
+
+    string responseBody = HttpPost("https://airbrake.io/api/v4/projects/" + Config.Airbrake.ProjectId
+        + "/deploys?key=" + Config.Airbrake.ProjectKey, settings);
+    Information("--------------------------------------------------------------------------------");
+    Information("Send An Airbrake Deploy Complete");
+    Information("--------------------------------------------------------------------------------");
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Ensure the project built correctly",
+            "Ensure no files are locked",
+            "Ensure 'Config.ConfigurableSettings.LocalCopyTargetDirectory' is set in the Config.ConfigurableSettings"
         },
         true
         );

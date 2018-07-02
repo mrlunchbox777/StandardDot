@@ -1,73 +1,104 @@
 public class ProjectInfo
 {
-    public ProjectInfo(ICakeContext context, bool StepUpADirectoryInConfigureSpace = false){
-        this.Context = context;
-        this.StepUpADirectoryInConfigureSpace = StepUpADirectoryInConfigureSpace;
-        this.IsProduction = (Context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop") == "master";
+    public ProjectInfo(ICakeContext context, bool stepUpADirectoryInConfigureSpace = false){
+        this._context = context;
+        this._stepUpADirectoryInConfigureSpace = stepUpADirectoryInConfigureSpace;
+        this.IsProduction = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("master");
+        this.IsBeta = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("beta");
+        this.IsQa = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("qa");
+        this.IsIntegration = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("integration");
+        this.IsDevelopment = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("develop");
+        this.IsLocal = !(this.IsProduction || this.IsBeta || this.IsQa
+            || this.IsIntegration || this.IsDevelopment);
     }
 
-    private ICakeContext Context { get; set; }
-
-    public string projectVersion = "1.0.0";
-
-    public bool IsProduction { get; set; }
-
-    bool StepUpADirectoryInConfigureSpace { get; set; }
+    private bool _stepUpADirectoryInConfigureSpace { get; set; }
 
     private FilePath _projectSolution;
 
     private FilePath _csProj;
 
-    public string projectName {
+    private ICakeContext _context { get; set; }
+
+    public bool IsLocal { get; set; }
+
+    public bool IsDevelopment { get; set; }
+
+    public bool IsIntegration { get; set; }
+
+    public bool IsQa { get; set; }
+
+    public bool IsBeta { get; set; }
+
+    public bool IsProduction { get; set; }
+
+    public string EnvironmentName
+    {
         get
         {
-            return Context.EnvironmentVariable("PROJECT_TO_BUILD")
-                ?? Context.EnvironmentVariable("PROJECTNAME")
-                ?? Context.Argument("project", "string")
+            string branchName = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME").Split('/')).Last();
+            if (IsProduction)
+            {
+                return "production";
+            }
+            if (IsLocal)
+            {
+                return "local";
+            } 
+            return branchName;
+        }
+    }
+
+    public string ProjectName {
+        get
+        {
+            return _context.EnvironmentVariable("PROJECT_TO_BUILD")
+                ?? _context.EnvironmentVariable("PROJECTNAME")
+                ?? _context.Argument("project", "string")
                 ?? "BAD";
         }
     }
 
-    public DirectoryPath workspace
+    public DirectoryPath Workspace
     {
         get
         {
-            return Context.HasEnvironmentVariable("WORKSPACE")
-                ? Context.MakeAbsolute(Context.Directory(Context.EnvironmentVariable("WORKSPACE")))
-                : Context.MakeAbsolute(Context.Directory(StepUpADirectoryInConfigureSpace ? "../" : "./"));
+            return _context.HasEnvironmentVariable("WORKSPACE")
+                ? _context.MakeAbsolute(_context.Directory(_context.EnvironmentVariable("WORKSPACE")))
+                : _context.MakeAbsolute(_context.Directory(_stepUpADirectoryInConfigureSpace ? "../" : "./"));
         }
     }
 
-    public DirectoryPath projectDirectory
+    public DirectoryPath ProjectDirectory
     {
         get
         {
-            return Context.DirectoryExists(Context.Directory(workspace + projectName))
-                ? Context.Directory(workspace + projectName)
-                : Context.Environment.WorkingDirectory;
+            return _context.DirectoryExists(_context.Directory(Workspace + ProjectName))
+                ? _context.Directory(Workspace + ProjectName)
+                : _context.Environment.WorkingDirectory;
         }
     }
 
-    public FilePath projectSolution
+    public FilePath ProjectSolution
     {
         get
         {
             if (_projectSolution != null){
                 return _projectSolution;
             }
-            Context.Information("Finding first .sln file");
-            IDirectory directory = Context.FileSystem.GetDirectory(workspace);
-            Context.Information("Using " + directory.Path.FullPath + ".");
+            _context.Information("Finding first .sln file");
+            IDirectory directory = _context.FileSystem.GetDirectory(Workspace);
+            _context.Information("Using " + directory.Path.FullPath + ".");
             IEnumerable<IFile> files = directory.GetFiles("*.sln", SearchScope.Current);
-            Context.Information("Found " + files.Count() + " files.");
+            _context.Information("Found " + files.Count() + " files.");
             FilePath path = files.First().Path;
-            Context.Information("Using " + path.FullPath + ".");
+            _context.Information("Using " + path.FullPath + ".");
             _projectSolution = path;
             return _projectSolution;
         }
     }
 
-    public FilePath projectFile
+    public FilePath ProjectFile
     {
         get
         {
@@ -75,19 +106,19 @@ public class ProjectInfo
             {
                 return _csProj;
             }
-            ConvertableFilePath csproj = Context.File(projectDirectory + "/" + projectName + ".csproj");
-            if (Context.FileExists(csproj.Path))
+            ConvertableFilePath csproj = _context.File(ProjectDirectory + "/" + ProjectName + ".csproj");
+            if (_context.FileExists(csproj.Path))
             {
                 _csProj = csproj.Path;
                 return _csProj;
             }
-            Context.Information("Finding first .csproj file");
-            IDirectory directory = Context.FileSystem.GetDirectory(projectDirectory + "/" );
-            Context.Information("Using " + directory.Path.FullPath + ".");
+            _context.Information("Finding first .csproj file");
+            IDirectory directory = _context.FileSystem.GetDirectory(ProjectDirectory + "/" );
+            _context.Information("Using " + directory.Path.FullPath + ".");
             IEnumerable<IFile> files = directory.GetFiles("*.csproj", SearchScope.Current);
-            Context.Information("Found " + files.Count() + " files.");
+            _context.Information("Found " + files.Count() + " files.");
             FilePath path = files.First().Path;
-            Context.Information("Using " + path.FullPath + ".");
+            _context.Information("Using " + path.FullPath + ".");
             _csProj = path;
             return _csProj;
         }
@@ -97,11 +128,7 @@ public class ProjectInfo
     {
         get
         {
-            return !string.IsNullOrEmpty(Context.EnvironmentVariable("MSBUILDOUTPUTDIR")) ? "\"" + Context.EnvironmentVariable("MSBUILDOUTPUTDIR") + "\"" : @"..\build\output";
+            return !string.IsNullOrEmpty(_context.EnvironmentVariable("MSBUILDOUTPUTDIR")) ? "\"" + _context.EnvironmentVariable("MSBUILDOUTPUTDIR") + "\"" : @"..\build\output";
         }
     }
-
-    public SolutionParserResult parsedSolutionFile;
-
-    public ProjectParserResult parsedProjectFile;
 }
