@@ -253,7 +253,7 @@ findAndRunCakeScript ()
         echo "Can't find cake dir, skipping link"
     fi
 
-    if [! -z "$AdditionalSubDir"]
+    if [ ! -z "$AdditionalSubDir" ]; then
         echo "Adding additional subdirectory to the junction"
         NewCakeDir=$(joinPath "$NewCakeDir" "$AdditionalSubDir")
     fi
