@@ -242,6 +242,11 @@ findAndRunCakeScript ()
         fi
     fi
 
+    if [ ! -z "$AdditionalSubDir" ]; then
+        echo "Adding additional subdirectory to the junction"
+        NewCakeDir=$(joinPath "$NewCakeDir" "$AdditionalSubDir")
+    fi
+
     if [ -d "$CAKEDIR" ]; then
         echo "Creating Symbolic Link (Junction)"
         ln -s "$BaseDirToLink" "$NewCakeDir"
@@ -251,11 +256,6 @@ findAndRunCakeScript ()
         fi
     else
         echo "Can't find cake dir, skipping link"
-    fi
-
-    if [ ! -z "$AdditionalSubDir" ]; then
-        echo "Adding additional subdirectory to the junction"
-        NewCakeDir=$(joinPath "$NewCakeDir" "$AdditionalSubDir")
     fi
 
     if [ ! -d "$NewCakeDir" ]; then
