@@ -231,7 +231,7 @@ findAndRunCakeScript ()
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
     
-    local NewCakeDir="~\devLink"
+    local NewCakeDir="~/devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
             echo "Found a symLink, removing..."
@@ -271,7 +271,7 @@ findAndRunCakeScript ()
 
             # we are going to need this for sonarqube
             #EnsureJava
-            export WORKSPACE="~\devLink"
+            export WORKSPACE="~/devLink"
             Script=$(ls -d1 "$NewCakeDir/*.cake" | head -1)
         else
             echo "Can't find Cakefile for $CakeTarget in $CAKEDIR... Abandoning ship!"
