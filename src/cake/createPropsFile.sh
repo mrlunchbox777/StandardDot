@@ -23,6 +23,10 @@ sudo sh -c "$currentString"
 currentString="sudo echo \"CI_REPOSITORY_URL=${GIT_URL}\" >> /var/lib/jenkins/.standarddotbuild.props"
 sudo sh -c "$currentString"
 
+# Repository URL
+currentString="sudo echo \"AdditionalSubDir=src/\" >> /var/lib/jenkins/.standarddotbuild.props"
+sudo sh -c "$currentString"
+
 # WORKSPACE this is the same for gitlab and jenkins
 
 # These don't need to be set, they have good defaults or other ways they are set
