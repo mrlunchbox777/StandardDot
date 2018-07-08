@@ -306,7 +306,7 @@ findAndRunCakeScript ()
 
     # Start Cake
     echo "Running build script..."# Start Cake
-    exec mono "$CAKE_EXE" $SCRIPT
+    exec mono "$CAKE_EXE" $Script
     LASTEXITCODE="$?"
 
     if [ "$LASTEXITCODE" != 0 ]; then
