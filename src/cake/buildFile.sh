@@ -232,29 +232,30 @@ findAndRunCakeScript ()
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
     
-    local NewCakeDir="/devLink"
-    if [ -d "$NewCakeDir" ]; then
-        if [ -L "$NewCakeDir" ]; then
-            echo "Found a symbolic link, removing..."
-            rm "$NewCakeDir"
-        else
-            echo "Found a folder, removing..."
-            rmdir "$NewCakeDir"
-        fi
-    fi
+    # local NewCakeDir="/devLink"
+    # if [ -d "$NewCakeDir" ]; then
+    #     if [ -L "$NewCakeDir" ]; then
+    #         echo "Found a symbolic link, removing..."
+    #         rm "$NewCakeDir"
+    #     else
+    #         echo "Found a folder, removing..."
+    #         rmdir "$NewCakeDir"
+    #     fi
+    # fi
+    local NewCakeDir="$BaseDirToLink"
 
-    if [ -d "$CAKEDIR" ]; then
-        echo "Creating Link - $NewCakeDir -> $BaseDirToLink"
-        ln -s "$BaseDirToLink" "$NewCakeDir"
-    else
-        echo "Can't find cake dir, skipping link"
-    fi
+    # if [ -d "$CAKEDIR" ]; then
+    #     echo "Creating Link - $NewCakeDir -> $BaseDirToLink"
+    #     ln -s "$BaseDirToLink" "$NewCakeDir"
+    # else
+    #     echo "Can't find cake dir, skipping link"
+    # fi
 
-    if [ ! -d "$NewCakeDir" ]; then
-        echo "Creating link $NewCakeDir didn't work...."
-    else
-        echo "Creating link successful - $NewCakeDir"
-    fi
+    # if [ ! -d "$NewCakeDir" ]; then
+    #     echo "Creating link $NewCakeDir didn't work...."
+    # else
+    #     echo "Creating link successful - $NewCakeDir"
+    # fi
 
     if [ ! -z "$AdditionalSubDir" ]; then
         echo "Adding additional subdirectory to the junction"
