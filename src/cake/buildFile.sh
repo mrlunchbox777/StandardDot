@@ -3,7 +3,8 @@ joinPath()
 {
     local BASEPATH="$1"
     local SUBDIR="$2"
-    echo ${BASEPATH%%+(/)}${BASEPATH:+/}$SUBDIR
+    parts=("$BASEPATH" "$SUBDIR");
+    printf '/%s' "${parts[@]%/}"
 }
 
 # Define default arguments.
