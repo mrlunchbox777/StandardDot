@@ -176,7 +176,7 @@ startRunning()
         for thing in $allDiffs; do
             # Gets every file from commit and adds it to $diff
             echo "adding a diff $thing"
-            diff+=$thing
+            diff+=("$thing")
         done
     else
         echo "Found no git commits, running $CakeTarget work."
@@ -197,7 +197,7 @@ startRunning()
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
-            PROJECTNAME="${ADDR[0]}"
+            PROJECTNAME="${ADDR[-2]}"
             if [ $(containsElement "$PROJECTNAME" "$alreadyBuilt") ]; then
                 continue
             else
@@ -212,7 +212,7 @@ startRunning()
     if [ -z "$CI_COMMIT_SHA" ]; then
         ADDR=()
         IFS='/' read -ra ADDR <<< "$change"
-        PROJECTNAME="${ADDR[-1]}"
+        PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
         findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
     fi
