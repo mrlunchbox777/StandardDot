@@ -235,7 +235,7 @@ findAndRunCakeScript ()
     local NewCakeDir="~/devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
-            echo "Found a link, removing..."
+            echo "Found a symbolic link, removing..."
             rm "$NewCakeDir"
         else
             echo "Found a folder, removing..."
@@ -245,7 +245,7 @@ findAndRunCakeScript ()
 
     if [ -d "$CAKEDIR" ]; then
         echo "Creating Link - $NewCakeDir -> $BaseDirToLink"
-        ln "$BaseDirToLink" "$NewCakeDir"
+        ln -s "$BaseDirToLink" "$NewCakeDir"
     else
         echo "Can't find cake dir, skipping link"
     fi
