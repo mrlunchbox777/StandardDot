@@ -242,15 +242,10 @@ findAndRunCakeScript ()
         fi
     fi
 
-    if [ ! -z "$AdditionalSubDir" ]; then
-        echo "Adding additional subdirectory to the junction"
-        NewCakeDir=$(joinPath "$NewCakeDir" "$AdditionalSubDir")
-    fi
-
-    if [ -d "$CAKEDIR" ]; then
+    if [ -d "$NewCakeDir" ]; then
         echo "Creating Symbolic Link (Junction)"
         ln -s "$BaseDirToLink" "$NewCakeDir"
-        if [ ! "$BaseDirToLink" -ef "$CAKEDIR" ]; then
+        if [ ! "$BaseDirToLink" -ef "$NewCakeDir" ]; then
             echo "Adding the project directory to the junction cake dir"
             NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
         fi
@@ -264,23 +259,34 @@ findAndRunCakeScript ()
         echo "Creating link successful - $NewCakeDir"
     fi
 
-    cakeFileCount=$(ls "$PSScriptRoot" | grep ".cake" -c)
+    if [ ! -z "$AdditionalSubDir" ]; then
+        echo "Adding additional subdirectory to the junction"
+        NewCakeDir=$(joinPath "$NewCakeDir" "$AdditionalSubDir")
+    fi
+
+    if [ ! -d "$NewCakeDir" ]; then
+        echo "Unable to find project subdir"
+    else
+        echo "Found the project subdir"
+    fi
+
+    cakeFileCount=$(ls "$NewCakeDir" | grep ".cake" -c)
     if [ -d "$NewCakeDir" ] && [ "$cakeFileCount" -gt 0 ]; then
         if [ -n "$CakeTarget" ] || [ "$CakeTarget" =~ "Build" ]; then
-            echo "Looking for Build.Cake in $CAKEDIR"
+            echo "Looking for Build.Cake in $NewCakeDir"
 
             # we are going to need this for sonarqube
             #EnsureJava
             export WORKSPACE="~/devLink"
             Script=$(ls -d1 "$NewCakeDir/*.cake" | head -1)
         else
-            echo "Can't find Cakefile for $CakeTarget in $CAKEDIR... Abandoning ship!"
+            echo "Can't find Cakefile for $CakeTarget in $NewCakeDir... Abandoning ship!"
             return
         fi
     fi
 
     if [ -z "$Script" ]; then
-        echo "Can't find Cakefile in $CAKEDIR... Abandoning ship!"
+        echo "Can't find Cakefile in $NewCakeDir... Abandoning ship!"
         return
     fi
 
