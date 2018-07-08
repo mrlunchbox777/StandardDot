@@ -232,7 +232,7 @@ findAndRunCakeScript ()
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
     
-    local NewCakeDir="~/devLink"
+    local NewCakeDir="/devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
             echo "Found a symbolic link, removing..."
