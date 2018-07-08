@@ -268,7 +268,7 @@ findAndRunCakeScript ()
         echo "Found the addtionsal sub dir"
     fi
 
-    if [ ! "$BaseDirToLink" -ef "$NewCakeDir" ]; then
+    if [ "$AddProjectDir" = true ]; then
         echo "Adding the project directory ($PROJECTNAME) to the junction cake dir"
         NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
     fi
