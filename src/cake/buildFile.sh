@@ -299,12 +299,14 @@ findAndRunCakeScript ()
         return
     fi
 
+    Script=$(joinPath "$NewCakeDir" "$Script")
+
     echo "Preparing to run build script at $Script..."
     EnsureNugetAndCake
 
     # Start Cake
     echo "Running build script..."# Start Cake
-    exec mono "$CAKE_EXE" $SCRIPT "${CAKE_ARGUMENTS[@]}"
+    exec mono "$CAKE_EXE" $SCRIPT
     LASTEXITCODE="$?"
 
     if [ "$LASTEXITCODE" != 0 ]; then
