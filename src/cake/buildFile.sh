@@ -287,7 +287,7 @@ findAndRunCakeScript ()
             # we are going to need this for sonarqube
             #EnsureJava
             export WORKSPACE="~/devLink"
-            Script=$(ls -d1 "$NewCakeDir/*.cake" | head -1)
+            Script=$(ls "$NewCakeDir" | grep ".cake" | head -1)
         else
             echo "Can't find Cakefile for $CakeTarget in $NewCakeDir... Abandoning ship!"
             return
