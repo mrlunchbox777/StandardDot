@@ -235,7 +235,7 @@ findAndRunCakeScript ()
     local NewCakeDir="~/devLink"
     if [ -d "$NewCakeDir" ]; then
         if [ -L "$NewCakeDir" ]; then
-            echo "Found a symLink, removing..."
+            echo "Found a link, removing..."
             rm "$NewCakeDir"
         else
             echo "Found a folder, removing..."
@@ -244,8 +244,8 @@ findAndRunCakeScript ()
     fi
 
     if [ -d "$CAKEDIR" ]; then
-        echo "Creating Symbolic Link (Junction) - $NewCakeDir -> $BaseDirToLink"
-        ln -s "$BaseDirToLink" "$NewCakeDir"
+        echo "Creating Link - $NewCakeDir -> $BaseDirToLink"
+        ln "$BaseDirToLink" "$NewCakeDir"
     else
         echo "Can't find cake dir, skipping link"
     fi
@@ -268,7 +268,7 @@ findAndRunCakeScript ()
     fi
 
     if [ ! "$BaseDirToLink" -ef "$NewCakeDir" ]; then
-        echo "Adding the project directory to the junction cake dir"
+        echo "Adding the project directory ($PROJECTNAME) to the junction cake dir"
         NewCakeDir=$(joinPath "$NewCakeDir" "$PROJECTNAME")
     fi
 
