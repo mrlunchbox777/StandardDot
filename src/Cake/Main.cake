@@ -52,6 +52,10 @@ private bool? _stepUpADirectoryInConfigureSpace = null;
 
 Setup(context =>
 {
+    if (context == null)
+    {
+        throw new InvalidOperationException("Context is null.");
+    }
     bool stepUpADirectoryInConfigureSpace = true;
     try {
         if ((((bool?)_stepUpADirectoryInConfigureSpace) != default(bool?)) && ((bool)(_stepUpADirectoryInConfigureSpace ?? true) == default(bool))){
@@ -60,9 +64,9 @@ Setup(context =>
     } catch (Exception) {}
     Information("Step up a directory in configure space = " + stepUpADirectoryInConfigureSpace);
     // Do init here
-    this.Config = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
-    this._nugetInfo = ((!string.IsNullOrEmpty(Config.Nuget.Description) ? Config.Nuget.Description : "Didn't work"));
-    this._slackInfo = (Config.ProjectInfo.EnvironmentName) + " Deploy - " + Config.ProjectInfo.ProjectName + ". Other Info - " + _nugetInfo;
+    Config = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
+    _nugetInfo = ((!string.IsNullOrEmpty(Config.Nuget.Description) ? Config.Nuget.Description : "Didn't work"));
+    _slackInfo = (Config.ProjectInfo.EnvironmentName) + " Deploy - " + Config.ProjectInfo.ProjectName + ". Other Info - " + _nugetInfo;
     Information("--------------------------------------------------------------------------------");
     Information("BUILD info = " + _nugetInfo + " version - " + Config.Nuget.Version + ".");
     Information("--------------------------------------------------------------------------------");
