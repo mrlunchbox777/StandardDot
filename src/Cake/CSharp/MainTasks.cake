@@ -33,10 +33,11 @@ Task("Restore-CSharp-Nuget-Packages")
             }})
         .Execute(()=> {
             NuGetRestore(Config.ProjectInfo.ProjectSolution, new NuGetRestoreSettings {
-                // this is causing issues
-                // Source = new List<string> {
-                //     Config.Nuget.Server
-                // },
+                Source = (string.IsNullOrWhiteSpace(Config.Nuget.Server)
+                    ? null
+                    : new List<string> {
+                    Config.Nuget.Server
+                }),
                 ToolTimeout = TimeSpan.FromMinutes(toolTimeout),
                 PackagesDirectory = Config.Nuget.PackagesDirectory
             });
@@ -73,7 +74,6 @@ Task("Build-Project")
             .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
             .WithProperty("PipelineDependsOnBuild", "false")
             .WithProperty("OutputPath", Config.ProjectInfo.FlattenOutputDirectory)
-            .WithProperty("ExcludeFilesFromDeployment", "\"**\\*.svn\\**\\*.*;Web.*.config;*.cs;*\\*.cs;*\\*\\*.cs;*\\*\\*\\*.cs;*.csproj\"")
             .UseToolVersion(MSBuildToolVersion.Default)
             .SetVerbosity(Verbosity.Minimal)
             .SetMaxCpuCount(1));
