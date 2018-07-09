@@ -6,6 +6,12 @@ using System.Globalization;
 
 public class FtpHelper
 {
+    public FtpHelper(ICakeContext context) {
+        this._context = context;
+    }
+
+    private ICakeContext _context;
+
     public string Host { get; set; }
 
     public string RemoteDir { get; set; }
@@ -14,7 +20,7 @@ public class FtpHelper
 
     public string SecurePasswordLocation { get; set; }
 
-    public byte[] AesKey => System.Convert.FromBase64String(Context.EnvironmentVariable("FTPAesKey"));
+    public byte[] AesKey => System.Convert.FromBase64String(_context.EnvironmentVariable("FTPAesKey"));
 
     public int DeleteRetryAttempts { get; set; }
 

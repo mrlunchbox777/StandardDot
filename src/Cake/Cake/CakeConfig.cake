@@ -17,12 +17,12 @@ public class CakeConfig
         CakeMethods = new CakeMethods(context);
         Slack = new CustomSlack(context);
         Airbrake = new Airbrake(context);
-        FtpHelper = new FtpHelper();
+        FtpHelper = new FtpHelper(context);
         if (getNuget){
-            Nuget = new Nuget(context);
+            Nuget = new Nuget(context, this);
         }
         if (handleUnitTests){
-            UnitTests = new UnitTests(context, ProjectInfo.ProjectName.ToString(), ProjectInfo.ProjectDirectory.ToString());
+            UnitTests = new UnitTests(context, this);
         }
         MSBuildInfo = new MSBuildInfo(context);
 
