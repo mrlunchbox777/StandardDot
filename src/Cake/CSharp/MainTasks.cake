@@ -542,27 +542,27 @@ Task("PackNugetPackage")
         Id                          = Config.Nuget.Id ?? "TestNuget",
         Version                     = Config.Nuget.Version ?? "0.0.0.1",
         Title                       = Config.Nuget.Title ?? "The tile of the package",
-        Authors                     = Config.Nuget.Authors ?? new[] {"John Doe"},
-        Owners                      = Config.Nuget.Owners ?? new[] {"Contoso"},
+        Authors                     = (Config.Nuget.Authors ?? new[] {"John Doe"}).ToList(),
+        Owners                      = (Config.Nuget.Owners ?? new[] {"Contoso"}).ToList(),
         Description                 = Config.Nuget.Description ?? "The description of the package",
         Summary                     = Config.Nuget.Summary ?? "Excellent summary of what the package does",
         ProjectUrl                  = Config.Nuget.ProjectUrl ?? new Uri("https://github.com/SomeUser/TestNuget/"),
         IconUrl                     = Config.Nuget.IconUrl ?? new Uri("http://cdn.rawgit.com/SomeUser/TestNuget/master/icons/testnuget.png"),
         LicenseUrl                  = Config.Nuget.LicenseUrl ?? new Uri("https://github.com/SomeUser/TestNuget/blob/master/LICENSE.md"),
         Copyright                   = Config.Nuget.Copyright ?? "Some company 2015",
-        ReleaseNotes                = Config.Nuget.ReleaseNotes ?? new [] {"Bug fixes", "Issue fixes", "Typos"},
-        Tags                        = Config.Nuget.Tags ?? new [] {"Cake", "Script", "Build"},
+        ReleaseNotes                = (Config.Nuget.ReleaseNotes ?? new [] {"Bug fixes", "Issue fixes", "Typos"}).ToList(),
+        Tags                        = (Config.Nuget.Tags ?? new [] {"Cake", "Script", "Build"}).ToList(),
         RequireLicenseAcceptance    = Config.Nuget.RequireLicenseAcceptance,
         Symbols                     = Config.Nuget.Symbols,
         NoPackageAnalysis           = Config.Nuget.NoPackageAnalysis,
-        Files                       = Config.Nuget.Files
+        Files                       = (List<NuSpecContent>)(Config.Nuget.Files
                                         // we want a null here if it is null
                                         // ?? new [] {
                                         //     new NuSpecContent {Source = "bin/TestNuget.dll", Target = "bin"},
                                         // }
-                                        ,
+                                        ),
         BasePath                    = Config.Nuget.BasePath ?? "./src/TestNuget/bin/release",
-        OutputDirectory             = Config.Nuget.OutputDirectory ?? "./nuget"
+        OutputDirectory             = Config.Nuget.OutputDirectory ?? "./nuget",
         IncludeReferencedProjects   = Config.Nuget.IncludeReferencedProjects
     };
 
