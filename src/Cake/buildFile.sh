@@ -233,31 +233,7 @@ findAndRunCakeScript ()
 
     local Script=""
     echo "Looking for a .cake file in $CAKEDIR."
-    
-    # local NewCakeDir="/devLink"
-    # if [ -d "$NewCakeDir" ]; then
-    #     if [ -L "$NewCakeDir" ]; then
-    #         echo "Found a symbolic link, removing..."
-    #         rm "$NewCakeDir"
-    #     else
-    #         echo "Found a folder, removing..."
-    #         rmdir "$NewCakeDir"
-    #     fi
-    # fi
     local NewCakeDir="$BaseDirToLink"
-
-    # if [ -d "$CAKEDIR" ]; then
-    #     echo "Creating Link - $NewCakeDir -> $BaseDirToLink"
-    #     ln -s "$BaseDirToLink" "$NewCakeDir"
-    # else
-    #     echo "Can't find cake dir, skipping link"
-    # fi
-
-    # if [ ! -d "$NewCakeDir" ]; then
-    #     echo "Creating link $NewCakeDir didn't work...."
-    # else
-    #     echo "Creating link successful - $NewCakeDir"
-    # fi
 
     if [ ! -z "$AdditionalSubDir" ]; then
         echo "Adding additional subdirectory to the junction"
@@ -291,7 +267,7 @@ findAndRunCakeScript ()
             export WORKSPACE="~/devLink"
             Script=$(ls "$NewCakeDir" | grep ".cake" | head -1)
             csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
-            if [ "$cakeFileCount" -le 0 ]; then
+            if [ "$csprojFileCount" -le 0 ]; then
                 echo "Found a cake file, but didn't find a csproj"
                 return
             fi
