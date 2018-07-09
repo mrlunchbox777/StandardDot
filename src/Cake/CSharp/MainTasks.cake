@@ -67,6 +67,66 @@ Task("Build-Project")
     }
     if (Config.MSBuildInfo.ShouldFlatten(false))
     {
+        // StartProcess("dotnet");
+        DonNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+            {
+                //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
+                Configuration = "Release",
+                // .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+                // .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
+                // .WithProperty("PipelineDependsOnBuild", "false")
+                OutputDirectory = Config.ProjectInfo.FlattenOutputDirectory
+                // .UseToolVersion(MSBuildToolVersion.Default)
+                // .SetVerbosity(Verbosity.Minimal)
+                // .SetMaxCpuCount(1)
+            });
+    }
+    else
+    {
+        DonNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+            {
+                //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
+                Configuration = Config.MSBuildInfo.MsBuildConfig(false),
+                // .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+                // .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
+                // .UseToolVersion(MSBuildToolVersion.Default)
+                // .SetVerbosity(Verbosity.Minimal)
+                // .SetMaxCpuCount(1)
+            });
+        // MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
+        //     //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
+        //     .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(false))
+        //     .WithProperty("Platform", Config.MSBuildInfo.Platform)        
+        //     .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
+        //     .UseToolVersion(MSBuildToolVersion.Default)
+        //     .SetVerbosity(Verbosity.Minimal)
+        //     .SetMaxCpuCount(1));
+    }
+    
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Check for c# syntax/runtime errors",
+            "Try local compilation",
+            "Ensure the .NET version and packages can be compiled with cake"
+        },
+        true
+        );
+});
+
+Task("Build-Project-MSBuild")
+    .IsDependentOn("Restore-CSharp-NuGet-Packages")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Build Project.");
+    }
+    if (Config.MSBuildInfo.ShouldFlatten(false))
+    {
         MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
             //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
             .SetConfiguration("Release")
