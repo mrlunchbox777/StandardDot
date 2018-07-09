@@ -563,7 +563,7 @@ Task("PackNugetPackage")
                                         ,
         BasePath                    = Config.Nuget.BasePath ?? "./src/TestNuget/bin/release",
         OutputDirectory             = Config.Nuget.OutputDirectory ?? "./nuget"
-        IncludeReferencedProjects   = Config.Nuget.IncludeReferencedProjects;
+        IncludeReferencedProjects   = Config.Nuget.IncludeReferencedProjects
     };
 
     Context.NuGetPack(Config.Nuget.PackPath ?? "./nuspec/TestNuget.nuspec", nuGetPackSettings);
