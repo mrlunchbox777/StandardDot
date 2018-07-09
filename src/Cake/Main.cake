@@ -60,9 +60,9 @@ Setup(context =>
     } catch (Exception) {}
     Information("Step up a directory in configure space = " + stepUpADirectoryInConfigureSpace);
     // Do init here
-    Config = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
-    _nugetInfo = ((!string.IsNullOrEmpty(Config.Nuget.Description) ? Config.Nuget.Description : "Didn't work"));
-    _slackInfo = (Config.ProjectInfo.EnvironmentName) + " Deploy - " + Config.ProjectInfo.ProjectName + ". Other Info - " + _nugetInfo;
+    this.Config = new CakeConfig(context, true, true, stepUpADirectoryInConfigureSpace);
+    this._nugetInfo = ((!string.IsNullOrEmpty(Config.Nuget.Description) ? Config.Nuget.Description : "Didn't work"));
+    this._slackInfo = (Config.ProjectInfo.EnvironmentName) + " Deploy - " + Config.ProjectInfo.ProjectName + ". Other Info - " + _nugetInfo;
     Information("--------------------------------------------------------------------------------");
     Information("BUILD info = " + _nugetInfo + " version - " + Config.Nuget.Version + ".");
     Information("--------------------------------------------------------------------------------");
