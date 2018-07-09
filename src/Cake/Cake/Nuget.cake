@@ -5,12 +5,20 @@ public class Nuget
         this._config = cakeConfig;
 
         string description = ("repo - "
-                                    + (!string.IsNullOrEmpty(this._context.EnvironmentVariable("CI_REPOSITORY_URL")) ? this._context.EnvironmentVariable("CI_REPOSITORY_URL") : "Unknown")
+                                    + (!string.IsNullOrWhiteSpace(this._context.EnvironmentVariable("CI_REPOSITORY_URL"))
+                                        ? this._context.EnvironmentVariable("CI_REPOSITORY_URL")
+                                        : "Unknown")
                                     + ", commit - "
-                                    + (!string.IsNullOrEmpty(this._context.EnvironmentVariable("CI_COMMIT_SHA")) ? this._context.EnvironmentVariable("CI_COMMIT_SHA") : "Unknown")
+                                    + (!string.IsNullOrWhiteSpace(this._context.EnvironmentVariable("CI_COMMIT_SHA"))
+                                        ? this._context.EnvironmentVariable("CI_COMMIT_SHA")
+                                        : "Unknown")
                                     ).ToString();
-        this.Summary = string.IsNullOrWhiteSpace(this.Summary) ? description : this.Summary;
-        this.Description = string.IsNullOrWhiteSpace(this.Description) ? description : this.Description;
+        this.Summary = string.IsNullOrWhiteSpace(this.Summary)
+            ? description
+            : this.Summary;
+        this.Description = string.IsNullOrWhiteSpace(this.Description)
+            ? description
+            : this.Description;
         this.Server = "nuget.org";
         this.ServerFeed = "https://api.nuget.org/v3/index.json";
 
