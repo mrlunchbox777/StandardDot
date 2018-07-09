@@ -33,9 +33,10 @@ Task("Restore-CSharp-Nuget-Packages")
             }})
         .Execute(()=> {
             NuGetRestore(Config.ProjectInfo.ProjectSolution, new NuGetRestoreSettings {
-                Source = new List<string> {
-                    Config.Nuget.Server
-                },
+                // this is causing issues
+                // Source = new List<string> {
+                //     Config.Nuget.Server
+                // },
                 ToolTimeout = TimeSpan.FromMinutes(toolTimeout),
                 PackagesDirectory = Config.Nuget.PackagesDirectory
             });

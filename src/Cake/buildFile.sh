@@ -131,6 +131,9 @@ ensureCakeAndNuget ()
 
 ensureOthers ()
 {
+    # Ensure native nuget
+    apt-get install nuget -y
+    
     # Ensure Java
     apt-get install default-jre -y
 
@@ -294,7 +297,7 @@ findAndRunCakeScript ()
     echo "new path - $PATH"
 
     # Start Cake
-    echo "Running build script..."# Start Cake
+    echo "Running build script..."
     exec mono "$CAKE_EXE" "$Script" -target="Bake-Cake" -configuration="Release" -verbosity="Diagnostic" -experimental="true"
 
     export WORKSPACE="$oldWorkspace"
