@@ -11,23 +11,35 @@
 public class CakeConfig
 {
     public CakeConfig(ICakeContext context, bool getNuget = true, bool handleUnitTests = true, bool stepUpADirectoryInConfigureSpace = false){
+        _context.Information("Creating the configuration"); 
         this._context = context;
+        _context.Information("Added the context"); 
         ProjectInfo = new ProjectInfo(context, stepUpADirectoryInConfigureSpace);
+        _context.Information("Added the default project info"); 
         ConfigurableSettings = new ConfigurableSettings(context);
+        _context.Information("Added the default configurable settings"); 
         CakeMethods = new CakeMethods(context);
+        _context.Information("Added the cake methods"); 
         Slack = new CustomSlack(context);
+        _context.Information("Added the default slack configuration"); 
         Airbrake = new Airbrake(context);
+        _context.Information("Added the default Airbrake configuration"); 
         FtpHelper = new FtpHelper(context);
+        _context.Information("Added the default FtpHelper configuration"); 
         if (getNuget){
             Nuget = new Nuget(context, this);
+            _context.Information("Added the default Nuget configuration"); 
         }
         if (handleUnitTests){
             UnitTests = new UnitTests(context, this);
+            _context.Information("Added the default Unit Test configuration"); 
         }
         MSBuildInfo = new MSBuildInfo(context);
+        _context.Information("Added the default MSBuild Configuration"); 
 
         if (getNuget){
             GetProjectInfo();
+            _context.Information("Got the Project Info based on Nuget"); 
         }
     }
 
