@@ -205,6 +205,8 @@ startRunning()
             fi
 
             findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+        else
+            echo "skipping $diff"
         fi
     done
     
@@ -289,7 +291,7 @@ findAndRunCakeScript ()
             export WORKSPACE="~/devLink"
             Script=$(ls "$NewCakeDir" | grep ".cake" | head -1)
             csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
-            if [ -d "$NewCakeDir" ] && [ "$cakeFileCount" -gt 0 ]; then
+            if [ "$cakeFileCount" -le 0 ]; then
                 echo "Found a cake file, but didn't find a csproj"
                 return
             fi
