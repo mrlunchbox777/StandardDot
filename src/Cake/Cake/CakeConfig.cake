@@ -11,7 +11,7 @@
 public class CakeConfig
 {
     public CakeConfig(ICakeContext context, bool getNuget = true, bool handleUnitTests = true, bool stepUpADirectoryInConfigureSpace = false){
-        _context.Information("Creating the configuration"); 
+        context.Information("Creating the configuration"); 
         this._context = context;
         _context.Information("Added the context"); 
         ProjectInfo = new ProjectInfo(context, stepUpADirectoryInConfigureSpace);
