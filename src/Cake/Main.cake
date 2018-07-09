@@ -72,13 +72,13 @@ Setup(context =>
     Information("--------------------------------------------------------------------------------");
 });
 
-Teardown(context =>
-{
-    if (Config?.Slack?.PostSlackStartAndStop ?? false)
-    {
-        Config.CakeMethods.SendSlackNotification(Config, "Finished " + _slackInfo);
-    }
-});
+// Teardown(context =>
+// {
+//     if (Config?.Slack?.PostSlackStartAndStop ?? false)
+//     {
+//         Config.CakeMethods.SendSlackNotification(Config, "Finished " + _slackInfo);
+//     }
+// });
 
 //////////////////////////////////////////////////////////////////////
 // TASKS
