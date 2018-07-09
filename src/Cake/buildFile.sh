@@ -284,6 +284,7 @@ findAndRunCakeScript ()
     Script=$(joinPath "$NewCakeDir" "$Script")
 
     echo "Preparing to run build script at $Script..."
+    export WORKSPACE="$NewCakeDir"
 
     # Start Cake
     echo "Running build script..."# Start Cake
