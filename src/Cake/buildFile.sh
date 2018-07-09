@@ -288,7 +288,7 @@ findAndRunCakeScript ()
 
     # Start Cake
     echo "Running build script..."# Start Cake
-    exec mono "$CAKE_EXE" "$Script" /target="Bake-Cake" /configuration="Release" /verbosity="Diagnostic" /experimental="true"
+    exec mono "$CAKE_EXE" "$Script" -target="Bake-Cake" -configuration="Release" -verbosity="Diagnostic" -experimental="true"
     LASTEXITCODE="$?"
 
     if [ "$LASTEXITCODE" != 0 ]; then
