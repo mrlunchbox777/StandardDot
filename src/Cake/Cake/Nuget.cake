@@ -14,14 +14,14 @@ public class Nuget
         this.Server = "nuget.org";
         this.ServerFeed = "https://api.nuget.org/v3/index.json";
 
-        this.PackPath = _context.ProjectInfo.ProjectDirectory + "/" + _context.ProjectInfo.ProjectName + ".nuspec";
+        this.PackPath = _config.ProjectInfo.ProjectDirectory + "/" + _config.ProjectInfo.ProjectName + ".nuspec";
 
-        this.Id = _context.ProjectInfo.ProjectName;
+        this.Id = _config.ProjectInfo.ProjectName;
         this.Version = "1.0.0.0";
         this.Title = this.Id;
         this.Authors = new List<string>(){ "Standard Dot" };
         this.Owners = new List<string>(){ "Standard Dot" };
-        this.ProjectUrl = string.IsNullOrWhiteSpace(EnvironmentVariable("CI_REPOSITORY_URL")) ? "" : new Uri(EnvironmentVariable("CI_REPOSITORY_URL"));
+        this.ProjectUrl = string.IsNullOrWhiteSpace(EnvironmentVariable("CI_REPOSITORY_URL")) ? null : new Uri(EnvironmentVariable("CI_REPOSITORY_URL"));
         this.IconUrl = new Uri(
             "https://github.com/mrlunchbox777/StandardDot/blob/master/defaultNugetIcon.png");
         this.LicenseUrl = new Uri("https://github.com/IQAndreas/markdown-licenses/blob/master/mit.md");
@@ -91,7 +91,7 @@ public class Nuget
 
     public string BasePath { get; set; }
 
-    public string OutputDirectory { get; set; }
+    public DirectoryPath OutputDirectory { get; set; }
 
     public bool IncludeReferencedProjects { get; set; }
 }

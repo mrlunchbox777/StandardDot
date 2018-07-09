@@ -288,6 +288,11 @@ findAndRunCakeScript ()
             #EnsureJava
             export WORKSPACE="~/devLink"
             Script=$(ls "$NewCakeDir" | grep ".cake" | head -1)
+            csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
+            if [ -d "$NewCakeDir" ] && [ "$cakeFileCount" -gt 0 ]; then
+                echo "Found a cake file, but didn't find a csproj"
+                return
+            fi
         else
             echo "Can't find Cakefile for $CakeTarget in $NewCakeDir... Abandoning ship!"
             return
