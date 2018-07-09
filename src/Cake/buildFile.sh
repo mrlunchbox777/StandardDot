@@ -21,6 +21,7 @@ TOOLS_DIR="$SCRIPT_DIR/tools"
 ADDINS_DIR="$TOOLS_DIR/Addins"
 MODULES_DIR="$TOOLS_DIR/Modules"
 NUGET_EXE="$TOOLS_DIR/nuget.exe"
+CAKE_DIR="$TOOLS_DIR/Cake"
 CAKE_EXE="$TOOLS_DIR/Cake/Cake.exe"
 PACKAGES_CONFIG="$TOOLS_DIR/packages.config"
 PACKAGES_CONFIG_MD5="$TOOLS_DIR/packages.config.md5sum"
@@ -284,13 +285,19 @@ findAndRunCakeScript ()
     Script=$(joinPath "$NewCakeDir" "$Script")
 
     echo "Preparing to run build script at $Script..."
+
     oldWorkspace="$WORKSPACE"
     export WORKSPACE="$BaseDirToLink"
+    oldPath="$PATH";
+    export PATH=$PATH:"$CAKE_DIR"
 
     # Start Cake
     echo "Running build script..."# Start Cake
     exec mono "$CAKE_EXE" "$Script" -target="Bake-Cake" -configuration="Release" -verbosity="Diagnostic" -experimental="true"
+
     export WORKSPACE="$oldWorkspace"
+    export PATH="$PATH"
+
     LASTEXITCODE="$?"
 
     if [ "$LASTEXITCODE" != 0 ]; then
