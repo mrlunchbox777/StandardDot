@@ -1,7 +1,7 @@
 public class UnitTests
 {
     public UnitTests(ICakeContext context, CakeConfig cakeConfig){
-        this._cakeConfig = cakeConfig
+        this._cakeConfig = cakeConfig;
         this.Context = context;
         this.JsTestPath = "";
         this.MaxQualityGateTimeoutCount = 24;

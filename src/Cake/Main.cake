@@ -232,7 +232,7 @@ Task("UploadDir")
     Information("--------------------------------------------------------------------------------");
     Information("Uploading a directory");
     Information("--------------------------------------------------------------------------------");
-    string sourceDir = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.FtpHelper.SpecificWebsiteOutputDir;
+    string sourceDir = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.ConfigurableSettings.SpecificWebsiteOutputDir;
     FtpClient client = new FtpClient(Config.FtpHelper.Host);
     var secure = Config.FtpHelper.DecryptPassword(Config.FtpHelper.SecurePasswordLocation, Config.FtpHelper.AesKey);
     client.Credentials = new NetworkCredential(Config.FtpHelper.Username, secure);
