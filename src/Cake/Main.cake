@@ -70,7 +70,7 @@ Setup(context =>
 
 Teardown(context =>
 {
-    if (Config.Slack.PostSlackStartAndStop)
+    if (Config?.Slack?.PostSlackStartAndStop ?? false)
     {
         Config.CakeMethods.SendSlackNotification(Config, "Finished " + _slackInfo);
     }
