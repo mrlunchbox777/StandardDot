@@ -21,7 +21,9 @@ public class Nuget
         this.Title = this.Id;
         this.Authors = new List<string>(){ "Standard Dot" };
         this.Owners = new List<string>(){ "Standard Dot" };
-        this.ProjectUrl = string.IsNullOrWhiteSpace(EnvironmentVariable("CI_REPOSITORY_URL")) ? null : new Uri(EnvironmentVariable("CI_REPOSITORY_URL"));
+        this.ProjectUrl = string.IsNullOrWhiteSpace(_context.EnvironmentVariable("CI_REPOSITORY_URL"))
+            ? null
+            : new Uri(_context.EnvironmentVariable("CI_REPOSITORY_URL"));
         this.IconUrl = new Uri(
             "https://github.com/mrlunchbox777/StandardDot/blob/master/defaultNugetIcon.png");
         this.LicenseUrl = new Uri("https://github.com/IQAndreas/markdown-licenses/blob/master/mit.md");
