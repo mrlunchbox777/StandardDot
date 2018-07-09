@@ -2,7 +2,6 @@
 #addin "nuget:?package=NuGet.Core"
 //#addin "Cake.Powershell"
 #addin "Cake.IIS"
-#addin "Cake.DotNetCore"
 #addin "nuget:?package=System.ServiceProcess.ServiceController"
 
 //#tool "nuget:?package=Microsoft.TypeScript.Compiler&version=2.7.2"
@@ -69,7 +68,7 @@ Task("Build-Project")
     if (Config.MSBuildInfo.ShouldFlatten(false))
     {
         // StartProcess("dotnet");
-        DonNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+        DotNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
             {
                 //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
                 Configuration = "Release",
@@ -84,7 +83,7 @@ Task("Build-Project")
     }
     else
     {
-        DonNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+        DotNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
             {
                 //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
                 Configuration = Config.MSBuildInfo.MsBuildConfig(false),
