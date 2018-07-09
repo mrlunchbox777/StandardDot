@@ -68,7 +68,7 @@ Task("Build-Project")
     if (Config.MSBuildInfo.ShouldFlatten(false))
     {
         // StartProcess("dotnet");
-        DotNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+        DotNetCoreBuild(Config.ProjectInfo.ProjectFile.ToString(), new DotNetCoreBuildSettings
             {
                 //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
                 Configuration = "Release",
@@ -83,7 +83,7 @@ Task("Build-Project")
     }
     else
     {
-        DotNetCoreBuild(Config.ProjectInfo.ProjectFile, new DotNetCoreBuildSettings
+        DotNetCoreBuild(Config.ProjectInfo.ProjectFile.ToString(), new DotNetCoreBuildSettings
             {
                 //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
                 Configuration = Config.MSBuildInfo.MsBuildConfig(false),
