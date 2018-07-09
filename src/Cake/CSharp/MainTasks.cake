@@ -2,6 +2,7 @@
 #addin "nuget:?package=NuGet.Core"
 //#addin "Cake.Powershell"
 #addin "Cake.IIS"
+#addin "Cake.DotNetCore"
 #addin "nuget:?package=System.ServiceProcess.ServiceController"
 
 //#tool "nuget:?package=Microsoft.TypeScript.Compiler&version=2.7.2"
