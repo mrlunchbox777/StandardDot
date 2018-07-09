@@ -264,7 +264,6 @@ findAndRunCakeScript ()
 
             # we are going to need this for sonarqube
             #EnsureJava
-            export WORKSPACE="~/devLink"
             Script=$(ls "$NewCakeDir" | grep ".cake" | head -1)
             csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
             if [ "$csprojFileCount" -le 0 ]; then
