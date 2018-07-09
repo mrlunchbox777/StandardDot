@@ -289,7 +289,9 @@ findAndRunCakeScript ()
     oldWorkspace="$WORKSPACE"
     export WORKSPACE="$BaseDirToLink"
     oldPath="$PATH";
+    echo "old path - $oldPath"
     export PATH=$PATH:"$CAKE_DIR"
+    echo "new path - $PATH"
 
     # Start Cake
     echo "Running build script..."# Start Cake
