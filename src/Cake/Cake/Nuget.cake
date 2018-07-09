@@ -19,7 +19,7 @@ public class Nuget
         this.Description = string.IsNullOrWhiteSpace(this.Description)
             ? description
             : this.Description;
-        this.Server = "nuget.org";
+        this.Server = null;
         this.ServerFeed = "https://api.nuget.org/v3/index.json";
 
         this.PackPath = _config.ProjectInfo.ProjectDirectory + "/" + _config.ProjectInfo.ProjectName + ".nuspec";
