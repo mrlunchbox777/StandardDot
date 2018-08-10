@@ -12,6 +12,7 @@ public class UnitTests
         this.UnitTestDirectoryPath = _context.MakeAbsolute(_context.Directory(
                                         _cakeConfig.ProjectInfo.ProjectDirectory + "/../" + UnitTestProjectName
                                     ));
+        _context.Information("Unit Test Path - " + this.UnitTestDirectoryPath);
     }
 
     private CakeConfig _cakeConfig;

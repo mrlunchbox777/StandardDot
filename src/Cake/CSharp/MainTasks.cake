@@ -66,7 +66,7 @@ Task("Raw-Build-Project")
     }
     StartProcess("dotnet",
         " build "
-        + Config.ProjectInfo.ProjectFile.ToString()
+        + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
         + " -c " + Config.MSBuildInfo.MsBuildConfig()
         + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
         + (Config.Nuget.Force ? " --force" : "")
@@ -355,7 +355,7 @@ Task("DotNetCore-Run-Unit-Test")
     {
         StartProcess("dotnet",
             " test "
-            + Config.ProjectInfo.ProjectFile.ToString()
+            + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
             + " -a " + Config.UnitTests.TestAdapterPath
             + (Config.UnitTests.TestBlame ? " --blame" : "")
             + " -c " + Config.MSBuildInfo.MsBuildConfig()
@@ -770,7 +770,7 @@ Task("DotNetCorePackNugetPackage")
 
     StartProcess("dotnet",
         " pack "
-        + Config.ProjectInfo.ProjectFile.ToString()
+        + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
         + (Config.Nuget.Force ? " --force" : "")
         + (Config.Nuget.IncludeSource ? " --include-source" : "")
         + (Config.Nuget.Symbols ? " --include-symbols" : "")
