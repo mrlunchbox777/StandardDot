@@ -7,12 +7,6 @@ public class UnitTests
         this.MaxQualityGateTimeoutCount = 24;
         this.QualityGateSleepLengthPerCount = 5000;
 
-        this.UnitTestProjectName = "" + _cakeConfig.ProjectInfo.ProjectName + "UnitTests";
-        this.XUnitOutputFile = _cakeConfig.ProjectInfo.ProjectDirectory + "/" + UnitTestProjectName + ".dll.xml";
-        this.CoverageReportFilePath = _cakeConfig.ProjectInfo.ProjectDirectory + "/unitTests.xml";
-        this.UnitTestDirectoryPath = _context.MakeAbsolute(_context.Directory(
-                                        _cakeConfig.ProjectInfo.ProjectDirectory + "/../" + UnitTestProjectName
-                                    ));
         _context.Information("Project Name - " + _cakeConfig.ProjectInfo.ProjectName);
         _context.Information("Unit Test Project Name - " + this.UnitTestProjectName);
         _context.Information("Unit Test Path - " + this.UnitTestDirectoryPath);
@@ -24,13 +18,39 @@ public class UnitTests
 
     public string SqAnalysisUrl { get; set; }
     
-    public DirectoryPath UnitTestDirectoryPath { get; set; }
+    public DirectoryPath UnitTestDirectoryPath
+    {
+        get
+        {
+            return _context.MakeAbsolute(_context.Directory(
+                                        _cakeConfig.ProjectInfo.ProjectDirectory + "/../" + UnitTestProjectName
+                                    ));
+        }
+    }
    
-    public string UnitTestProjectName { get; set; }
+    public string UnitTestProjectName
+    {
+        get
+        {
+            return _cakeConfig.ProjectInfo.ProjectName + "UnitTests";
+        }
+    }
 
-    public string CoverageReportFilePath { get; set; }
+    public string CoverageReportFilePath
+    {
+        get
+        {
+            return _cakeConfig.ProjectInfo.ProjectDirectory + "/unitTests.xml";
+        }
+    }
 
-    public string XUnitOutputFile { get; set; }
+    public string XUnitOutputFile
+    {
+        get
+        {
+            return  _cakeConfig.ProjectInfo.ProjectDirectory + "/" + UnitTestProjectName + ".dll.xml";
+        }
+    }
 
     public string JsTestPath { get; set; }
 
