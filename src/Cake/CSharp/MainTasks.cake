@@ -355,7 +355,7 @@ Task("DotNetCore-Run-Unit-Test")
     {
         StartProcess("dotnet",
             " test "
-            + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
+            + "\"" + Config.UnitTests.ProjectFile.ToString() + "\""
             + " -a " + Config.UnitTests.TestAdapterPath
             + (Config.UnitTests.TestBlame ? " --blame" : "")
             + " -c " + Config.MSBuildInfo.MsBuildConfig()

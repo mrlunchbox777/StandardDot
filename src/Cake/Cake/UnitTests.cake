@@ -14,6 +14,8 @@ public class UnitTests
 
     private CakeConfig _cakeConfig;
 
+    private FilePath _csProj;
+
     private ICakeContext _context { get; set; }
 
     public string SqAnalysisUrl { get; set; }
@@ -49,6 +51,36 @@ public class UnitTests
         get
         {
             return  _cakeConfig.ProjectInfo.ProjectDirectory + "/" + UnitTestProjectName + ".dll.xml";
+        }
+    }
+
+    public FilePath ProjectFile
+    {
+        get
+        {
+            if (_csProj != null)
+            {
+                return _csProj;
+            }
+            ConvertableFilePath csproj = _context.File(UnitTestDirectoryPath + "/" + UnitTestProjectName + ".csproj");
+            if (_context.FileExists(csproj.Path))
+            {
+                _csProj = csproj.Path;
+                return _csProj;
+            }
+            else
+            {
+                _context.Information("Could find project - " + csproj.Path);
+            }
+            _context.Information("Finding first .csproj file");
+            IDirectory directory = _context.FileSystem.GetDirectory(UnitTestDirectoryPath + "/" );
+            _context.Information("Using " + directory.Path.FullPath + ".");
+            IEnumerable<IFile> files = directory.GetFiles("*.csproj", SearchScope.Current);
+            _context.Information("Found " + files.Count() + " files.");
+            FilePath path = files.First().Path;
+            _context.Information("Using " + path.FullPath + ".");
+            _csProj = path;
+            return _csProj;
         }
     }
 
