@@ -11,7 +11,7 @@ public class MSBuildInfo
         return IsRunningTests ? "Debug" : "Release";
     }
 
-    public string IsRunningTests { get; set; }
+    public bool IsRunningTests { get; set; }
 
     public string MsBuildVersion = "15.0";
 
