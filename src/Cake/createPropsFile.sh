@@ -5,31 +5,31 @@ fi
 
 echo "Creating Build props"
 
-sudo touch /var/lib/jenkins/.standarddotbuild.props
+touch /var/lib/jenkins/.standarddotbuild.props
 
 # Branch
-currentString="sudo echo \"CI_COMMIT_REF_NAME=${GIT_BRANCH}\" >> /var/lib/jenkins/.standarddotbuild.props"
-sudo sh -c "$currentString"
+currentString="echo \"CI_COMMIT_REF_NAME=${GIT_BRANCH}\" >> /var/lib/jenkins/.standarddotbuild.props"
+sh -c "$currentString"
 
 # Commit
-currentString="sudo echo \"CI_COMMIT_SHA=${GIT_COMMIT}\" >> /var/lib/jenkins/.standarddotbuild.props"
-sudo sh -c "$currentString"
+currentString="echo \"CI_COMMIT_SHA=${GIT_COMMIT}\" >> /var/lib/jenkins/.standarddotbuild.props"
+sh -c "$currentString"
 
 # Nuget
-currentString="sudo echo \"CAKE_ROSLYN_NUGETSOURCE=https://www.nuget.org\" >> /var/lib/jenkins/.standarddotbuild.props"
-sudo sh -c "$currentString"
+currentString="echo \"CAKE_ROSLYN_NUGETSOURCE=https://www.nuget.org\" >> /var/lib/jenkins/.standarddotbuild.props"
+sh -c "$currentString"
 
 # Repository URL
-currentString="sudo echo \"CI_REPOSITORY_URL=${GIT_URL}\" >> /var/lib/jenkins/.standarddotbuild.props"
-sudo sh -c "$currentString"
+currentString="echo \"CI_REPOSITORY_URL=${GIT_URL}\" >> /var/lib/jenkins/.standarddotbuild.props"
+sh -c "$currentString"
 
 # AdditionalSubDir
-# currentString="sudo echo \"AdditionalSubDir=src/\" >> /var/lib/jenkins/.standarddotbuild.props"
-# sudo sh -c "$currentString"
+# currentString="echo \"AdditionalSubDir=src/\" >> /var/lib/jenkins/.standarddotbuild.props"
+# sh -c "$currentString"
 
 # Repository URL
-currentString="sudo echo \"AddProjectDir=true\" >> /var/lib/jenkins/.standarddotbuild.props"
-sudo sh -c "$currentString"
+currentString="echo \"AddProjectDir=true\" >> /var/lib/jenkins/.standarddotbuild.props"
+sh -c "$currentString"
 
 # WORKSPACE this is the same for gitlab and jenkins
 
