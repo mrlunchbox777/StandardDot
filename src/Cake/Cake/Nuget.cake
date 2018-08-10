@@ -104,4 +104,42 @@ public class Nuget
     public DirectoryPath OutputDirectory { get; set; }
 
     public bool IncludeReferencedProjects { get; set; }
+
+    // DOT NET CORE
+
+    // PACK
+
+    public bool Force { get; set; }
+
+    public bool IncludeSource { get; set; }
+
+    public bool BuildForPack { get; set; }
+
+    public bool IgnoreDependencies { get; set; }
+
+    public bool NoRestore { get; set; }
+
+    public string RunTimeVersion { get; set; }
+
+    public bool Servicable { get; set; }
+
+    public string VersionSuffix { get; set; }
+
+    public string VerbosityLevel { get; set; }
+
+    // PUSH
+
+    public bool DisableBuffering { get; set; }
+
+    public bool ForceEnglishOutput { get; set; }
+
+    public bool NoPushSymbols { get; set; }
+
+    public bool NoServiceEndpoint { get; set; }
+
+    public string SymbolApiKey { get; set; }
+
+    public string SymbolSource { get; set; }
+
+    public int Timeout { get; set; }
 }
