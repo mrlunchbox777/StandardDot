@@ -777,7 +777,7 @@ Task("DotNetCorePackNugetPackage")
         + (Config.Nuget.BuildForPack ? "" : " --no-build")
         + (Config.Nuget.IgnoreDependencies ? " --no-dependencies" : "")
         + (Config.Nuget.NoRestore ? " --no-restore" : "")
-        + " -o \"" + (string.IsNullOrWhiteSpace(Config.Nuget.PackPath) ? Config.ProjectInfo.ProjectDirectory : Config.Nuget.PackPath) + "\""
+        + " -o \"" + (string.IsNullOrWhiteSpace(Config.Nuget.PackDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.Nuget.PackDirectory) + "\""
         + (string.IsNullOrWhiteSpace(Config.Nuget.RunTimeVersion) ? "" : " --runtime " + Config.Nuget.RunTimeVersion)
         + (Config.Nuget.Servicable ? " -s" : "")
         + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix \"" + Config.Nuget.VersionSuffix + "\"")
@@ -809,9 +809,9 @@ Task("DotNetCoreDeployNugetPackage")
         return;
     }
 
-    var packageFinder = (string.IsNullOrWhiteSpace(Config.Nuget.PackPath)
+    var packageFinder = (string.IsNullOrWhiteSpace(Config.Nuget.PackDirectory)
             ? Config.ProjectInfo.ProjectDirectory
-            : Config.Nuget.PackPath)
+            : Config.Nuget.PackDirectory)
         + ".*.nupkg";
 
     var package = GetFiles(packageFinder).FirstOrDefault();
