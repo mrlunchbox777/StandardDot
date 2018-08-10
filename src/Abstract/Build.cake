@@ -22,7 +22,7 @@ Task("Bake-Cake")
     // .IsDependentOn("Start-SonarQube")
     // .IsDependentOn("TypeScriptCompile")   
     // .IsDependentOn("SassCompile")   
-    .IsDependentOn("Build-Project")    
+    .IsDependentOn("Raw-Build-Project")    
     // .IsDependentOn("End-SonarQube")
     // .IsDependentOn("Check-Quality-Gate")
     .IsDependentOn("Cleanup-Environment")
@@ -53,7 +53,9 @@ Task("Setup-Environment")
 
         Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
         Config.Nuget.BuildForPack = false;
-        Config.Nuget.Server = "nuget.org";
+        Config.Nuget.Server = "https://www.nuget.org/";
+        Config.MSBuildInfo.TargetFramework = "netstandard2.0";
+        Config.MSBuildInfo.NoIncremental = true;
     });
 
 Task("Cleanup-Environment")

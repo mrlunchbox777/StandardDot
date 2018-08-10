@@ -6,10 +6,12 @@ public class MSBuildInfo
 
     private ICakeContext _context { get; set; }
 
-    public string MsBuildConfig(bool runningTests = false) {
+    public string MsBuildConfig() {
         // PDB files allow for proper test coverage, so use debug when testing
-        return runningTests ? "Debug" : "Release";
+        return IsRunningTests ? "Debug" : "Release";
     }
+
+    public string IsRunningTests { get; set; }
 
     public string MsBuildVersion = "15.0";
 
@@ -17,12 +19,20 @@ public class MSBuildInfo
 
     public bool? ForceFlatten { get; set; }
 
-    public bool ShouldFlatten(bool runningTests = false) {
+    public bool ShouldFlatten() {
         // PDB files allow for proper test coverage, so use debug when testing
         if (ForceFlatten != null)
         {
             return ((bool)ForceFlatten);
         }
-        return runningTests ? false : true;
+        return IsRunningTests ? false : true;
     }
+
+    // DOT NET CORE
+
+    public string TargetFramework { get; set; }
+
+    public bool NoDependencies { get; set; }
+
+    public bool NoIncremental { get; set; }
 }
