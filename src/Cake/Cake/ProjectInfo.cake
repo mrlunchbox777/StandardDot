@@ -40,13 +40,13 @@ public class ProjectInfo
             string environmentName = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME").Split('/')).Last();
             if (IsProduction)
             {
-                _environmentName = "production";
+                environmentName = "production";
             }
             if (IsLocal)
             {
-                _environmentName = "local";
+                environmentName = "local";
             } 
-            return _environmentName;
+            return environmentName;
         }
     }
 
