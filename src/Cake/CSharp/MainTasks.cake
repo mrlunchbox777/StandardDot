@@ -66,7 +66,7 @@ Task("Raw-Build-Project")
     }
     StartProcess("dotnet",
         " build "
-        + Config.ProjectInfo.ProjectFile.ToString()
+        + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
         + " -c " + Config.MSBuildInfo.MsBuildConfig()
         + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
         + (Config.Nuget.Force ? " --force" : "")
@@ -355,17 +355,17 @@ Task("DotNetCore-Run-Unit-Test")
     {
         StartProcess("dotnet",
             " test "
-            + Config.ProjectInfo.ProjectFile.ToString()
-            + " -a " + Config.UnitTests.TestAdapterPath
+            + "\"" + Config.UnitTests.ProjectFile.ToString() + "\""
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.TestAdapterPath) ? "" : " -a " + Config.UnitTests.TestAdapterPath)
             + (Config.UnitTests.TestBlame ? " --blame" : "")
             + " -c " + Config.MSBuildInfo.MsBuildConfig()
             + (string.IsNullOrWhiteSpace(Config.UnitTests.DataCollectorName) ? "" : " -d " + Config.UnitTests.DataCollectorName)
-            + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.TargetFramework) ? "" : " -f " + Config.UnitTests.TargetFramework)
             + (string.IsNullOrWhiteSpace(Config.UnitTests.FilterExpression) ? "" : " --filter " + Config.UnitTests.FilterExpression)
             + (Config.UnitTests.NoBuildForTest ? " --no-build" : "")
             + (Config.UnitTests.NoRestoreForTest ? " --no-restore" : "")
             + (Config.MSBuildInfo.ShouldFlatten() ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\"" : "")
-            + " -r " (string.IsNullOrWhiteSpace(Config.UnitTests.ResultsDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.UnitTests.ResultsDirectory)
+            + " -r \"" + (string.IsNullOrWhiteSpace(Config.UnitTests.ResultsDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.UnitTests.ResultsDirectory) + "\""
             + (string.IsNullOrWhiteSpace(Config.UnitTests.SettingsFile) ? "" : " -s " + Config.UnitTests.SettingsFile)
             + (Config.UnitTests.ListTests ? " -t" : "")
             + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
@@ -770,7 +770,7 @@ Task("DotNetCorePackNugetPackage")
 
     StartProcess("dotnet",
         " pack "
-        + Config.ProjectInfo.ProjectFile.ToString()
+        + "\"" + Config.ProjectInfo.ProjectFile.ToString() + "\""
         + (Config.Nuget.Force ? " --force" : "")
         + (Config.Nuget.IncludeSource ? " --include-source" : "")
         + (Config.Nuget.Symbols ? " --include-symbols" : "")
