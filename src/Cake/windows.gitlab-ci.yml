@@ -1,0 +1,8 @@
+BuildMe:
+    variables:
+        GIT_SUBMODULE_STRATEGY: recursive
+    before_script:
+        - git submodule sync --recursive
+        - git submodule update --init --recursive
+    script:
+        - powershell Import-Module .\Cake\BuildFile.ps1; Bake-A-Cake -PSScriptRoot $CI_PROJECT_DIR

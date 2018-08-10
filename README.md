@@ -1,6 +1,6 @@
 # README
 
-![StandardDot](https://img.shields.io/badge/Standard%20Dot-1.0-blue.svg)
+![StandardDot](https://img.shields.io/badge/Standard%20Dot-0.0.1-blue.svg)
 ![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0-green.svg)
 ![.NET Core](https://img.shields.io/badge/.NET%20Core-2.0-green.svg)
 
