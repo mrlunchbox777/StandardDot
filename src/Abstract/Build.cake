@@ -58,7 +58,7 @@ Task("Setup-Environment")
         Config.MSBuildInfo.NoIncremental = true;
 
         Config.UnitTests.TestBlame = true;
-        Config.UnitTests.ListTests = true;
+        // Config.UnitTests.ListTests = true;
         Config.UnitTests.TargetFramework = "netcoreapp2.0";
     });
 
