@@ -812,7 +812,7 @@ Task("DotNetCoreDeployNugetPackage")
     var packageFinder = (string.IsNullOrWhiteSpace(Config.Nuget.PackDirectory)
             ? Config.ProjectInfo.ProjectDirectory
             : Config.Nuget.PackDirectory)
-        + "/.*.nupkg";
+        + "*.nupkg";
 
     var package = GetFiles(packageFinder).FirstOrDefault();
 
