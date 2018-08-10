@@ -671,3 +671,106 @@ Task("DeployNugetPackage")
         true
         );
 });
+
+Task("DotNetCorePackNugetPackage")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Pack Nuget Package.");
+    }
+    if (!Config.Nuget.CreateNugetPackage)
+    {
+        return;
+    }
+
+    StartProcess("dotnet",
+        " pack "
+        + Config.ProjectInfo.ProjectName + ".csproj"
+        + (Config.Nuget.Force ? " --force" : "")
+        + (Config.Nuget.IncludeSource ? " --include-source" : "")
+        + (Config.Nuget.Symbols ? " --include-symbols" : "")
+        + (Config.Nuget.BuildForPack ? "" : " --no-build")
+        + (Config.Nuget.IgnoreDependencies ? " --no-dependencies" : "")
+        + (Config.Nuget.NoRestore ? " --no-restore" : "")
+        + " -o " + (string.IsNullOrWhiteSpace(Config.Nuget.PackPath) ? Config.ProjectInfo.ProjectDirectory : Config.Nuget.PackPath)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.RunTimeVersion) ? "" : " --runtime " + Config.Nuget.RunTimeVersion)
+        + (Config.Nuget.Servicable ? " -s" : "")
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix " + Config.Nuget.VersionSuffix)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
+    );
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Ensure dotnet pack is possible",
+            "Ensure the nuget server is up",
+            "Ensure nuget got installed"
+        },
+        true
+        );
+});
+
+Task("DotNetCoreDeployNugetPackage")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Deploy Nuget Package.");
+    }
+    if (!Config.Nuget.CreateNugetPackage)
+    {
+        return;
+    }
+
+    var packageFinder = (string.IsNullOrWhiteSpace(Config.Nuget.PackPath)
+            ? Config.ProjectInfo.ProjectDirectory
+            : Config.Nuget.PackPath)
+        + ".*.nupkg";
+
+    var package = GetFiles(packageFinder).FirstOrDefault();
+
+    if (package == null)
+    {
+        throw new InvalidOperationException("Unable to find .nupkg.");
+    }
+
+    if (string.IsNullOrWhiteSpace(Config.Nuget.ApiKey))
+    {
+        throw new InvalidOperationException("Unable to find ApiKey. Please ensure 'NUGET_APIKEY' is set as an environmental variable.");
+    }
+
+    if (string.IsNullOrWhiteSpace(Config.Nuget.Server))
+    {
+        throw new InvalidOperationException("Unable to find Nuget Server. Please ensure Config.Nuget.Server is set during setup.");
+    }
+
+    StartProcess("dotnet",
+        " nuget push "
+        + "\"" + package.ToString() + "\""
+        + (Config.Nuget.DisableBuffering ? " -d" : "")
+        + (Config.Nuget.ForceEnglishOutput ? " --force-english-output" : "")
+        + " -k " + Config.Nuget.ApiKey
+        + (Config.Nuget.NoPushSymbols ? " -n" : "")
+        + (Config.Nuget.NoServiceEndpoint ? " --no-service-endpoint" : "")
+        + " -s " + Config.Nuget.Server
+        + (string.IsNullOrWhiteSpace(Config.Nuget.SymbolApiKey) ? "" : " -sk " + Config.Nuget.SymbolApiKey)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.SymbolSource) ? "" : " -ss " + Config.Nuget.SymbolSource)
+        + (Config.Nuget.Timeout > 0 ? " -t " + Config.Nuget.Timeout : "")
+    );
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Ensure nuspec exists",
+            "Ensure the nuget server is up",
+            "Ensure nuget got installed",
+            "Ensure NUGET_APIKEY is an environmental variable"
+        },
+        true
+        );
+});

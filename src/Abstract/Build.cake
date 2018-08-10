@@ -30,8 +30,8 @@ Task("Bake-Cake")
     // .IsDependentOn("DeleteRemoteDir")
     // .IsDependentOn("UploadDir")
     // .IsDependentOn("SendAnAirbrakeDeploy")
-    .IsDependentOn("PackNugetPackage")
-    .IsDependentOn("DeployNugetPackage")
+    .IsDependentOn("DotNetCorePackNugetPackage")
+    .IsDependentOn("DotNetCoreDeployNugetPackage")
 ;
 
 Task("Setup-Environment")
@@ -52,30 +52,8 @@ Task("Setup-Environment")
         Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = false;
 
         Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
-        Config.Nuget.PackPath = "./src/Abstract/Abstract.nuspec";
-        Config.Nuget.Id = "StandardDot.Abstract";
-        Config.Nuget.Version = "0.0.0.1";
-        Config.Nuget.Title = "StandardDot.Abstract";
-        Config.Nuget.Authors = new List<string>() { "Andrew Shoell" };
-        Config.Nuget.Owners = new List<string>() { "Andrew Shoell" };
-        Config.Nuget.Description = "Abstractions for the Standard Dot Libraries.";
-        Config.Nuget.Summary = "Abstractions for the Standard Dot Libraries.";
-        Config.Nuget.ProjectUrl = new Uri("https://github.com/mrlunchbox777/StandardDot");
-        Config.Nuget.IconUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png");
-        Config.Nuget.LicenseUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md");
-        Config.Nuget.Copyright = "Copyright (c) 2018 Andrew Shoell";
-        Config.Nuget.ReleaseNotes = new List<string>() { "Intial Release" };
-        Config.Nuget.Tags = new List<string>() { "Library" };
-        Config.Nuget.RequireLicenseAcceptance = false;
-        Config.Nuget.Symbols = false;
-        Config.Nuget.NoPackageAnalysis = false;
-        // Config.Nuget.Files = new List<NuSpecContent>()
-        //     {
-        //         new NuSpecContent { Source = "bin/TestNuget.dll", Target = "bin" }
-        //     };
-        // Config.Nuget.BasePath = "";
-        // Config.Nuget.OutputDirectory = "";
-        Config.Nuget.IncludeReferencedProjects = true;
+        Config.Nuget.BuildForPack = false;
+        Config.Nuget.Server = "nuget.org";
     });
 
 Task("Cleanup-Environment")
