@@ -59,6 +59,7 @@ Task("Setup-Environment")
 
         Config.UnitTests.TestBlame = true;
         Config.UnitTests.ListTests = true;
+        Config.UnitTests.TargetFramework = "netcoreapp2.0";
     });
 
 Task("Cleanup-Environment")

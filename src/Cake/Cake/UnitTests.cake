@@ -113,4 +113,6 @@ public class UnitTests
     public string SettingsFile { get; set; }
 
     public bool ListTests { get; set; }
+
+    public string TargetFramework { get; set; }
 }
