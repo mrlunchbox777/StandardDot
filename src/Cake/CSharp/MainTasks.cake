@@ -356,7 +356,7 @@ Task("DotNetCore-Run-Unit-Test")
         StartProcess("dotnet",
             " test "
             + "\"" + Config.UnitTests.ProjectFile.ToString() + "\""
-            + " -a " + Config.UnitTests.TestAdapterPath
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.TestAdapterPath) ? "" : " -a " + Config.UnitTests.TestAdapterPath)
             + (Config.UnitTests.TestBlame ? " --blame" : "")
             + " -c " + Config.MSBuildInfo.MsBuildConfig()
             + (string.IsNullOrWhiteSpace(Config.UnitTests.DataCollectorName) ? "" : " -d " + Config.UnitTests.DataCollectorName)
