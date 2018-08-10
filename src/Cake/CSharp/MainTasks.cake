@@ -76,7 +76,7 @@ Task("Raw-Build-Project")
         + (Config.MSBuildInfo.ShouldFlatten() ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\"" : "")
         + (string.IsNullOrWhiteSpace(Config.Nuget.RunTimeVersion) ? "" : " --runtime " + Config.Nuget.RunTimeVersion)
         + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
-        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix " + Config.Nuget.VersionSuffix)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix \"" + Config.Nuget.VersionSuffix + "\"")
     );
 })
     .ReportError(exception =>
@@ -777,10 +777,10 @@ Task("DotNetCorePackNugetPackage")
         + (Config.Nuget.BuildForPack ? "" : " --no-build")
         + (Config.Nuget.IgnoreDependencies ? " --no-dependencies" : "")
         + (Config.Nuget.NoRestore ? " --no-restore" : "")
-        + " -o " + (string.IsNullOrWhiteSpace(Config.Nuget.PackPath) ? Config.ProjectInfo.ProjectDirectory : Config.Nuget.PackPath)
+        + " -o \"" + (string.IsNullOrWhiteSpace(Config.Nuget.PackPath) ? Config.ProjectInfo.ProjectDirectory : Config.Nuget.PackPath) + "\""
         + (string.IsNullOrWhiteSpace(Config.Nuget.RunTimeVersion) ? "" : " --runtime " + Config.Nuget.RunTimeVersion)
         + (Config.Nuget.Servicable ? " -s" : "")
-        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix " + Config.Nuget.VersionSuffix)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix \"" + Config.Nuget.VersionSuffix + "\"")
         + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
     );
 })
