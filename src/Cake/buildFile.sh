@@ -132,16 +132,16 @@ ensureCakeAndNuget ()
 ensureOthers ()
 {
     # Ensure native nuget
-    apt-get install nuget -y
+    sudo apt-get install nuget -y
     
     # Ensure Java
-    apt-get install default-jre -y
+    sudo apt-get install default-jre -y
 
     # Ensure TypeScript
     curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-    nvm uninstall --lts
-    nvm install --lts
-    npm install -g typescript
+    sudo nvm uninstall --lts
+    sudo nvm install --lts
+    sudo npm install -g typescript
 }
 
 startRunning()
@@ -201,6 +201,9 @@ startRunning()
             ADDR=()
             PROJECTNAME=""
             IFS='/' read -ra ADDR <<< "$change"
+            if [ "${#ADDR[@]}" -lt 2 ]; then
+                continue
+            fi
             PROJECTNAME="${ADDR[-2]}"
             if [ $(containsElement "$PROJECTNAME" "$alreadyBuilt") ]; then
                 continue
@@ -218,6 +221,9 @@ startRunning()
     if [ -z "$CI_COMMIT_SHA" ]; then
         ADDR=()
         IFS='/' read -ra ADDR <<< "$change"
+        if [ "${#ADDR[@]}" -lt 2 ]; then
+            continue
+        fi
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
         findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
