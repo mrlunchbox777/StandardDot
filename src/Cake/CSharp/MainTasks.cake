@@ -365,7 +365,7 @@ Task("DotNetCore-Run-Unit-Test")
             + (Config.UnitTests.NoBuildForTest ? " --no-build" : "")
             + (Config.UnitTests.NoRestoreForTest ? " --no-restore" : "")
             + (Config.MSBuildInfo.ShouldFlatten() ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\"" : "")
-            + " -r " + (string.IsNullOrWhiteSpace(Config.UnitTests.ResultsDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.UnitTests.ResultsDirectory)
+            + " -r \"" + (string.IsNullOrWhiteSpace(Config.UnitTests.ResultsDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.UnitTests.ResultsDirectory) + "\""
             + (string.IsNullOrWhiteSpace(Config.UnitTests.SettingsFile) ? "" : " -s " + Config.UnitTests.SettingsFile)
             + (Config.UnitTests.ListTests ? " -t" : "")
             + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
