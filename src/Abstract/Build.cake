@@ -54,8 +54,12 @@ Task("Setup-Environment")
         Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
         Config.Nuget.BuildForPack = false;
         Config.Nuget.Server = "https://www.nuget.org/";
+
         Config.MSBuildInfo.TargetFramework = "netstandard2.0";
         Config.MSBuildInfo.NoIncremental = true;
+
+        Config.UnitTests.TestBlame = true;
+        Config.UnitTests.ListTests = true;
     });
 
 Task("Cleanup-Environment")
