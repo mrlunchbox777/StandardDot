@@ -8,7 +8,7 @@ echo "Creating Build props"
 touch /var/lib/jenkins/.standarddotbuild.props
 
 # Branch
-currentString="echo \"CI_COMMIT_REF_NAME=${GIT_LOCAL_BRANCH}\" >> /var/lib/jenkins/.standarddotbuild.props"
+currentString="echo \"CI_COMMIT_REF_NAME=${GIT_BRANCH}\" >> /var/lib/jenkins/.standarddotbuild.props"
 sh -c "$currentString"
 
 # Commit
