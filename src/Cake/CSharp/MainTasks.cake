@@ -341,6 +341,55 @@ Task("TypeScriptCompile")
 // Unit Test Tasks (we aren't doing any of these right now)
 //////////////////////////////////////////////////////////////
 
+Task("DotNetCore-Run-Unit-Test")
+    .WithCriteria(() => DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Unit Tests.");
+    }
+
+    Config.MSBuildInfo.IsRunningTests = true;
+    try
+    {
+        StartProcess("dotnet",
+            " test "
+            + Config.ProjectInfo.ProjectFile.ToString()
+            + " -a " + Config.UnitTests.TestAdapterPath
+            + (Config.UnitTests.TestBlame ? " --blame" : "")
+            + " -c " + Config.MSBuildInfo.MsBuildConfig())
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.DataCollectorName) ? "" : " -d " + Config.UnitTests.DataCollectorName)
+            + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.FilterExpression) ? "" : " --filter " + Config.UnitTests.FilterExpression)
+            + (Config.UnitTests.NoBuildForTest ? " --no-build" : "")
+            + (Config.UnitTests.NoRestoreForTest ? " --no-restore" : "")
+            + (Config.MSBuildInfo.ShouldFlatten() ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\"" : "")
+            + " -r " (string.IsNullOrWhiteSpace(Config.UnitTests.ResultsDirectory) ? Config.ProjectInfo.ProjectDirectory : Config.UnitTests.ResultsDirectory)
+            + (string.IsNullOrWhiteSpace(Config.UnitTests.SettingsFile) ? "" : " -s " + Config.UnitTests.SettingsFile)
+            + (Config.UnitTests.ListTests ? " -t" : "")
+            + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
+        );
+    }
+    catch (Exception)
+    {
+        Config.MSBuildInfo.IsRunningTests = true;
+        throw;
+    }
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Check for xunit syntax/runtime errors",
+            "ENSURE THE UNIT TESTS HAVE AT LEAST 1 XUNIT TEST",
+            "Check for file locks"
+        },
+        true
+        );
+});
+
 Task("Build-Unit-Tests")
     .WithCriteria(() => DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
     .IsDependentOn("Restore-CSharp-NuGet-Packages")

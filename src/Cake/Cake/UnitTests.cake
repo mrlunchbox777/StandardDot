@@ -37,4 +37,24 @@ public class UnitTests
     public string QualityGateStatus { get; set; }
 
     public bool QualityGateReady { get; set; }
+
+    // DOT NET CORE
+
+    public string TestAdapterPath { get; set; }
+
+    public bool TestBlame { get; set; }
+
+    public string DataCollectorName { get; set; }
+
+    public string FilterExpression { get; set; }
+
+    public bool NoBuildForTest { get; set; }
+
+    public bool NoRestoreForTest { get; set; }
+
+    public string ResultsDirectory { get; set; }
+
+    public string SettingsFile { get; set; }
+
+    public bool ListTests { get; set; }
 }
