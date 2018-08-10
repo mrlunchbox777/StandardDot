@@ -57,6 +57,41 @@ Task("Restore-CSharp-Nuget-Packages")
         );
 });
 
+Task("Raw-Build-Project")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Build Project.");
+    }
+    StartProcess("dotnet",
+        " build "
+        + Config.ProjectInfo.ProjectFile.ToString()
+        + " -c " + Config.MSBuildInfo.MsBuildConfig()
+        + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
+        + (Config.Nuget.Force ? " --force" : "")
+        + (Config.MSBuildInfo.NoDependencies ? " --no-dependencies" : "")
+        + (Config.MSBuildInfo.NoIncremental ? " --no-incremental" : "")
+        + (Config.Nuget.NoRestore ? " --no-restore" : "")
+        + (Config.MSBuildInfo.ShouldFlatten() ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\"" : "")
+        + (string.IsNullOrWhiteSpace(Config.Nuget.RunTimeVersion) ? "" : " --runtime " + Config.Nuget.RunTimeVersion)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VerbosityLevel) ? "" : " -v " + Config.Nuget.VerbosityLevel)
+        + (string.IsNullOrWhiteSpace(Config.Nuget.VersionSuffix) ? "" : " --version-suffix " + Config.Nuget.VersionSuffix)
+    );
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Check for c# syntax/runtime errors",
+            "Try local compilation",
+            "Ensure the .NET version and packages can be compiled with cake"
+        },
+        true
+        );
+});
+
 Task("Build-Project")
     .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
@@ -65,7 +100,7 @@ Task("Build-Project")
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Build Project.");
     }
-    if (Config.MSBuildInfo.ShouldFlatten(false))
+    if (Config.MSBuildInfo.ShouldFlatten())
     {
         // StartProcess("dotnet");
         DotNetCoreBuild(Config.ProjectInfo.ProjectFile.ToString(), new DotNetCoreBuildSettings
@@ -86,7 +121,7 @@ Task("Build-Project")
         DotNetCoreBuild(Config.ProjectInfo.ProjectFile.ToString(), new DotNetCoreBuildSettings
             {
                 //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
-                Configuration = Config.MSBuildInfo.MsBuildConfig(false),
+                Configuration = Config.MSBuildInfo.MsBuildConfig(),
                 // .WithProperty("Platform", Config.MSBuildInfo.Platform)        
                 // .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
                 // .UseToolVersion(MSBuildToolVersion.Default)
@@ -95,7 +130,7 @@ Task("Build-Project")
             });
         // MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
         //     //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
-        //     .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(false))
+        //     .SetConfiguration(Config.MSBuildInfo.MsBuildConfig())
         //     .WithProperty("Platform", Config.MSBuildInfo.Platform)        
         //     .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
         //     .UseToolVersion(MSBuildToolVersion.Default)
@@ -125,7 +160,7 @@ Task("Build-Project-MSBuild")
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Build Project.");
     }
-    if (Config.MSBuildInfo.ShouldFlatten(false))
+    if (Config.MSBuildInfo.ShouldFlatten())
     {
         MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
             //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
@@ -142,7 +177,7 @@ Task("Build-Project-MSBuild")
     {
         MSBuild(Config.ProjectInfo.ProjectFile, new MSBuildSettings()
             //.WithTarget(Config.ProjectInfo.ProjectName) //.Replace('.','_')
-            .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(false))
+            .SetConfiguration(Config.MSBuildInfo.MsBuildConfig())
             .WithProperty("Platform", Config.MSBuildInfo.Platform)        
             .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
             .UseToolVersion(MSBuildToolVersion.Default)
@@ -317,9 +352,9 @@ Task("Build-Unit-Tests")
     }
     MSBuild(Config.ProjectInfo.ProjectSolution, new MSBuildSettings()
         .WithTarget(Config.UnitTests.UnitTestProjectName.Replace('.','_'))
-        .SetConfiguration(Config.MSBuildInfo.MsBuildConfig(true))
+        .SetConfiguration(Config.MSBuildInfo.MsBuildConfig())
         .WithProperty("Platform", Config.MSBuildInfo.Platform)        
-        .WithProperty("Configuration", Config.MSBuildInfo.MsBuildConfig(true))
+        .WithProperty("Configuration", Config.MSBuildInfo.MsBuildConfig())
         .WithProperty("VisualStudioVersion", Config.MSBuildInfo.MsBuildVersion)
         .UseToolVersion(MSBuildToolVersion.Default)
         .SetVerbosity(Verbosity.Minimal)
@@ -347,7 +382,7 @@ Task("Run-Unit-Tests")
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Run Unit Tests.");
     }
-    string targetDir = Config.UnitTests.UnitTestDirectoryPath.FullPath + "/bin/" + Config.MSBuildInfo.MsBuildConfig(true);
+    string targetDir = Config.UnitTests.UnitTestDirectoryPath.FullPath + "/bin/" + Config.MSBuildInfo.MsBuildConfig();
     IEnumerable<FilePath> targetDLLs = new List<FilePath>(){File(targetDir + "/" + Config.UnitTests.UnitTestProjectName + ".dll")};
     OpenCoverSettings settings = new OpenCoverSettings();
     settings.ArgumentCustomization = args => args.Append(string.Concat("-targetdir:\"" + targetDir + "\""));
@@ -686,7 +721,7 @@ Task("DotNetCorePackNugetPackage")
 
     StartProcess("dotnet",
         " pack "
-        + Config.ProjectInfo.ProjectName + ".csproj"
+        + Config.ProjectInfo.ProjectFile.ToString()
         + (Config.Nuget.Force ? " --force" : "")
         + (Config.Nuget.IncludeSource ? " --include-source" : "")
         + (Config.Nuget.Symbols ? " --include-symbols" : "")
