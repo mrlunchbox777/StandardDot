@@ -6,11 +6,11 @@ public class UnitTests
         this.JsTestPath = "";
         this.MaxQualityGateTimeoutCount = 24;
         this.QualityGateSleepLengthPerCount = 5000;
-        this.XUnitOutputFile = _cakeConfig.ProjectInfo.ProjectDirectory + "/" + UnitTestProjectName + ".dll.xml";
-        this.CoverageReportFilePath = _cakeConfig.ProjectInfo.ProjectDirectory + "/unitTests.xml";
-        this.UnitTestProjectName = _cakeConfig.ProjectInfo.ProjectName + "UnitTests";
+        this.UnitTestProjectName = _cakeConfig.ProjectInfo.ProjectName.ToString() + "UnitTests";
+        this.XUnitOutputFile = _cakeConfig.ProjectInfo.ProjectDirectory.ToString() + "/" + UnitTestProjectName.ToString() + ".dll.xml";
+        this.CoverageReportFilePath = _cakeConfig.ProjectInfo.ProjectDirectory.ToString() + "/unitTests.xml";
         this.UnitTestDirectoryPath = _context.MakeAbsolute(_context.Directory(
-                                        _cakeConfig.ProjectInfo.ProjectDirectory + "/../" + UnitTestProjectName
+                                        _cakeConfig.ProjectInfo.ProjectDirectory.ToString() + "/../" + UnitTestProjectName.ToString()
                                     ));
         _context.Information("Unit Test Path - " + this.UnitTestDirectoryPath);
     }
