@@ -812,13 +812,13 @@ Task("DotNetCoreDeployNugetPackage")
     var packageFinder = (string.IsNullOrWhiteSpace(Config.Nuget.PackDirectory)
             ? Config.ProjectInfo.ProjectDirectory
             : Config.Nuget.PackDirectory)
-        + ".*.nupkg";
+        + "/.*.nupkg";
 
     var package = GetFiles(packageFinder).FirstOrDefault();
 
     if (package == null)
     {
-        throw new InvalidOperationException("Unable to find .nupkg.");
+        throw new InvalidOperationException("Unable to find .nupkg. In - " + packageFinder);
     }
 
     if (string.IsNullOrWhiteSpace(Config.Nuget.ApiKey))
