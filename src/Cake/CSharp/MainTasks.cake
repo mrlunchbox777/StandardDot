@@ -358,7 +358,7 @@ Task("DotNetCore-Run-Unit-Test")
             + Config.ProjectInfo.ProjectFile.ToString()
             + " -a " + Config.UnitTests.TestAdapterPath
             + (Config.UnitTests.TestBlame ? " --blame" : "")
-            + " -c " + Config.MSBuildInfo.MsBuildConfig())
+            + " -c " + Config.MSBuildInfo.MsBuildConfig()
             + (string.IsNullOrWhiteSpace(Config.UnitTests.DataCollectorName) ? "" : " -d " + Config.UnitTests.DataCollectorName)
             + (string.IsNullOrWhiteSpace(Config.MSBuildInfo.TargetFramework) ? "" : " -f " + Config.MSBuildInfo.TargetFramework)
             + (string.IsNullOrWhiteSpace(Config.UnitTests.FilterExpression) ? "" : " --filter " + Config.UnitTests.FilterExpression)
