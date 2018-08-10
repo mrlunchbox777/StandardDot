@@ -50,10 +50,13 @@ public class ProjectInfo
         }
     }
 
+    private string _projectName = null;
+
     public string ProjectName {
         get
         {
-            return  _context.EnvironmentVariable("PROJECT_TO_BUILD")
+            return _projectName
+                ?? _context.EnvironmentVariable("PROJECT_TO_BUILD")
                 ?? _context.EnvironmentVariable("PROJECTNAME")
                 ?? _context.Argument("project", "string")
                 ?? "BAD";
@@ -78,9 +81,9 @@ public class ProjectInfo
                 ? _context.Directory(Workspace + ProjectName)
                 : _context.Environment.WorkingDirectory;
             
-            // _projectName = directory == null
-            //     ? _projectName
-            //     : directory.ToString().Split('/').LastOrDefault() ?? _projectName;
+            _projectName = directory == null
+                ? _projectName
+                : directory.ToString().Split('/').LastOrDefault() ?? _projectName;
             
             return directory;
         }
