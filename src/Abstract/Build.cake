@@ -52,15 +52,15 @@ Task("Setup-Environment")
         Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = false;
 
         Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
-        // Config.Nuget.PackPath = "";
+        Config.Nuget.PackPath = "./src/Abstract/Abstract.nuspec";
         Config.Nuget.Id = "StandardDot.Abstract";
         Config.Nuget.Version = "0.0.0.1";
-        // Config.Nuget.Title = "";
+        Config.Nuget.Title = "StandardDot.Abstract";
         Config.Nuget.Authors = new List<string>() { "Andrew Shoell" };
         Config.Nuget.Owners = new List<string>() { "Andrew Shoell" };
         Config.Nuget.Description = "Abstractions for the Standard Dot Libraries.";
         Config.Nuget.Summary = "Abstractions for the Standard Dot Libraries.";
-        // Config.Nuget.ProjectUrl = new Uri("");
+        Config.Nuget.ProjectUrl = new Uri("https://github.com/mrlunchbox777/StandardDot");
         Config.Nuget.IconUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png");
         Config.Nuget.LicenseUrl = new Uri("https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md");
         Config.Nuget.Copyright = "Copyright (c) 2018 Andrew Shoell";
