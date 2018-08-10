@@ -32,30 +32,41 @@ public class ProjectInfo
 
     public bool IsProduction { get; set; }
 
+    private string _environmentName;
+
     public string EnvironmentName
     {
         get
         {
-            string branchName = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME").Split('/')).Last();
-            if (IsProduction)
+            if (string.IsNullOrWhiteSpace(_environmentName))
             {
-                return "production";
+                _environmentName = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME").Split('/')).Last();
+                if (IsProduction)
+                {
+                    _environmentName = "production";
+                }
+                if (IsLocal)
+                {
+                    _environmentName = "local";
+                } 
             }
-            if (IsLocal)
-            {
-                return "local";
-            } 
-            return branchName;
+            return _environmentName;
         }
     }
+
+    private string _projectName;
 
     public string ProjectName {
         get
         {
-            return _context.EnvironmentVariable("PROJECT_TO_BUILD")
-                ?? _context.EnvironmentVariable("PROJECTNAME")
-                ?? _context.Argument("project", "string")
-                ?? "BAD";
+            if (string.IsNullOrWhiteSpace(_projectName))
+            {
+                _projectName =  _context.EnvironmentVariable("PROJECT_TO_BUILD")
+                    ?? _context.EnvironmentVariable("PROJECTNAME")
+                    ?? _context.Argument("project", "string")
+                    ?? "BAD";
+            }
+            return _projectName;
         }
     }
 

@@ -7,7 +7,7 @@ public class UnitTests
         this.MaxQualityGateTimeoutCount = 24;
         this.QualityGateSleepLengthPerCount = 5000;
 
-        this.UnitTestProjectName = _cakeConfig.ProjectInfo.ProjectName + "UnitTests";
+        this.UnitTestProjectName = "" + _cakeConfig.ProjectInfo.ProjectName + "UnitTests";
         this.XUnitOutputFile = _cakeConfig.ProjectInfo.ProjectDirectory + "/" + UnitTestProjectName + ".dll.xml";
         this.CoverageReportFilePath = _cakeConfig.ProjectInfo.ProjectDirectory + "/unitTests.xml";
         this.UnitTestDirectoryPath = _context.MakeAbsolute(_context.Directory(
