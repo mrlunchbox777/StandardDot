@@ -8,7 +8,6 @@
 //////////////////////////////////////////////////////////////
 
 Task("Build-Project-DotNet-Core-Alias")
-    .IsDependentOn("Restore-CSharp-NuGet-Packages")
     .Does(() =>
 {
     if (Config.Slack.PostSlackSteps)
