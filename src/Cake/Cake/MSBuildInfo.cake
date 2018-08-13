@@ -2,6 +2,8 @@ public class MSBuildInfo
 {
     public MSBuildInfo(ICakeContext context){
         this._context = context;
+        this.MsBuildVersion = "15.0";
+        this.Platform = "\"Any CPU\"";
     }
 
     private ICakeContext _context { get; set; }
@@ -13,9 +15,9 @@ public class MSBuildInfo
 
     public bool IsRunningTests { get; set; }
 
-    public string MsBuildVersion = "15.0";
+    public string MsBuildVersion { get; set; }
 
-    public string Platform = "\"Any CPU\"";
+    public string Platform { get; set; }
 
     public bool? ForceFlatten { get; set; }
 

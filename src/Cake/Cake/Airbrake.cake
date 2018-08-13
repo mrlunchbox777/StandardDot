@@ -14,4 +14,6 @@ public class Airbrake
     public string UserName { get; set; }
 
     public string Email { get; set; }
+
+    public bool DoAirbrakeDeploy { get; set; }
 }
