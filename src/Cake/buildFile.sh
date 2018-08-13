@@ -203,7 +203,7 @@ startRunning()
     # run if there are changes
     echo "number of changes - ${#diff[@]}"
     alreadyBuilt=() # Memoize so we don't build twice
-    for change in ${diff}; do
+    for change in "${diff}"; do
         echo $change
         if [ ! -z "$change" ] && [ $(echo "$change" | grep "Tests" -c) -lt 1 ] && [ $(echo "$change" | grep ".sql" -c) -lt 1 ]; then
             ADDR=()
@@ -219,10 +219,10 @@ startRunning()
                 alreadyBuilt+=$PROJECTNAME
             fi
 
-            runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
-            echo "completed $diff -- result - $runResult"
-            # findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
-            # echo "completed $diff"
+            # runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
+            # echo "completed $diff -- result - $runResult"
+            findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            echo "completed $diff"
         else
             echo "skipping $diff"
         fi
@@ -238,10 +238,10 @@ startRunning()
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
 
-        runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
-        echo "completed $CI_COMMIT_SHA -- result - $runResult"
-        # findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
-        # echo "completed $CI_COMMIT_SHA"
+        # runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
+        # echo "completed $CI_COMMIT_SHA -- result - $runResult"
+        findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+        echo "completed $CI_COMMIT_SHA"
     fi
     echo "completed run"
 }
