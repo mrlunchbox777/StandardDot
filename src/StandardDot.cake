@@ -1,4 +1,4 @@
-#load "../Cake/CSharp/MainDotNetCoreTasks.cake"
+#load "./Cake/CSharp/MainDotNetCoreTasks.cake"
 
 Task("Common-Setup-Environment")
     .Does(() =>
