@@ -25,7 +25,7 @@ public class Nuget
         this.PackPath = _config.ProjectInfo.ProjectDirectory + "/" + _config.ProjectInfo.ProjectName + ".nuspec";
 
         this.Id = _config.ProjectInfo.ProjectName;
-        this.Version = "1.0.0.0";
+        this.Version = "0.0.0.1";
         this.Title = this.Id;
         this.Authors = new List<string>(){ "Standard Dot" };
         this.Owners = new List<string>(){ "Standard Dot" };
@@ -108,6 +108,12 @@ public class Nuget
     public bool IncludeReferencedProjects { get; set; }
 
     // DOT NET CORE
+
+    public bool UpdateVersionWithCINumber { get; set; }
+
+    public string DllDirectory { get; set; }
+
+    public string DllName { get; set; }
 
     // PACK
 
