@@ -219,7 +219,7 @@ startRunning()
                 alreadyBuilt+=$PROJECTNAME
             fi
 
-            $result = findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            $result=findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
             echo "completed $diff -- result - $result"
         else
             echo "skipping $diff"
@@ -236,7 +236,7 @@ startRunning()
         fi
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
-        $result = findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+        $result=findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
         echo "completed $CI_COMMIT_SHA -- result - $result"
     fi
 }
