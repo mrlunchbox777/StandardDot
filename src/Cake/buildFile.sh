@@ -220,10 +220,12 @@ startRunning()
             fi
 
             findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            echo "completed $diff"
         else
             echo "skipping $diff"
         fi
     done
+    echo "completed all diffs"
     
     # run if this isn't change driven
     if [ -z "$CI_COMMIT_SHA" ]; then
