@@ -219,8 +219,9 @@ startRunning()
                 alreadyBuilt+=$PROJECTNAME
             fi
 
-            runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
-            echo "completed $diff -- result - $runResult"
+            exec 5>&1
+            runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+            echo "completed $diff"
             # findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
             # echo "completed $diff"
         else
@@ -238,8 +239,9 @@ startRunning()
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
 
-        runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot")
-        echo "completed $CI_COMMIT_SHA -- result - $runResult"
+        exec 5>&1
+        runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+        echo "completed $CI_COMMIT_SHA"
         # findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
         # echo "completed $CI_COMMIT_SHA"
     fi
