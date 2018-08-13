@@ -1,6 +1,39 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <!-- This gets defaulted into package version -->
+    <Version>0.0.0.2</Version>
+
+    <!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
+    <IsPackable>true</IsPackable>
+    <!-- <PackageVersion>Automatically gathered from Version</PackageVersion> -->
+    <PackageId>StandardDot.Enums</PackageId>
+    <Title>StandardDot.Enums</Title>
+    <Authors>mrlunchbox777</Authors>
+    <Description>Enums for StandardDot</Description>
+    <Copyright>Copyright 2018 (c) mrlunchbox777. All rights reserved.</Copyright>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/mrlunchbox777/StandardDot/tree/master</PackageProjectUrl>
+    <PackageIconUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png</PackageIconUrl>
+    <PackageReleaseNotes>First release</PackageReleaseNotes>
+    <PackageTags>standarddot enums</PackageTags>
+    <PackageOutputPath>./</PackageOutputPath>
+    <IncludeSymbols>false</IncludeSymbols>
+    <IncludeSource>false</IncludeSource>
+    <IsTool>false</IsTool>
+    <RepositoryUrl>https://github.com/mrlunchbox777/StandardDot/tree/master</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <!-- <NoPackageAnalysis>false</NoPackageAnalysis> -->
+    <!-- <MinClientVersion></MinClientVersion> -->
+    <!-- <IncludeBuildOutput></IncludeBuildOutput> -->
+    <IncludeContentInPack>true</IncludeContentInPack>
+    <!-- <BuildOutputTargetFolder>true</BuildOutputTargetFolder> -->
+    <!-- <ContentTargetFolders></ContentTargetFolders> -->
+    <!-- <NuspecFile></NuspecFile> -->
+    <!-- <NuspecBasePath></NuspecBasePath> -->
+    <!-- <NuspecProperties><NuspecProperties> -->
+
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
