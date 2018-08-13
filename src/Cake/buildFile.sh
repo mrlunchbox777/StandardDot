@@ -3,6 +3,14 @@ joinPath()
 {
     local BASEPATH="$1"
     local SUBDIR="$2"
+    if [ -z $"BASEPATH" ]; then
+        print $"SUBDIR"
+        return
+    fi
+    if [ -z $"SUBDIR" ]; then
+        print $"BASEPATH"
+        return
+    fi
     parts=("$BASEPATH" "$SUBDIR");
     printf '/%s' "${parts[@]%/}"
 }
@@ -278,17 +286,17 @@ findAndRunCakeScript ()
             csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
             if [ "$csprojFileCount" -le 0 ]; then
                 echo "Found a cake file, but didn't find a csproj"
-                return
+                return 0
             fi
         else
             echo "Can't find Cakefile for $CakeTarget in $NewCakeDir... Abandoning ship!"
-            return
+            return 0
         fi
     fi
 
     if [ -z "$Script" ]; then
         echo "Can't find Cakefile in $NewCakeDir... Abandoning ship!"
-        return
+        return 0
     fi
 
     Script=$(joinPath "$NewCakeDir" "$Script")
