@@ -160,7 +160,7 @@ Task("DotNet-Core-Run-Unit-Test")
 //////////////////////////////////////////////////////////////
 
 Task("DotNet-Core-Pack-Nuget-Package")
-    .WithCriteria(() => DirectoryExists(Config.Nuget.CreateNugetPackage))
+    .WithCriteria(() => Config.Nuget.CreateNugetPackage)
     .Does(() =>
 {
     if (Config.Slack.PostSlackSteps)
@@ -198,7 +198,7 @@ Task("DotNet-Core-Pack-Nuget-Package")
 });
 
 Task("DotNet-Core-Deploy-Nuget-Package")
-    .WithCriteria(() => DirectoryExists(Config.Nuget.CreateNugetPackage))
+    .WithCriteria(() => Config.Nuget.CreateNugetPackage)
     .Does(() =>
 {
     if (Config.Slack.PostSlackSteps)
