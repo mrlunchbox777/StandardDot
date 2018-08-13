@@ -5,7 +5,10 @@ function ChangeBuildMe {
     
 
     Set-Location "./$folder";
-    if ([System.IO.File]::Exists("build.me"))
+    $currentDir = Get-Location;
+    $fullDir = $currentDir.ToString() + "/build.me";
+    Write-Host "$fullDir";
+    if (Test-Path "$fullDir")
     {
         Remove-Item "build.me";
     }
@@ -27,3 +30,5 @@ ChangeBuildMe("CoreExtensions");
 ChangeBuildMe("CoreServices");
 ChangeBuildMe("Dto");
 ChangeBuildMe("Enums");
+
+Set-Location "./../";
