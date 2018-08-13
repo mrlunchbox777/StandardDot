@@ -203,7 +203,7 @@ startRunning()
     # run if there are changes
     echo "number of changes - ${#diff[@]}"
     alreadyBuilt=() # Memoize so we don't build twice
-    for change in $diff; do
+    for change in "${diff[@]}"; do
         echo $change
         if [ ! -z "$change" ] && [ $(echo "$change" | grep "Tests" -c) -lt 1 ] && [ $(echo "$change" | grep ".sql" -c) -lt 1 ]; then
             ADDR=()
@@ -219,7 +219,11 @@ startRunning()
                 alreadyBuilt+=$PROJECTNAME
             fi
 
-            findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            exec 5>&1
+            runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+            echo "completed $diff"
+            # findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            # echo "completed $diff"
         else
             echo "skipping $diff"
         fi
@@ -234,8 +238,14 @@ startRunning()
         fi
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
-        findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+
+        exec 5>&1
+        runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+        echo "completed $CI_COMMIT_SHA"
+        # findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+        # echo "completed $CI_COMMIT_SHA"
     fi
+    echo "completed run"
 }
 
 
@@ -350,5 +360,7 @@ ensureCakeAndNuget
 ensureOthers
 
 startRunning
+
+echo "finished running"
 
 rm -rf "$TOOLS_DIR"
