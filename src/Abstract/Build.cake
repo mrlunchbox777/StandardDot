@@ -11,26 +11,26 @@
 //                                                                                  //
 //////////////////////////////////////////////////////////////////////////////////////
 
-#load "../Cake/Main.cake" // Main Cake File
-#load "../Cake/CSharp/MainTasks.cake"
+#load "../Cake/CSharp/MainDotNetCoreTasks.cake"
 
 Task("Bake-Cake")
     .IsDependentOn("Setup-Environment")
-    .IsDependentOn("StartingUpNotification")    
-    .IsDependentOn("DotNetCore-Run-Unit-Test")
+    .IsDependentOn("Starting-Up-Notification")    
+    .IsDependentOn("DotNet-Core-Run-Unit-Test")
     // .IsDependentOn("Start-SonarQube")
-    // .IsDependentOn("TypeScriptCompile")   
-    // .IsDependentOn("SassCompile")   
-    .IsDependentOn("Raw-Build-Project")    
+    // .IsDependentOn("Type-Script-Compile")   
+    // .IsDependentOn("Sass-Compile")   
+    .IsDependentOn("Build-Project-DotNet-Core")    
+    .IsDependentOn("Update-Version-From-Assembly")    
     // .IsDependentOn("End-SonarQube")
     // .IsDependentOn("Check-Quality-Gate")
     .IsDependentOn("Cleanup-Environment")
-    // .IsDependentOn("CopyOutputToLocalDirectory")
-    // .IsDependentOn("DeleteRemoteDir")
-    // .IsDependentOn("UploadDir")
-    // .IsDependentOn("SendAnAirbrakeDeploy")
-    .IsDependentOn("DotNetCorePackNugetPackage")
-    .IsDependentOn("DotNetCoreDeployNugetPackage")
+    // .IsDependentOn("Copy-Output-To-Local-Directory")
+    // .IsDependentOn("Delete-Remote-Dir")
+    // .IsDependentOn("Upload-Dir")
+    // .IsDependentOn("Send-An-Airbrake-Deploy")
+    .IsDependentOn("DotNet-Core-Pack-Nuget-Package")
+    .IsDependentOn("DotNet-Core-Deploy-Nuget-Package")
 ;
 
 Task("Setup-Environment")
@@ -53,7 +53,7 @@ Task("Setup-Environment")
         Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
         Config.Nuget.BuildForPack = false;
         Config.Nuget.Server = "https://www.nuget.org/";
-        Config.Nuget.Version = null;
+        // Config.Nuget.Version = null;
 
         Config.MSBuildInfo.TargetFramework = "netstandard2.0";
         Config.MSBuildInfo.NoIncremental = true;

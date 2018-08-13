@@ -21,9 +21,8 @@
 #addin "Cake.Http"
 
 // Install tools. We aren't running tests right now
-//#tool "nuget:?package=xunit.runner.console&version=2.1.0"
-//#tool "nuget:?package=SonarQube.MSBuild.Runner"
-//#tool "nuget:?package=OpenCover"
+// #tool "nuget:?package=SonarQube.MSBuild.Runner"
+// #tool "nuget:?package=OpenCover"
 
 // Load other scripts.
 #load "Cake/CakeConfig.cake"
@@ -72,28 +71,15 @@ Setup(context =>
     Information("--------------------------------------------------------------------------------");
 });
 
-// Teardown(context =>
-// {
-//     if (Config?.Slack?.PostSlackStartAndStop ?? false)
-//     {
-//         Config.CakeMethods.SendSlackNotification(Config, "Finished " + _slackInfo);
-//     }
-// });
-
 //////////////////////////////////////////////////////////////////////
 // TASKS
 //////////////////////////////////////////////////////////////////////
 
-
-
-Task("StartingUpNotification")
+Task("Starting-Up-Notification")
+    .WithCriteria(() => Config.Slack.PostSlackStartAndStop)
     .Does(() =>
 {
-    if (Config.Slack.PostSlackStartAndStop)
-    {
-        Config.CakeMethods.SendSlackNotification(Config, "Starting " + _slackInfo);
-    }
-
+    Config.CakeMethods.SendSlackNotification(Config, "Starting " + _slackInfo);
 })
     .ReportError(exception =>
 {
@@ -108,34 +94,29 @@ Task("StartingUpNotification")
 });
 
 
-
 //////////////////////////////////////////////////////////////////////
 // LOCAL COPY
 //////////////////////////////////////////////////////////////////////
 
-// make sure to set this in your Config.ConfigurableSettings
-// Config.ConfigurableSettings.LocalCopyTargetDirectory = "";
-// Config.ConfigurableSettings.SpecificWebsiteOutputDir = ""
-
-Task("CopyOutputToLocalDirectory")
+Task("Copy-Output-To-Local-Directory")
+    .WithCriteria(() => Config.ConfigurableSettings.DoLocalCopyWork)
     .Does(() =>
 {
     if (Config.Slack.PostSlackSteps)
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Copy Output To Local Directory.");
     }
-    if (!Config.ConfigurableSettings.DoLocalCopyWork)
-    {
-        return;
-    }
+
     if (string.IsNullOrWhiteSpace(Config.ConfigurableSettings.LocalCopyTargetDirectory))
     {
         throw new CakeException("No local copy target directory variable set. Please set - 'Config.ConfigurableSettings.localCopyTargetDirectory' - in your build.");
     }
+
     if (Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy && DirectoryExists(Config.ConfigurableSettings.LocalCopyTargetDirectory))
     {
         DeleteDirectory(Config.ConfigurableSettings.LocalCopyTargetDirectory, true);
     }
+
     EnsureDirectoryExists(Config.ConfigurableSettings.LocalCopyTargetDirectory);
     string sourceDir = Config.ProjectInfo.FlattenOutputDirectory + "\\" + Config.ConfigurableSettings.SpecificWebsiteOutputDir;
     Information("--------------------------------------------------------------------------------");
@@ -159,27 +140,19 @@ Task("CopyOutputToLocalDirectory")
         );
 });
 
-
 //////////////////////////////////////////////////////////////////////
 // FTP COPY
 //////////////////////////////////////////////////////////////////////
 
-// make sure to set this in your Config.ConfigurableSettings
-// Config.FtpHelper.Host = "";
-// Config.FtpHelper.RemoteDir = ""
-// Config.FtpHelper.Username = ""
-// Config.FtpHelper.SecurePasswordLocation = ""
-
-Task("DeleteRemoteDir")
-  .Does(() => {
+Task("Delete-Remote-Dir")
+  .WithCriteria(() => Config.ConfigurableSettings.DoFtpWork)
+  .Does(() =>
+{
     if (Config.Slack.PostSlackSteps)
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting Delete Remote Directory.");
     }
-    if (!Config.ConfigurableSettings.DoFtpWork)
-    {
-        return;
-    }
+
     Information("--------------------------------------------------------------------------------");
     Information("Deleting the remote directory");
     Information("--------------------------------------------------------------------------------");
@@ -193,6 +166,7 @@ Task("DeleteRemoteDir")
     client.DataConnectionReadTimeout = Config.FtpHelper.DataConnectionReadTimeout;
     client.RetryAttempts = Config.FtpHelper.DeleteRetryAttempts;
     client.Connect();
+
     try
     {
         client.DeleteDirectory(Config.FtpHelper.RemoteDir, FtpListOption.AllFiles);
@@ -205,6 +179,7 @@ Task("DeleteRemoteDir")
             throw;
         }
     }
+
     client.Disconnect();
     Information("--------------------------------------------------------------------------------");
     Information("Deleted the remote directory");
@@ -223,16 +198,15 @@ Task("DeleteRemoteDir")
         );
 });
 
-Task("UploadDir")
-  .Does(() => {
+Task("Upload-Dir")
+  .WithCriteria(() => Config.ConfigurableSettings.DoFtpWork)
+  .Does(() =>
+{
     if (Config.Slack.PostSlackSteps)
     {
         Config.CakeMethods.SendSlackNotification(Config, "Starting FTP Upload.");
     }
-    if (!Config.ConfigurableSettings.DoFtpWork)
-    {
-        return;
-    }
+
     Information("--------------------------------------------------------------------------------");
     Information("Uploading a directory");
     Information("--------------------------------------------------------------------------------");
@@ -247,6 +221,7 @@ Task("UploadDir")
     client.DataConnectionReadTimeout = Config.FtpHelper.DataConnectionReadTimeout;
     client.RetryAttempts = Config.FtpHelper.UploadRetryAttempts;
     client.Connect();
+
     try
     {
         Config.CakeMethods.UploadDirectory(Config, client, sourceDir, sourceDir);
@@ -254,6 +229,7 @@ Task("UploadDir")
     {
         client.Disconnect();
     }
+
     client.Disconnect();
     Information("--------------------------------------------------------------------------------");
     Information("Uploaded a directory");
@@ -272,48 +248,143 @@ Task("UploadDir")
         );
 });
 
-//////////////////////////////////////////////////////////////////////
-// Airbrake Deploy
-//////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////
+// SonarQube Tasks
+//////////////////////////////////////////////////////////////
 
-Task("SendAnAirbrakeDeploy")
+Task("Start-SonarQube")
     .Does(() =>
 {
     if (Config.Slack.PostSlackSteps)
     {
-        Config.CakeMethods.SendSlackNotification(Config, "Starting Send An Airbrake Deploy.");
+        Config.CakeMethods.SendSlackNotification(Config, "Starting SonarQube.");
     }
-
-    Information("--------------------------------------------------------------------------------");
-    Information("Starting Send An Airbrake Deploy");
-    Information("--------------------------------------------------------------------------------");
-    var settings = new HttpSettings
-    {
-        Headers = new Dictionary<string, string>
-        {
-            { "Content-Type", "application/json" }
-        },
-    };
-    settings.SetRequestBody("{\"environment\":\"" + Config.ProjectInfo.EnvironmentName + "\",\"username\":\""
-        + Config.Airbrake.UserName + "\",\"email\":\"" + Config.Airbrake.Email + "\","
-        + "\"repository\":\"" + EnvironmentVariable("CI_REPOSITORY_URL") + "/" + EnvironmentVariable("CI_COMMIT_REF_NAME") + "\",\"revision\":\""
-        + EnvironmentVariable("CI_COMMIT_SHA") + "\",\"version\":\"v2.0\"}");
-
-    string responseBody = HttpPost("https://airbrake.io/api/v4/projects/" + Config.Airbrake.ProjectId
-        + "/deploys?key=" + Config.Airbrake.ProjectKey, settings);
-    Information("--------------------------------------------------------------------------------");
-    Information("Send An Airbrake Deploy Complete");
-    Information("--------------------------------------------------------------------------------");
+    // using (var process = StartAndReturnProcess(
+    //     "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
+    //     new ProcessSettings()
+    //         .WithArguments(
+    //             arguments => {
+    //                 arguments
+    //                     .Append("begin")
+    //                     .AppendSwitchQuoted(@"/k", ":", Config.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/n", ":", Config.ProjectInfo.ProjectName)
+    //                     .AppendSwitchQuoted(@"/v", ":", Config.Nuget.Version);
+    //                 if (!string.IsNullOrEmpty(EnvironmentVariable("SONARQUBE_KEY")))
+    //                 {
+    //                     arguments
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.login=" + EnvironmentVariable("SONARQUBE_KEY"));
+    //                 }
+    //                 if (DirectoryExists(Config.UnitTests.UnitTestDirectoryPath))
+    //                 {
+    //                     arguments
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.opencover.reportsPaths=" + Config.UnitTests.CoverageReportFilePath)
+    //                         .AppendSwitchQuoted(@"/d", ":", "sonar.cs.xunit.reportsPaths=" + Config.UnitTests.XUnitOutputFile);
+    //                 }
+    //                 if (!string.IsNullOrEmpty(Config.UnitTests.JsTestPath))
+    //                 {
+    //                     arguments
+    //                         .AppendSwitchQuoted("/d",":", "sonar.javascript.lcov.reportPath=jsTests.lcov");
+    //                 }
+    //             }   
+    //             )
+    //         )
+    //     )
+    // {
+    //     process.WaitForExit();
+    //     if (process.GetExitCode() != 0) throw new CakeException("Could not start SonarQube analysis");
+    // }
 })
     .ReportError(exception =>
 {
     Config.DispalyException(
         exception,
         new string[] {
-            "Ensure the project built correctly",
-            "Ensure no files are locked",
-            "Ensure 'Config.ConfigurableSettings.LocalCopyTargetDirectory' is set in the Config.ConfigurableSettings"
+            "Ensure java is installed on the machine",
+            "ENSURE THE UNIT TESTS HAVE AT LEAST 1 XUNIT TEST",
+            "Check for file locks"
         },
         true
+        );
+});
+
+Task("End-SonarQube")
+    .Does(() =>
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Complete SonarQube Analysis.");
+    }
+    // using (var process = StartAndReturnProcess(
+    //         "./tools/SonarQube.MSBuild.Runner/tools/MSBuild.SonarQube.Runner.exe", 
+    //         new ProcessSettings()
+    //             .SetRedirectStandardOutput(true)
+    //             .WithArguments(
+    //                 arguments => {
+    //                     arguments.Append("end");
+    //                     }
+    //                 )
+    //             )
+    //         )
+    // {
+    //     Information("--------------------------------------------------------------------------------");
+    //     Information("Starting stdout capture");
+    //     Information("--------------------------------------------------------------------------------");
+    //     process.WaitForExit();
+    //     IEnumerable<string> stdout = process.GetStandardOutput();
+    //     Information("Aggregating.....");      
+    //     string filename = string.Format("reallyLameFileToNeed{0}.txt",Guid.NewGuid());  
+    //     System.IO.File.WriteAllLines(filename, stdout);
+    //     Config.UnitTests.SqAnalysisUrl = GetSonarQubeURL(System.IO.File.ReadAllLines(filename));
+    //     DeleteFile(filename);
+    //     Information("--------------------------------------------------------------------------------");
+    //     Information("Check " + Config.UnitTests.SqAnalysisUrl + " for a sonarqube update status.");
+    //     Information("--------------------------------------------------------------------------------");
+    // }
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Ensure java is installed on the machine",
+            "ENSURE THE UNIT TESTS HAVE AT LEAST 1 XUNIT TEST",
+            "Check for file locks"
+        },
+        true
+        );
+});
+
+Task("Check-Quality-Gate")
+    .WithCriteria(() => !String.IsNullOrEmpty(Config.UnitTests.SqAnalysisUrl))
+    .Does(() => 
+{
+    if (Config.Slack.PostSlackSteps)
+    {
+        Config.CakeMethods.SendSlackNotification(Config, "Starting Check Quality Gate.");
+    }
+    // Config.UnitTests.QualityGateReady = IsAnalysisComplete(Config.UnitTests.SqAnalysisUrl);
+    // int timeoutCount = 0;
+    // while(!Config.UnitTests.QualityGateReady) // Giving it up to two minutes to complete
+    // {
+    //     if (Config.UnitTests.MaxQualityGateTimeoutCount < timeoutCount) throw new CakeException("Could not get quality gate from SonarQube");
+    //     Config.UnitTests.QualityGateReady = IsAnalysisComplete(Config.UnitTests.SqAnalysisUrl);
+    //     System.Threading.Thread.Sleep(Config.UnitTests.QualityGateSleepLengthPerCount);
+    //     timeoutCount++;
+    // }
+    // Config.UnitTests.QualityGateStatus = CheckQualityGate(Config.ProjectInfo.ProjectName);
+    // if (string.IsNullOrEmpty(Config.UnitTests.QualityGateStatus))
+    // {
+    //     Environment.Exit(1);
+    // }
+})
+    .ReportError(exception =>
+{
+    Config.DispalyException(
+        exception,
+        new string[] {
+            "Ensure sonarqube is available and not too busy",
+            "Try again... the server can get overloaded"
+        },
+        false
         );
 });
