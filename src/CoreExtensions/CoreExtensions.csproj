@@ -43,8 +43,4 @@
     <ProjectReference Include="..\Constants\Constants.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.CSharp" Version="4.4.1" />
-  </ItemGroup>
-
 </Project>

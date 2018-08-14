@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Abstract\Abstract.csproj" />
     <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
     <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
     <ProjectReference Include="..\Constants\Constants.csproj" />

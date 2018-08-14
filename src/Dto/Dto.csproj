@@ -38,7 +38,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Enums\Enums.csproj" />
+    <PackageReference Include="StandardDot.Enums" Version="0.0.0.2" />
   </ItemGroup>
 
 </Project>

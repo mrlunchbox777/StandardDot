@@ -137,9 +137,10 @@ Task("DotNet-Core-Run-Unit-Test")
     }
     catch (Exception)
     {
-        Config.MSBuildInfo.IsRunningTests = true;
+        Config.MSBuildInfo.IsRunningTests = false;
         throw;
     }
+    Config.MSBuildInfo.IsRunningTests = false;
 })
     .ReportError(exception =>
 {
