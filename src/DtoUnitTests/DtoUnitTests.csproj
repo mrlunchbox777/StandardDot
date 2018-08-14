@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- this needs to be cleared -->
+    <!-- <PackageReference Include="StandardDot.Abstract" Version="0.0.0.3" />
+    <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.2" />
+    <PackageReference Include="StandardDot.Dto" Version="0.0.0.2" /> -->
+
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.8.2" />
     <PackageReference Include="xunit" Version="2.3.1" />
@@ -15,9 +20,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Dto\Dto.csproj" />
-    <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
     <ProjectReference Include="..\Abstract\Abstract.csproj" />
+    <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" />
+    <ProjectReference Include="..\Dto\Dto.csproj" />
     <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
   </ItemGroup>
 
