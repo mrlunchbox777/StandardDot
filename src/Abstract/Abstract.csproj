@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <!-- This gets defaulted into package version -->
-    <Version>0.0.0.3</Version>
+    <Version>0.0.0.5</Version>
 
     <!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
     <IsPackable>true</IsPackable>
@@ -38,8 +38,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Enums\Enums.csproj" />
-    <ProjectReference Include="..\Dto\Dto.csproj" />
+    <PackageReference Include="StandardDot.Enums" Version="0.0.0.2" />
+    <PackageReference Include="StandardDot.Dto" Version="0.0.0.3" />
   </ItemGroup>
 
 </Project>

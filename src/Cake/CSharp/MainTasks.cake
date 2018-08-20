@@ -93,12 +93,15 @@ Task("Update-Version-From-Assembly")
 
     string oldVersion = Config.Nuget.Version;
     string dllPath = string.IsNullOrWhiteSpace(Config.Nuget.DllDirectory)
-        ? Config.ProjectInfo.ProjectDirectory + "/bin/" + Config.MSBuildInfo.MsBuildConfig() + "/"
-            + Config.MSBuildInfo.TargetFramework + "/"
+        ? (Config.MSBuildInfo.ShouldFlatten()
+            ? " -o \"" + Config.ProjectInfo.FlattenOutputDirectory + "\""
+            : Config.ProjectInfo.ProjectDirectory + "/bin/" + Config.MSBuildInfo.MsBuildConfig() + "/"
+                + Config.MSBuildInfo.TargetFramework + "/")
         : Config.Nuget.DllDirectory;
     dllPath += string.IsNullOrWhiteSpace(Config.Nuget.DllName)
         ? Config.ProjectInfo.ProjectName + ".dll"
         : Config.Nuget.DllName;
+    // echo out where we are getting the path
 
     Config.Nuget.Version = GetFullVersionNumber(dllPath);
     if (Config.Nuget.UpdateVersionWithCINumber)
