@@ -101,6 +101,7 @@ Task("Update-Version-From-Assembly")
     dllPath += string.IsNullOrWhiteSpace(Config.Nuget.DllName)
         ? Config.ProjectInfo.ProjectName + ".dll"
         : Config.Nuget.DllName;
+    // echo out where we are getting the path
 
     Config.Nuget.Version = GetFullVersionNumber(dllPath);
     if (Config.Nuget.UpdateVersionWithCINumber)
