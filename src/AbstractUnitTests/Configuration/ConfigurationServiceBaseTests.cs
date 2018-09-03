@@ -8,7 +8,7 @@ using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 
-namespace AbstractUnitTests.Configuration
+namespace StandardDot.Abstract.UnitTests.Configuration
 {
     public class ConfigurationServiceBaseTests
     {
