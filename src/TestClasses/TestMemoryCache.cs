@@ -1,5 +1,3 @@
-using StandardDot.Abstract.CoreServices.Serialization;
-using StandardDot.CoreServices.Logging;
 using System;
 using System.Collections;
 using System.Collections.Concurrent;
@@ -7,19 +5,10 @@ using System.Collections.Generic;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 
-namespace StandardDot.CoreServices.UnitTests.Logging
+namespace StandardDot.TestClasses
 {
     public class TestMemoryCache : ICachingService
     {
-        public static CacheLoggingService GetLogsService(ISerializationService serializationService = null, TimeSpan? cacheLife = null)
-        {
-            serializationService = serializationService ?? new Json();
-            ICachingService cachingService = new TestMemoryCache(cacheLife ?? TimeSpan.FromMinutes(5));
-            CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService);
-
-            return loggingService;
-        }
-
         /// <param name="defaultCacheLifespan">How long items should be cached by default</param>
         /// <param name="cache">The cache to use, default is a thread safe dictionary</param>
         public TestMemoryCache(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObject<object>> cache = null)

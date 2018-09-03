@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.CoreServices.Serialization;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.CoreServices.Logging;
 using StandardDot.Dto.CoreServices;
 using StandardDot.Dto.Exception;
@@ -17,7 +17,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void TestBasicEnumeration()
         {
-            CacheLoggingService service = TestMemoryCache.GetLogsService();
+            CacheLoggingService service = TestMemoryCacheProvider.GetLogsService();
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
@@ -45,7 +45,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void TestNonGenricEnumerator()
         {
-            CacheLoggingService service = TestMemoryCache.GetLogsService();
+            CacheLoggingService service = TestMemoryCacheProvider.GetLogsService();
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");

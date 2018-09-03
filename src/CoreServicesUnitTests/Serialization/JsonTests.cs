@@ -1,6 +1,6 @@
 using System.IO;
 using System.Text;
-using StandardDot.Abstract.CoreServices.Serialization;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.TestClasses;
 using Xunit;
 
