@@ -1,7 +1,7 @@
 using System;
 using StandardDot.Abstract.Caching;
 
-namespace StandardDot.TestClasses
+namespace StandardDot.TestClasses.AbstractImplementations
 {
     internal class TestDefaultCachedObject<T> : ICachedObject<T>
     {

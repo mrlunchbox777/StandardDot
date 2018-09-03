@@ -1,5 +1,5 @@
 using System;
-using StandardDot.TestClasses;
+using StandardDot.TestClasses.AbstractImplementations;
 using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
@@ -200,7 +200,7 @@ namespace StandardDot.Configuration.UnitTests
         private static DefaultConfigurationService GenerateService()
         {
             TestSerializationService jsonSerializer = new TestSerializationService();
-            TestMemoryCache cachingService = new TestMemoryCache(TimeSpan.FromDays(1), false);
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromDays(1), false);
             DefaultConfigurationCache cache = new DefaultConfigurationCache(cachingService,
                 jsonSerializer, TimeSpan.FromDays(1));
             DefaultConfigurationService service = new DefaultConfigurationService(cache);

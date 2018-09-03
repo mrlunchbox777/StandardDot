@@ -5,13 +5,13 @@ using System.Collections.Generic;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 
-namespace StandardDot.TestClasses
+namespace StandardDot.TestClasses.AbstractImplementations
 {
-    public class TestMemoryCache : ICachingService
+    public class TestMemoryCachingService : ICachingService
     {
         /// <param name="defaultCacheLifespan">How long items should be cached by default</param>
         /// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-        public TestMemoryCache(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObject<object>> cache = null)
+        public TestMemoryCachingService(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObject<object>> cache = null)
         {
             DefaultCacheLifespan = defaultCacheLifespan;
             Store = cache ?? new ConcurrentDictionary<string, ICachedObject<object>>();
@@ -19,7 +19,7 @@ namespace StandardDot.TestClasses
 
         /// <param name="defaultCacheLifespan">How long items should be cached by default</param>
         /// <param name="useStaticCache">If this instance should use a static cache (thread safe)</param>
-        public TestMemoryCache(TimeSpan defaultCacheLifespan, bool useStaticCache)
+        public TestMemoryCachingService(TimeSpan defaultCacheLifespan, bool useStaticCache)
         {
             DefaultCacheLifespan = defaultCacheLifespan;
             Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObject<object>>();
