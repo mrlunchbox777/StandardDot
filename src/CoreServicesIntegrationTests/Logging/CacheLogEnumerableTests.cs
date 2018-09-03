@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.CoreServices.Serialization;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.Caching;
 using StandardDot.CoreServices.Logging;
 using StandardDot.Dto.CoreServices;

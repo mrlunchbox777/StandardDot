@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using StandardDot.Abstract;
-using StandardDot.AbstractUnitTests.AbstractObjects;
+using StandardDot.Abstract.IntegrationTests.AbstractObjects;
 using Xunit;
 
 namespace StandardDot.Abstract.IntegrationTests
