@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
+    <PackageReference Include="Moq" Version="4.8.2" />
+    <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.3" />
+    <PackageReference Include="StandardDot.CoreServices" Version="0.0.0.3" />
+    <PackageReference Include="StandardDot.Authentication" Version="0.0.0.4" />
+    <PackageReference Include="StandardDot.Caching" Version="0.0.0.4" />
+    <PackageReference Include="xunit" Version="2.3.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
+    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- <ProjectReference Include="..\Authentication\Authentication.csproj" />
+    <ProjectReference Include="..\Caching\Caching.csproj" />
+    <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
+    <ProjectReference Include="..\CoreExtensions\CoreExtensions.csproj" /> -->
+  </ItemGroup>
+
+</Project>
