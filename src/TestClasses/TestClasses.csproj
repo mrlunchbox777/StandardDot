@@ -7,10 +7,7 @@
   <ItemGroup>
     <None Update=".\testConfigurationJson.json" CopyToOutputDirectory="PreserveNewest" />
     <None Update=".\testConfigurationJson2.json" CopyToOutputDirectory="PreserveNewest" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\Abstract\Abstract.csproj" />
+    <PackageReference Include="StandardDot.Abstract" Version="0.0.0.4" />
   </ItemGroup>
 
 </Project>

@@ -7,7 +7,7 @@ using StandardDot.Dto.CoreServices;
 using StandardDot.Enums;
 using Xunit;
 
-namespace AbstractUnitTests.CoreServices
+namespace StandardDot.Abstract.UnitTests.CoreServices
 {
     public class LoggingServiceBaseTests
     {

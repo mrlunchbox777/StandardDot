@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/src/shoellibraries.sln"
+                "${workspaceFolder}/src/StandardDot.sln"
             ],
             "problemMatcher": "$msCompile"
         },
@@ -17,7 +17,7 @@
             "type": "process",
             "args": [
                 "test",
-                "${workspaceFolder}/src/shoellibraries.sln"
+                "${workspaceFolder}/src/StandardDot.sln"
             ],
             "problemMatcher": "$msCompile"
         }
