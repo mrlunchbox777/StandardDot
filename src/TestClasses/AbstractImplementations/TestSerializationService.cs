@@ -6,7 +6,7 @@ using System.Text;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Enums;
 
-namespace StandardDot.TestClasses
+namespace StandardDot.TestClasses.AbstractImplementations
 {
     /// <summary>
     /// A Basic Json Serializer

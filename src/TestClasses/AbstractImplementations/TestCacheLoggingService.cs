@@ -4,7 +4,7 @@ using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Dto.CoreServices;
 
-namespace StandardDot.TestClasses
+namespace StandardDot.TestClasses.AbstractImplementations
 {
     public class TestCacheLoggingService : LoggingServiceBase
     {
@@ -41,7 +41,7 @@ namespace StandardDot.TestClasses
         /// <returns>IEnumerable that iterates through all logs</returns>
         protected override LogEnumerableBase<T> BaseGetLogs<T>()
         {
-            return new CacheLogEnumerable<T>(CachingService, SerializationService, true);
+            return new TestCacheLogEnumerable<T>(CachingService, SerializationService, true);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace StandardDot.TestClasses
         /// <returns>IEnumerable that iterates through all logs</returns>
         protected override ILogBaseEnumerable BaseGetLogs()
         {
-            return new CacheLogBaseEnumerable(CachingService, SerializationService);
+            return new TestCacheLogBaseEnumerable(CachingService, SerializationService);
         }
     }
 }

@@ -7,29 +7,27 @@ using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Dto.CoreServices;
 
-namespace StandardDot.TestClasses
+namespace StandardDot.TestClasses.AbstractImplementations
 {
     /// <summary>
     /// An Enumerable to get text logs
     /// </summary>
-    /// <typeparam name="T">The target type for the logs (must be serializable)</typeparam>
-    public class CacheLogEnumerable<T> : LogEnumerableBase<T>
-        where T : new()
+    public class TestCacheLogBaseEnumerable : LogBaseEnumerableBase
     {
         /// <param name="source">The source that the enumerable should represent</param>
-        public CacheLogEnumerable(IEnumerable<Log<T>> source)
+        public TestCacheLogBaseEnumerable(IEnumerable<LogBase> source)
             : base(source)
         { }
 
         /// <param name="source">The source that the enumerable should represent</param>
-        public CacheLogEnumerable(ILogEnumerable<T> source)
+        public TestCacheLogBaseEnumerable(ILogBaseEnumerable source)
             : base(source)
         { }
 
         /// <param name="cachingService">The caching service that backs the enumerable</param>
         /// <param name="serializationService">The serialization service to use</param>
         /// <param name="onlySerializeLogsOfTheCorrectType">Only serializes logs of the correct type, has a significant performance hit</param>
-        public CacheLogEnumerable(ICachingService cachingService, ISerializationService serializationService, bool onlySerializeLogsOfTheCorrectType = false)
+        public TestCacheLogBaseEnumerable(ICachingService cachingService, ISerializationService serializationService, bool onlySerializeLogsOfTheCorrectType = false)
             : base(null)
         {
             SerializationService = serializationService;
@@ -43,7 +41,7 @@ namespace StandardDot.TestClasses
 
         protected virtual bool OnlySerializeLogsOfTheCorrectType { get; }
 
-        public override IEnumerator<Log<T>> GetEnumerator()
+        public override IEnumerator<LogBase> GetEnumerator()
         {
             if (CachingService == null) 
             {
@@ -52,7 +50,7 @@ namespace StandardDot.TestClasses
             return CachingService
                 .Select(i => i.Value)
                 .Where(i => i.ExpireTime >= DateTime.UtcNow)
-                .Select(i => i.Value as Log<T>)
+                .Select(i => i.Value as LogBase)
                 .Where(i => !OnlySerializeLogsOfTheCorrectType || i != null)
                 .GetEnumerator();
         }
