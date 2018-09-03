@@ -34,9 +34,10 @@ namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
             var stuff = copy[0];
             var stuff1 = dict[0];
             Assert.NotSame(copy, dict);
-            Assert.NotSame(copy.Single(), dict.Single());
+            Assert.NotEqual(copy.Single(), dict.Single());
             Assert.NotEqual(copy.Single(), dict.Single()); 
-            Assert.NotSame(copy.Single().Key, dict.Single().Key);
+            // these should be equal because it's a copy (and the key is a value type)
+            Assert.Equal(copy.Single().Key, dict.Single().Key);
             Assert.Equal(copy.Single().Key, dict.Single().Key); 
             Assert.NotSame(copy.Single().Value, dict.Single().Value);
             Assert.NotEqual(copy.Single().Value, dict.Single().Value); 

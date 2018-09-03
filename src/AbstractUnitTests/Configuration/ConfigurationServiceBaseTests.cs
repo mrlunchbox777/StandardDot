@@ -2,13 +2,12 @@ using System;
 using Moq;
 using Moq.Protected;
 using StandardDot.Abstract.Configuration;
-using StandardDot.Abstract.CoreServices.Serialization;
-using StandardDot.Caching;
+using StandardDot.TestClasses.AbstractImplementations;
 using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 
-namespace AbstractUnitTests.Configuration
+namespace StandardDot.Abstract.UnitTests.Configuration
 {
     public class ConfigurationServiceBaseTests
     {
@@ -116,8 +115,8 @@ namespace AbstractUnitTests.Configuration
 
         private static Mock<ConfigurationCacheBase> GenerateCache(bool useStrict = true)
         {
-            Json jsonSerializer = new Json();
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromDays(1), false);
+            TestSerializationService jsonSerializer = new TestSerializationService();
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromDays(1), false);
             Mock<ConfigurationCacheBase> cacheProxy =
                 new Mock<ConfigurationCacheBase>(useStrict ? MockBehavior.Strict : MockBehavior.Loose,
                     cachingService, jsonSerializer, TimeSpan.FromDays(1));

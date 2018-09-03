@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.CoreServices.Serialization;
-using StandardDot.Caching;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.CoreServices.Logging;
 using StandardDot.Dto.CoreServices;
 using StandardDot.Dto.Exception;
 using StandardDot.Enums;
+using StandardDot.TestClasses.AbstractImplementations;
 using StandardDot.TestClasses;
 using Xunit;
 
@@ -19,7 +19,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -40,7 +40,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogMessage()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -71,7 +71,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogMessageWithObject()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -113,7 +113,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogMessageWithObjectWithoutMessage()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -154,7 +154,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogException()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -199,7 +199,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogExceptionWithoutMessage()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -243,7 +243,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogExceptionWithObject()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -298,7 +298,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogExceptionWithObjectWithoutMessage()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -352,7 +352,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void LogObjectTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 
@@ -421,7 +421,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void GetLogsTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             Json serializationService = new Json();
             CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService, _partSeperator);
 

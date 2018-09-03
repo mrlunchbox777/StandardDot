@@ -5,7 +5,7 @@ using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;
 using Xunit;
 
-namespace Abstract.UnitTests.Configuration
+namespace StandardDot.Abstract.UnitTests.Configuration
 {
     public class ConfigurationMetaDataBaseTests
     {

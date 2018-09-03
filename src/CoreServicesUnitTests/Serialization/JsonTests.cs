@@ -1,6 +1,6 @@
 using System.IO;
-using StandardDot.Abstract.CoreServices.Serialization;
-using StandardDot.CoreExtensions;
+using System.Text;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.TestClasses;
 using Xunit;
 
@@ -36,7 +36,8 @@ namespace StandardDot.CoreServices.UnitTests
                 };
             
             Foobar deserialized;
-            using (Stream currentStream = originalString.ToStream())
+            byte[] bytes = Encoding.UTF8.GetBytes(originalString);
+            using (Stream currentStream = new MemoryStream(bytes))
             {
                 deserialized = service.DeserializeObject<Foobar>(currentStream);
             }
