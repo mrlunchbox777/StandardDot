@@ -1,9 +1,10 @@
 using System;
 using System.IO;
+using StandardDot.Abstract.CoreServices;
 using StandardDot.CoreExtensions;
 using StandardDot.CoreExtensions.Object;
 
-namespace StandardDot.Abstract.CoreServices.Serialization
+namespace StandardDot.CoreServices.Serialization
 {
     /// <summary>
     /// A Basic Json Serializer
