@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using StandardDot.Abstract.Configuration;
 using StandardDot.TestClasses.TestConfigurations;
-using TestClasses;
+using StandardDot.TestClasses;
 
 namespace StandardDot.TestClasses.TestConfigurationMetadatas
 {

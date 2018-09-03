@@ -1,6 +1,6 @@
 using System.IO;
 
-namespace TestClasses
+namespace StandardDot.TestClasses
 {
     public class CheckDisposeStream : Stream
     {
