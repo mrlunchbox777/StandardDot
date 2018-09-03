@@ -4,7 +4,7 @@ using StandardDot.CoreExtensions;
 using StandardDot.TestClasses;
 using Xunit;
 
-namespace StandardDot.CoreServices.UnitTests
+namespace StandardDot.CoreServices.IntegrationTests
 {
     public class JsonTests
     {

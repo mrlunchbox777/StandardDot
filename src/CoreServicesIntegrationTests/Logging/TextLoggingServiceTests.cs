@@ -11,7 +11,7 @@ using StandardDot.Enums;
 using StandardDot.TestClasses;
 using Xunit;
 
-namespace StandardDot.CoreServices.UnitTests.Logging
+namespace StandardDot.CoreServices.IntegrationTests.Logging
 {
     public class TextLoggingServiceTest
     {
