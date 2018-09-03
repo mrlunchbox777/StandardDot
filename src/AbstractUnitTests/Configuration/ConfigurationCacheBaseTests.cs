@@ -3,7 +3,7 @@ using Moq;
 using StandardDot.Abstract.Configuration;
 using Xunit;
 
-namespace Abstract.UnitTests.Configuration
+namespace StandardDot.Abstract.UnitTests.Configuration
 {
     public class ConfigurationCacheBaseTests
     {

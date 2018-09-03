@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using StandardDot.Abstract;
 
-namespace StandardDot.AbstractUnitTests.AbstractObjects
+namespace StandardDot.Abstract.UnitTests.AbstractObjects
 {
     public class TestApiKeyService : IApiKeyService
     {

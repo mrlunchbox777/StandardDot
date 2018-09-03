@@ -4,7 +4,7 @@ using StandardDot.Abstract.CoreServices;
 using StandardDot.TestClasses;
 using Xunit;
 
-namespace AbstractUnitTests.CoreServices
+namespace StandardDot.Abstract.UnitTests.CoreServices
 {
     public class ISerializationServiceTests
     {

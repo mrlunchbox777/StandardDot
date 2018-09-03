@@ -7,13 +7,11 @@ using System.Security.Principal;
 using StandardDot.Abstract;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.CoreServices.Serialization;
 using StandardDot.Authentication.Hmac;
 using StandardDot.Authentication.UnitTests.AuthenticationServiceTestObjects;
-using StandardDot.Caching;
 using StandardDot.CoreExtensions;
-using StandardDot.CoreServices.Logging;
 using StandardDot.Enums;
+using StandardDot.TestClasses.AbstractImplementations;
 using Xunit;
 
 namespace StandardDot.Authentication.UnitTests
@@ -39,7 +37,7 @@ namespace StandardDot.Authentication.UnitTests
         [Fact]
         public void IsValidRequestTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             IsValidRequestOverride service = GetService((l, a, c) => new IsValidRequestOverride(l, a, c), cachingService);
             const string badAppId = "badappId";
             const string resource = "/test";
@@ -90,7 +88,7 @@ namespace StandardDot.Authentication.UnitTests
         [Fact]
         public void IsReplayRequestTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             IsReplayRequestOverride service = GetService((l, a, c) => new IsReplayRequestOverride(l, a, c), cachingService);
 
             const string Key = "alreadyAdded";
@@ -138,7 +136,7 @@ namespace StandardDot.Authentication.UnitTests
         [Fact]
         public void DoAuthorizationTest()
         {
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
+            TestMemoryCachingService cachingService = new TestMemoryCachingService(TimeSpan.FromMinutes(5));
             AuthenticationService service = GetService((l, a, c) => new AuthenticationService(l, a, c), cachingService);
             const string resource = "/test";
             const string method = "GET";
@@ -213,12 +211,12 @@ namespace StandardDot.Authentication.UnitTests
             Assert.Equal(_appId, result.Item3.Identity.Name);
         }
         
-        private static T GetService<T>(Func<ILoggingService, IApiKeyService, ICachingService, T> constructor, MemoryCachingService cachingService = null)
+        private static T GetService<T>(Func<ILoggingService, IApiKeyService, ICachingService, T> constructor, ICachingService cachingService = null)
             where T: AuthenticationService
         {
-            MemoryCachingService memoryCachingService = cachingService ?? new MemoryCachingService(TimeSpan.FromMinutes(5));
-            Json serializationService = new Json();
-            CacheLoggingService loggingService = new CacheLoggingService(memoryCachingService, serializationService);
+            ICachingService memoryCachingService = cachingService ?? new TestMemoryCachingService(TimeSpan.FromMinutes(5));
+            TestSerializationService serializationService = new TestSerializationService();
+            TestCacheLoggingService loggingService = new TestCacheLoggingService(memoryCachingService, serializationService);
             BasicApiKeyService apiKeyService = new BasicApiKeyService(GetBackingKeys());
             T service = constructor(loggingService, apiKeyService, memoryCachingService);
             return service;
