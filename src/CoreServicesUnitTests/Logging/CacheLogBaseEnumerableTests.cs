@@ -3,7 +3,6 @@ using System.Collections;
 using System.Linq;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Abstract.CoreServices.Serialization;
-using StandardDot.Caching;
 using StandardDot.CoreServices.Logging;
 using StandardDot.Dto.CoreServices;
 using StandardDot.Enums;
@@ -17,7 +16,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void TestBasicEnumeration()
         {
-            CacheLoggingService service = GetLogsService();
+            CacheLoggingService service = TestMemoryCache.GetLogsService();
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
@@ -35,7 +34,7 @@ namespace StandardDot.CoreServices.UnitTests.Logging
         [Fact]
         public void TestNonGenricEnumerator()
         {
-            CacheLoggingService service = GetLogsService();
+            CacheLoggingService service = TestMemoryCache.GetLogsService();
             Tuple<Foobar, BarredFoo> objects = CreateObjects();
             service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
             service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
@@ -74,15 +73,6 @@ namespace StandardDot.CoreServices.UnitTests.Logging
             };
 
             return new Tuple<Foobar, BarredFoo>(original, original2);
-        }
-
-        private CacheLoggingService GetLogsService()
-        {
-            Json serializationService = new Json();
-            MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromMinutes(5));
-            CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService);
-
-            return loggingService;
         }
 
         private Random random = new Random();
