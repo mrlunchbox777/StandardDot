@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using StandardDot.Abstract;
-using StandardDot.AbstractUnitTests.AbstractObjects;
+using StandardDot.Abstract.UnitTests.AbstractObjects;
 using Xunit;
 
-namespace AbstractUnitTests
+namespace StandardDot.Abstract.UnitTests
 {
     public class IApiKeyServiceTests
     {

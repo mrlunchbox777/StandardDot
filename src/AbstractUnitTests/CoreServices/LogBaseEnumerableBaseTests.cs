@@ -8,7 +8,7 @@ using StandardDot.Abstract.CoreServices;
 using StandardDot.Dto.CoreServices;
 using Xunit;
 
-namespace AbstractUnitTests.CoreServices
+namespace StandardDot.Abstract.UnitTests.CoreServices
 {
     public class LogBaseEnumerableBaseTests
     {

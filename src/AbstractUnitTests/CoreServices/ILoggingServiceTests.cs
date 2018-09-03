@@ -8,7 +8,7 @@ using StandardDot.Enums;
 using StandardDot.TestClasses;
 using Xunit;
 
-namespace AbstractUnitTests.CoreServices
+namespace StandardDot.Abstract.UnitTests.CoreServices
 {
     public class ILoggingServiceTests
     {
