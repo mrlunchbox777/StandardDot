@@ -16,7 +16,7 @@
 Task("Bake-Cake")
     .IsDependentOn("Setup-Environment")
     .IsDependentOn("Starting-Up-Notification")    
-    // .IsDependentOn("DotNet-Core-Run-Unit-Test")
+    .IsDependentOn("DotNet-Core-Run-Unit-Test")
     // .IsDependentOn("Start-SonarQube")
     // .IsDependentOn("Type-Script-Compile")   
     // .IsDependentOn("Sass-Compile")   
