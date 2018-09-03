@@ -5,8 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Serialization;
-using StandardDot.CoreExtensions;
-using StandardDot.CoreExtensions.Object;
+using System.Runtime.Serialization.Json;
+using System.Text;
 using StandardDot.Dto.Exception;
 using Xunit;
 
@@ -246,10 +246,35 @@ namespace StandardDot.Dto.UnitTests.Exception
             Assert.Equal((object)serializableException, sException.Data["test"]);
             AssertEqualExceptions(sException, exception, true, true);
 
-            string jsonString = sException.SerializeJson();
+            string jsonString = "";
+            using (MemoryStream stream = new MemoryStream())
+            {
+                DataContractJsonSerializer ds = new DataContractJsonSerializer(typeof(SerializableException));
+                ds.WriteObject(stream, sException);
+                if (stream.CanSeek)
+                {
+                    stream.Position = 0;
+                }
+                using (StreamReader reader = new StreamReader(stream))
+                {
+                    jsonString = reader.ReadToEnd();
+                }
+            }
+
             Assert.NotNull(jsonString);
             Assert.NotEmpty(jsonString);
-            SerializableException deserialized = jsonString.DeserializeJson<SerializableException>();
+            SerializableException deserialized = null;
+            // jsonString.DeserializeJson<SerializableException>();
+            byte[] bytes = Encoding.UTF8.GetBytes(jsonString);
+            using (MemoryStream stream = new MemoryStream(bytes))
+            {
+                if (stream.CanSeek)
+                {
+                    stream.Position = 0;
+                }
+                DataContractJsonSerializer ds = new DataContractJsonSerializer(typeof(SerializableException));
+                deserialized = (SerializableException)ds.ReadObject(stream);
+            }
             Assert.NotNull(deserialized);
             // the data can't be verified this way (they are new instances when deserialized)
             AssertEqualExceptionsSerializable(sException, deserialized, true, false);
