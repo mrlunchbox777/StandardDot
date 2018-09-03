@@ -9,6 +9,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0" />
     <PackageReference Include="Moq" Version="4.8.2" />
+    <PackageReference Include="StandardDot.Dto" Version="0.0.0.3" />
+    <PackageReference Include="StandardDot.Enums" Version="0.0.0.2" />
     <PackageReference Include="xunit" Version="2.3.1" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
@@ -16,11 +18,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Abstract\Abstract.csproj" />
-    <ProjectReference Include="..\Enums\Enums.csproj" />
-    <ProjectReference Include="..\Dto\Dto.csproj" />
-    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
-    <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
-    <ProjectReference Include="..\Caching\Caching.csproj" />
   </ItemGroup>
 
 </Project>
