@@ -3,6 +3,14 @@ joinPath()
 {
     local BASEPATH="$1"
     local SUBDIR="$2"
+    if [ -z $"BASEPATH" ]; then
+        print $"SUBDIR"
+        return
+    fi
+    if [ -z $"SUBDIR" ]; then
+        print $"BASEPATH"
+        return
+    fi
     parts=("$BASEPATH" "$SUBDIR");
     printf '/%s' "${parts[@]%/}"
 }
@@ -195,7 +203,7 @@ startRunning()
     # run if there are changes
     echo "number of changes - ${#diff[@]}"
     alreadyBuilt=() # Memoize so we don't build twice
-    for change in $diff; do
+    for change in "${diff[@]}"; do
         echo $change
         if [ ! -z "$change" ] && [ $(echo "$change" | grep "Tests" -c) -lt 1 ] && [ $(echo "$change" | grep ".sql" -c) -lt 1 ]; then
             ADDR=()
@@ -211,7 +219,11 @@ startRunning()
                 alreadyBuilt+=$PROJECTNAME
             fi
 
-            findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            exec 5>&1
+            runResult=$(findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+            echo "completed $diff"
+            # findAndRunCakeScript "$PROJECTNAME" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+            # echo "completed $diff"
         else
             echo "skipping $diff"
         fi
@@ -226,8 +238,14 @@ startRunning()
         fi
         PROJECTNAME="${ADDR[-2]}"
         # Still need the find and run cake script in this
-        findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+
+        exec 5>&1
+        runResult=$(findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"|tee >(cat - >&5))
+        echo "completed $CI_COMMIT_SHA"
+        # findAndRunCakeScript "$CakeDirectory" "$CakeTarget" "$Target" "$Configuration" "$Verbosity" "$PROJECTNAME" "$PSScriptRoot"
+        # echo "completed $CI_COMMIT_SHA"
     fi
+    echo "completed run"
 }
 
 
@@ -278,17 +296,17 @@ findAndRunCakeScript ()
             csprojFileCount=$(ls "$NewCakeDir" | grep ".csproj" -c)
             if [ "$csprojFileCount" -le 0 ]; then
                 echo "Found a cake file, but didn't find a csproj"
-                return
+                return 0
             fi
         else
             echo "Can't find Cakefile for $CakeTarget in $NewCakeDir... Abandoning ship!"
-            return
+            return 0
         fi
     fi
 
     if [ -z "$Script" ]; then
         echo "Can't find Cakefile in $NewCakeDir... Abandoning ship!"
-        return
+        return 0
     fi
 
     Script=$(joinPath "$NewCakeDir" "$Script")
@@ -342,5 +360,7 @@ ensureCakeAndNuget
 ensureOthers
 
 startRunning
+
+echo "finished running"
 
 rm -rf "$TOOLS_DIR"

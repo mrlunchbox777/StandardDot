@@ -6,10 +6,6 @@ public class UnitTests
         this.JsTestPath = "";
         this.MaxQualityGateTimeoutCount = 24;
         this.QualityGateSleepLengthPerCount = 5000;
-
-        _context.Information("Project Name - " + _cakeConfig.ProjectInfo.ProjectName);
-        _context.Information("Unit Test Project Name - " + this.UnitTestProjectName);
-        _context.Information("Unit Test Path - " + this.UnitTestDirectoryPath);
     }
 
     private CakeConfig _cakeConfig;

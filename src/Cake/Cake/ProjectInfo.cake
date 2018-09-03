@@ -10,7 +10,6 @@ public class ProjectInfo
         this.IsDevelopment = (_context.EnvironmentVariable("CI_COMMIT_REF_NAME") ?? "develop").Contains("develop");
         this.IsLocal = !(this.IsProduction || this.IsBeta || this.IsQa
             || this.IsIntegration || this.IsDevelopment);
-        _context.Information("Project Name from ProjectInfo - " + this.ProjectName);
     }
 
     private bool _stepUpADirectoryInConfigureSpace { get; set; }
