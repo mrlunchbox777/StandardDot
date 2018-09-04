@@ -38,7 +38,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="StandardDot.Abstract" Version="0.0.0.7" />
+    <PackageReference Include="StandardDot.Abstract" Version="0.0.0.8" />
     <PackageReference Include="StandardDot.Dto" Version="0.0.0.7" />
     <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.6" />
   </ItemGroup>
