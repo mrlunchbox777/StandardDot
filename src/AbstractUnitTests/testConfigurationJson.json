@@ -1,0 +1,8 @@
+{
+    "testInt": 3,
+    "testListString": [
+        "string1",
+        "string2",
+        "string3"
+    ]
+}
