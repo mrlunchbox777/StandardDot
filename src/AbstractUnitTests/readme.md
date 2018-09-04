@@ -7,6 +7,8 @@ There are several folders and files that are directly copied from test classes (
 * Configuration Metadatas (folder)
 * Foobar (.cs)
 * Check Dispose Stream (.cs)
+* testConfigurationJson.json
+* testConfigurationJson2.json
 
 THE TEST CLASSES VERSION SHOULD BE THE SYSTEM OF RECORD.
 
