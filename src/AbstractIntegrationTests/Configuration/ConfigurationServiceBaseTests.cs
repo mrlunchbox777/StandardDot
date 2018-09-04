@@ -1,8 +1,7 @@
 using System;
 using Moq;
-using Moq.Protected;
 using StandardDot.Abstract.Configuration;
-using StandardDot.Abstract.CoreServices.Serialization;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.Caching;
 using StandardDot.TestClasses.TestConfigurationMetadatas;
 using StandardDot.TestClasses.TestConfigurations;

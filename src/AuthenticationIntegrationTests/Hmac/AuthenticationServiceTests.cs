@@ -7,7 +7,7 @@ using System.Security.Principal;
 using StandardDot.Abstract;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.CoreServices.Serialization;
+using StandardDot.CoreServices.Serialization;
 using StandardDot.Authentication.Hmac;
 using StandardDot.Authentication.IntegrationTests.AuthenticationServiceTestObjects;
 using StandardDot.Caching;
