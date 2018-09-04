@@ -2,20 +2,46 @@ using System.Collections.Generic;
 
 namespace Abstract.CoreServices
 {
+    /// <summary>
+    /// An enumerable of fixed size subsets
+    /// </summary>
+    /// <typeparam name="T">The type of items in the enumerable</typeparam>
     public interface IPaginated<T> : IEnumerable<IPage<T>>
     {
-         IEnumerable<T> Collate();
+        /// <summary>
+        /// Combines all subsets into a single enumerable
+        /// </summary>
+        IEnumerable<T> Collate();
 
-         void Reset();
+        /// <summary>
+        /// Resets the current page index
+        /// </summary>
+        void Reset();
 
-         IPage<T> GetPage(int pageIndex);
+        /// <summary>
+        /// Gets the page at the pageIndex
+        /// </summary>
+        /// <param name="pageIndex">The index of the page to get</param>
+        IPage<T> GetPage(int pageIndex);
 
-         IPage<T> Current { get; }
+        /// <summary>
+        /// Gets the current page
+        /// </summary>
+        IPage<T> Current { get; }
 
-         int PageSize { get; }
+        /// <summary>
+        /// The size of pages
+        /// </summary>
+        int PageSize { get; }
 
-         int CurrentPageIndex { get; }
+        /// <summary>
+        /// Gets the index of the current page
+        /// </summary>
+        int CurrentPageIndex { get; }
 
-         IPage<T> GetNext();
+        /// <summary>
+        /// Gets the next page
+        /// </summary>
+        IPage<T> GetNext();
     }
 }
