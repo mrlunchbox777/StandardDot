@@ -12,36 +12,36 @@ namespace StandardDot.Abstract.IntegrationTests.Configuration
         [Fact]
         public void PropertiesFile()
         {
-            ConfigurationMetadataBase<TestConfiguration, TestConfigurationMetadata> metaData = new TestConfigurationMetadata();
-            Assert.False(metaData.UseStream);
-            Assert.Equal("./testConfigurationJson.json", metaData.ConfigurationLocation);
-            Assert.Equal(typeof(TestConfiguration), metaData.ConfigurationType);
-            Assert.Equal("TestConfiguration", metaData.ConfigurationName);
-            Assert.Null(metaData.GetConfigurationStream); 
+            ConfigurationMetadataBase<TestConfiguration, TestConfigurationMetadata> metadata = new TestConfigurationMetadata();
+            Assert.False(metadata.UseStream);
+            Assert.Equal("./testConfigurationJson.json", metadata.ConfigurationLocation);
+            Assert.Equal(typeof(TestConfiguration), metadata.ConfigurationType);
+            Assert.Equal("TestConfiguration", metadata.ConfigurationName);
+            Assert.Null(metadata.GetConfigurationStream); 
         }
         
         [Fact]
         public void PropertiesStream()
         {
-            ConfigurationMetadataBase<TestConfigurationStream, TestConfigurationMetadataStream> metaData = new TestConfigurationMetadataStream();
-            Assert.True(metaData.UseStream);
-            Assert.Null(metaData.ConfigurationLocation);
-            Assert.Equal(typeof(TestConfigurationStream), metaData.ConfigurationType);
-            Assert.Equal("TestConfigurationStream", metaData.ConfigurationName);
-            Assert.NotNull(metaData.GetConfigurationStream); 
+            ConfigurationMetadataBase<TestConfigurationStream, TestConfigurationMetadataStream> metadata = new TestConfigurationMetadataStream();
+            Assert.True(metadata.UseStream);
+            Assert.Null(metadata.ConfigurationLocation);
+            Assert.Equal(typeof(TestConfigurationStream), metadata.ConfigurationType);
+            Assert.Equal("TestConfigurationStream", metadata.ConfigurationName);
+            Assert.NotNull(metadata.GetConfigurationStream); 
         }
 
         [Fact]
         public void ConstructorFileTests()
         {
             const string location = "./testConfigurationJson.json";
-            ConfigurationMetadataBase<TestConfigurationConstructor, TestConfigurationConstructorMetadata> metaData
+            ConfigurationMetadataBase<TestConfigurationConstructor, TestConfigurationConstructorMetadata> metadata
                 = new TestConfigurationConstructorMetadata(location);
-            Assert.False(metaData.UseStream);
-            Assert.Equal(location, metaData.ConfigurationLocation);
-            Assert.Equal(typeof(TestConfigurationConstructor), metaData.ConfigurationType);
-            Assert.Equal("TestConfigurationConstructor", metaData.ConfigurationName);
-            Assert.Null(metaData.GetConfigurationStream); 
+            Assert.False(metadata.UseStream);
+            Assert.Equal(location, metadata.ConfigurationLocation);
+            Assert.Equal(typeof(TestConfigurationConstructor), metadata.ConfigurationType);
+            Assert.Equal("TestConfigurationConstructor", metadata.ConfigurationName);
+            Assert.Null(metadata.GetConfigurationStream); 
         }
 
         [Fact]
@@ -50,13 +50,13 @@ namespace StandardDot.Abstract.IntegrationTests.Configuration
             using(MemoryStream stream = new MemoryStream())
             {
                 Func<Stream> getStream = () => stream;
-                ConfigurationMetadataBase<TestConfigurationConstructor, TestConfigurationConstructorMetadata> metaData
+                ConfigurationMetadataBase<TestConfigurationConstructor, TestConfigurationConstructorMetadata> metadata
                     = new TestConfigurationConstructorMetadata(getStream);
-                Assert.True(metaData.UseStream);
-                Assert.Equal(stream, metaData.GetConfigurationStream());
-                Assert.Equal(typeof(TestConfigurationConstructor), metaData.ConfigurationType);
-                Assert.Equal("TestConfigurationConstructor", metaData.ConfigurationName);
-                Assert.Null(metaData.ConfigurationLocation); 
+                Assert.True(metadata.UseStream);
+                Assert.Equal(stream, metadata.GetConfigurationStream());
+                Assert.Equal(typeof(TestConfigurationConstructor), metadata.ConfigurationType);
+                Assert.Equal("TestConfigurationConstructor", metadata.ConfigurationName);
+                Assert.Null(metadata.ConfigurationLocation); 
             }
         }
     }
