@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.IO.Compression;
 using System.Runtime.Serialization.Json;
 using System.Text;
 
@@ -135,6 +136,37 @@ namespace StandardDot.CoreExtensions
             ulong unixTimestampSeconds = Convert.ToUInt64(unixTimestamp);
 
             return TimeSpan.FromSeconds(unixTimestampSeconds);
+        }
+
+        /// <summary>
+        /// Zips up a string using the .NET GZip
+        /// </summary>
+        /// <param name="source">The source to compress</param>
+        /// <returns>The compressed data</returns>
+        public static byte[] Zip(this string source)
+        {
+            using (MemoryStream output = new MemoryStream())
+            using (Stream input = source.ToStream())
+            {
+                using (GZipStream zipper = new GZipStream(output, CompressionMode.Compress))
+                {
+                    input.CopyTo(zipper);
+                }
+                return output.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Unzips a .NET GZipped string
+        /// </summary>
+        /// <param name="source">The GZipped encoded data</param>
+        /// <returns>The uncompressed string</returns>
+        public static string Unzip(this string source)
+        {
+            using (Stream input = source.ToStream())
+            {
+                return input.Unzip();
+            }
         }
     }
 }

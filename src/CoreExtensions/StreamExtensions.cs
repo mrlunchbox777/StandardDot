@@ -1,4 +1,5 @@
 using System.IO;
+using System.IO.Compression;
 using StandardDot.CoreExtensions.Object;
 
 namespace StandardDot.CoreExtensions
@@ -46,6 +47,37 @@ namespace StandardDot.CoreExtensions
                     ms.Write(buffer, 0, read);
                 }
                 return ms.ToArray();
+            }
+        }
+
+        /// <summary>
+        /// Unzips a .NET GZipped string
+        /// </summary>
+        /// <param name="source">The GZipped source data</param>
+        /// <returns>The uncompressed string</returns>
+        public static string Unzip(this byte[] source)
+        {
+            using (MemoryStream input = new MemoryStream(source))
+            {
+                return input.Unzip();
+            }
+        }
+
+        /// <summary>
+        /// Unzips a .NET GZipped string
+        /// </summary>
+        /// <param name="source">The GZipped source steam</param>
+        /// <returns>The uncompressed string</returns>
+        public static string Unzip(this Stream source)
+        {
+            using (MemoryStream output = new MemoryStream())
+            {
+                using (GZipStream zipper = new GZipStream(source, CompressionMode.Decompress))
+                {
+                    zipper.CopyTo(output);
+                }
+
+                return output.GetString();
             }
         }
     }

@@ -30,11 +30,11 @@ namespace StandardDot.Abstract.IntegrationTests.Configuration
         [Fact]
         public void ClearConfigurationTest()
         {
-            Mock<TestConfigurationMetadata> metaDataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
+            Mock<TestConfigurationMetadata> metadataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
             Mock<IConfigurationService> cacheProxy = new Mock<IConfigurationService>(MockBehavior.Strict);
-            cacheProxy.Setup(x => x.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
-            cacheProxy.Object.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object);
-            cacheProxy.Verify(x => x.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
+            cacheProxy.Setup(x => x.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
+            cacheProxy.Object.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object);
+            cacheProxy.Verify(x => x.ClearConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
         }
 
         [Fact]
@@ -50,11 +50,11 @@ namespace StandardDot.Abstract.IntegrationTests.Configuration
         public void GetConfigurationTest()
         {
             Mock<TestConfiguration> configurationProxy = new Mock<TestConfiguration>(MockBehavior.Strict);
-            Mock<TestConfigurationMetadata> metaDataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
+            Mock<TestConfigurationMetadata> metadataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
             Mock<IConfigurationService> cacheProxy = new Mock<IConfigurationService>(MockBehavior.Strict);
-            cacheProxy.Setup(x => x.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object)).Returns(configurationProxy.Object);
-            Assert.Equal(configurationProxy.Object, cacheProxy.Object.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
-            cacheProxy.Verify(x => x.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
+            cacheProxy.Setup(x => x.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object)).Returns(configurationProxy.Object);
+            Assert.Equal(configurationProxy.Object, cacheProxy.Object.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
+            cacheProxy.Verify(x => x.GetConfiguration<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
         }
 
         [Fact]
@@ -70,11 +70,11 @@ namespace StandardDot.Abstract.IntegrationTests.Configuration
         [Fact]
         public void DoesConfigurationExistTest()
         {
-            Mock<TestConfigurationMetadata> metaDataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
+            Mock<TestConfigurationMetadata> metadataProxy = new Mock<TestConfigurationMetadata>(MockBehavior.Strict);
             Mock<IConfigurationService> cacheProxy = new Mock<IConfigurationService>(MockBehavior.Strict);
-            cacheProxy.Setup(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object)).Returns(true);
-            Assert.True(cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
-            cacheProxy.Verify(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metaDataProxy.Object));
+            cacheProxy.Setup(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object)).Returns(true);
+            Assert.True(cacheProxy.Object.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
+            cacheProxy.Verify(x => x.DoesConfigurationExist<TestConfiguration, TestConfigurationMetadata>(metadataProxy.Object));
         }
 
         [Fact]
