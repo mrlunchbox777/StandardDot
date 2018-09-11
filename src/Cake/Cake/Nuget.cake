@@ -35,7 +35,7 @@ public class Nuget
         this.IconUrl = new Uri(
             "https://github.com/mrlunchbox777/StandardDot/blob/master/defaultNugetIcon.png");
         this.LicenseUrl = new Uri("https://github.com/IQAndreas/markdown-licenses/blob/master/mit.md");
-        this.Copyright = "Standard Dot " + DateTime.Now.Year.ToString();
+        this.Copyright = "Standard Dot " + DateTime.UtcNow.Year.ToString();
         this.ReleaseNotes = new List<string>(){ "General Updates" };
         this.Tags = new List<string>(){ "Build" };
         this.RequireLicenseAcceptance = false;
