@@ -7,6 +7,8 @@ namespace StandardDot.Caching.Redis.Abstract
 {
     public interface ICacheProviderSettings
     {
+        Guid CacheProviderSettingsId { get; }
+
         TimeSpan? DefaultExpireTimeSpan { get; set; }
         
         int DefaultScanPageSize { get; set; }
