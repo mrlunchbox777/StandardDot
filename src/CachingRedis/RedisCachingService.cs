@@ -7,7 +7,8 @@ using StandardDot.Abstract.Caching;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Providers;
-using StandardDot
+using StandardDot.Caching.Redis.Service;
+using StandardDot.CoreServices.Extensions;
 
 namespace StandardDot.Caching.Redis
 {
@@ -28,14 +29,14 @@ namespace StandardDot.Caching.Redis
 
         protected virtual CacheInfo _cacheInfo { get; }
 
-        private static ConcurrentDictionary<Guid, RedisCacheProvider> _store
-            = new ConcurrentDictionary<Guid, RedisCacheProvider>();
+        private static ConcurrentDictionary<Guid, RedisService> _store
+            = new ConcurrentDictionary<Guid, RedisService>();
 
-        private RedisCacheProvider Store
+        private RedisService Store
         {
             get
             {
-                RedisCacheProvider provider;
+                RedisService provider;
                 if (UseStaticProvider && _store.ContainsKey(_settings.CacheProviderSettingsId))
                 {
                     provider = _store[_settings.CacheProviderSettingsId];
@@ -44,7 +45,7 @@ namespace StandardDot.Caching.Redis
                         return provider;
                     }
                 }
-                provider = new RedisCacheProvider(_settings);
+                provider = new RedisService(_settings);
                 if (UseStaticProvider)
                 {
                     _store[_settings.CacheProviderSettingsId] = provider;
@@ -75,11 +76,11 @@ namespace StandardDot.Caching.Redis
 
         public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
-        public virtual ICollection<string> Keys => Store.Database.HashKeys("*").Select(x => x.ToString()).Paginate<string>();
+        public virtual ICollection<string> Keys => Store.Database.HashKeys("*").Select(x => x.ToString()).Paginate(_settings.DefaultScanPageSize);
 
-        public virtual ICollection<ICachedObject<object>> Values => Store.Values;
+        public virtual ICollection<ICachedObject<object>> Values => Store.Server("test").d;
 
-        public int Count => Store.Count;
+        public int Count => Store;
 
         public bool IsReadOnly => Store.IsReadOnly;
 

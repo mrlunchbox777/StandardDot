@@ -17,25 +17,17 @@ namespace StandardDot.Caching.Redis.Service
 {
     internal class RedisService
     {
-        private RedisServiceConfiguration _redisDefaultSettings;
+        public RedisService(ICacheProviderSettings settings)
+        {
+            _cacheSettings = settings;
+        }
+
+        private ICacheProviderSettings _cacheSettings;
 
         /// <summary>
         /// Set this before using anything
         /// </summary>
-        public RedisServiceConfiguration RedisDefaultSettings
-        {
-            get
-            {
-                return _redisDefaultSettings;
-            }
-            // ReSharper disable once UnusedMember.Global
-            set
-            {
-                _redisDefaultSettings = value;
-                // we reset to make sure we get a valid config being used
-                ResetCache(null, true);
-            }
-        }
+        public ICacheProviderSettings CacheSettings => _cacheSettings;
 
         private static RedisCacheProvider _cacheProvider;
 
@@ -71,7 +63,7 @@ namespace StandardDot.Caching.Redis.Service
 
         private static IDatabase _db;
 
-        internal IDatabase Db
+        internal IDatabase Database
         {
             get
             {
@@ -84,7 +76,7 @@ namespace StandardDot.Caching.Redis.Service
 
         internal IServer Server(string key)
         {
-            _server = Redis?.GetServer(Db.IdentifyEndpoint(key));
+            _server = Redis?.GetServer(Database.IdentifyEndpoint(key));
             return _server;
         }
 
@@ -98,26 +90,26 @@ namespace StandardDot.Caching.Redis.Service
         {
             get
             {
-                return GetEnsureValidRedisServiceImplementation(RedisDefaultSettings.RedisServiceImplementationType);
+                return GetEnsureValidRedisServiceImplementation(CacheSettings.RedisServiceImplementationType);
             }
             set
             {
 
-                if (_redisServiceImplementation.ContainsKey(RedisDefaultSettings.RedisServiceImplementationType))
+                if (_redisServiceImplementation.ContainsKey(CacheSettings.RedisServiceImplementationType))
                 {
-                    _redisServiceImplementation[RedisDefaultSettings.RedisServiceImplementationType] = value;
+                    _redisServiceImplementation[CacheSettings.RedisServiceImplementationType] = value;
                 }
-                _redisServiceImplementation.TryAdd(RedisDefaultSettings.RedisServiceImplementationType, value);
+                _redisServiceImplementation.TryAdd(CacheSettings.RedisServiceImplementationType, value);
             }
         }
 
         private IRedisService GetEnsureValidRedisServiceImplementation(
             RedisServiceType redisServiceImplementationType)
         {
-            if (_redisServiceImplementation.ContainsKey(RedisDefaultSettings.RedisServiceImplementationType)
-                && (_redisServiceImplementation[RedisDefaultSettings.RedisServiceImplementationType] != null))
+            if (_redisServiceImplementation.ContainsKey(CacheSettings.RedisServiceImplementationType)
+                && (_redisServiceImplementation[CacheSettings.RedisServiceImplementationType] != null))
             {
-                return _redisServiceImplementation[RedisDefaultSettings.RedisServiceImplementationType];
+                return _redisServiceImplementation[CacheSettings.RedisServiceImplementationType];
             }
 
             IRedisService helper;
@@ -159,7 +151,7 @@ namespace StandardDot.Caching.Redis.Service
         {
             if (provider == null || forceReset)
             {
-                CacheProvider = new RedisCacheProvider(this.RedisDefaultSettings);
+                CacheProvider = new RedisCacheProvider(this.CacheSettings);
             }
             else
             {
@@ -201,7 +193,7 @@ namespace StandardDot.Caching.Redis.Service
 
         internal ISerializationService GetSerializationService<T>(IDataContractResolver dataContractResolver)
         {
-            return RedisDefaultSettings.SerializationService;
+            return CacheSettings.SerializationService;
         }
     }
 }

@@ -61,7 +61,7 @@ namespace StandardDot.Caching.Redis.Service
             // delete keys by hashset (still there should only be one)
             foreach (string hashsetDictionaryKey in hashsetDictionary.Keys)
             {
-                RedisService.Db.HashDelete(hashsetDictionaryKey,
+                RedisService.Database.HashDelete(hashsetDictionaryKey,
                     hashsetDictionary[hashsetDictionaryKey].Select(x => (RedisValue)x).ToArray());
             }
         }
@@ -116,8 +116,8 @@ namespace StandardDot.Caching.Redis.Service
                 return new List<RedisId>();
             }
 
-            IEnumerable<HashEntry> fieldIdentifiers = RedisService.Db.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
-                RedisService.RedisDefaultSettings.DefaultScanPageSize);
+            IEnumerable<HashEntry> fieldIdentifiers = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
+                RedisService.CacheSettings.DefaultScanPageSize);
 
             IEnumerable<RedisId> resultingKeys =
                 // get the name, and add it to the hash name
@@ -182,8 +182,8 @@ namespace StandardDot.Caching.Redis.Service
                     continue;
                 }
 
-                IEnumerable<HashEntry> fieldIdentifiers = RedisService.Db.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
-                    RedisService.RedisDefaultSettings.DefaultScanPageSize);
+                IEnumerable<HashEntry> fieldIdentifiers = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
+                    RedisService.CacheSettings.DefaultScanPageSize);
                 IEnumerable<Tuple<RedisId, string>> resultingValues =
                     // get the name, and add it to the hash name
                     fieldIdentifiers
@@ -249,12 +249,12 @@ namespace StandardDot.Caching.Redis.Service
 
         private void HardAddToCache(RedisId key, string value)
         {
-            RedisService.Db.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
+            RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
         }
 
         private string HardGetFromCache(RedisId key)
         {
-            return RedisService.Db.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
+            return RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
         }
     }
 }

@@ -84,8 +84,8 @@ namespace StandardDot.Caching.Redis.Service
                 return new List<RedisId>();
             }
 
-            return RedisService.Server(key.FullKey).Keys(RedisService.Db.Database, key.FullKey,
-                RedisService.RedisDefaultSettings.DefaultScanPageSize)
+            return RedisService.Server(key.FullKey).Keys(RedisService.Database.Database, key.FullKey,
+                RedisService.CacheSettings.DefaultScanPageSize)
                 .Select(x => new RedisId{HashSetIdentifier = null, ObjectIdentifier = x, ServiceType = RedisServiceType.KeyValue});
         }
         
@@ -135,7 +135,7 @@ namespace StandardDot.Caching.Redis.Service
                 return new List<Tuple<RedisId, string>>();
             }
 
-            RedisValue[] results = RedisService.Db.StringGet(redisKeys.ToArray());
+            RedisValue[] results = RedisService.Database.StringGet(redisKeys.ToArray());
 
             IEnumerable<Tuple<RedisId, string>> values = results.Select(redisValue => new Tuple<RedisId, string>(null, (string)redisValue));
 
@@ -148,7 +148,7 @@ namespace StandardDot.Caching.Redis.Service
             {
                 return null;
             }
-            return RedisService.Db.KeyTimeToLive(key.FullKey);
+            return RedisService.Database.KeyTimeToLive(key.FullKey);
         }
         
         public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> allKeys, IDataContractResolver dataContractResolver = null)
@@ -169,7 +169,7 @@ namespace StandardDot.Caching.Redis.Service
                     end
                     return retVal"; // retVal = (retVal) .. (splitString) //  .. (keys[i])
             RedisKey[] redisValues = keys.Select(x => (RedisKey)x.FullKey).ToArray();
-            RedisResult result = RedisService.Db.ScriptEvaluate(luaScript, redisValues);
+            RedisResult result = RedisService.Database.ScriptEvaluate(luaScript, redisValues);
             string[] splitResult = result.ToString()
                 .Split(new[] {"|||||"}, StringSplitOptions.RemoveEmptyEntries);
             Dictionary<RedisId, TimeSpan?> ttls = new Dictionary<RedisId, TimeSpan?>();
@@ -202,12 +202,12 @@ namespace StandardDot.Caching.Redis.Service
 
         private void HardAddToCache(RedisId key, string value, DateTime expiration)
         {
-            RedisService.Db.StringSet(key.FullKey, value, expiration - DateTime.UtcNow);
+            RedisService.Database.StringSet(key.FullKey, value, expiration - DateTime.UtcNow);
         }
 
         private string HardGetFromCache(RedisId key)
         {
-            return RedisService.Db.StringGet(key.FullKey);
+            return RedisService.Database.StringGet(key.FullKey);
         }
         
     }

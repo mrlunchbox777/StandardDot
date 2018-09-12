@@ -6,8 +6,8 @@
 
   <ItemGroup>
     <PackageReference Include="StackExchange.Redis" Version="2.0.495" />
-    <PackageReference Include="StandardDot.Caching" Version="0.0.0.9" />
-    <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.11" />
+    <PackageReference Include="StandardDot.Caching" Version="0.0.0.10" />
+    <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.12" />
     <PackageReference Include="StandardDot.CoreServices" Version="0.0.0.15" />
   </ItemGroup>
 
