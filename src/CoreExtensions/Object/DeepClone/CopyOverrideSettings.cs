@@ -31,11 +31,11 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
             ShouldSkipOverrideInsteadOfSet = shouldSkipOverrideInsteadOfSet;
             IncludeNonPublic = includeNonPublic;
         }
-        
+
         public CopyOverrideSettings(Type containingClassType, string affectedFieldName, Func<object, object> fieldValueOverrideFunction,
-                bool shouldSkipOverrideInsteadOfSet, Type defaultPostActionType, bool useVistedGraph,  bool onlyOverrideFirst = false,
-                bool includeNonPublic = true, Dictionary<Type, Action<dynamic, dynamic, Type>> postCopyActions = null, List<string> fullNamesToSkip = null,
-                List<string> fullNamesToInclude = null, List<string> fullNamesToAttempt = null)
+            bool shouldSkipOverrideInsteadOfSet, Type defaultPostActionType, bool useVistedGraph,  bool onlyOverrideFirst = false,
+            bool includeNonPublic = true, Dictionary<Type, Action<dynamic, dynamic, Type>> postCopyActions = null, List<string> fullNamesToSkip = null,
+            List<string> fullNamesToInclude = null, List<string> fullNamesToAttempt = null)
             : base(containingClassType, affectedFieldName, fieldValueOverrideFunction,
                 shouldSkipOverrideInsteadOfSet, defaultPostActionType, useVistedGraph, onlyOverrideFirst,
                 includeNonPublic, postCopyActions, fullNamesToSkip,
