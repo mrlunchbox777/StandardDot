@@ -670,6 +670,10 @@ namespace StandardDot.CoreExtensions.Object
         /// <returns>If the instance is a value type, and the value if it is.</returns>
         private static Tuple<bool, T> DeduceInstanceForTypeIfValueType<T>(this T instance)
         {
+            if (instance == null)
+            {
+                return new Tuple<bool, T>(false, default(T));
+            }
             Type instanceType = instance.GetType();
             if (instanceType.IsPointer || instanceType == typeof(Pointer) || instanceType.IsPrimitive
                 || instanceType == typeof(string) || instanceType == typeof(decimal)
@@ -692,6 +696,11 @@ namespace StandardDot.CoreExtensions.Object
         /// </exception>
         private static T DeduceInstance<T>(T instance)
         {
+            if (instance == null)
+            {
+                return default(T);
+            }
+
             Type instanceType = instance.GetType();
 
             if (typeof(Copyable).IsAssignableFrom(instanceType))
