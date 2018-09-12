@@ -75,10 +75,10 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
                 {
                   argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
                 }
-                if (!parameters[i].ParameterType.GetTypeInfo().IsAssignableFrom(args[i].GetType().GetTypeInfo()))
+                if (!parameters[i].ParameterType.GetTypeInfo().IsAssignableFrom(argType.GetTypeInfo()))
                 {
                     throw new InvalidOperationException(string.Format("Copyable constructed with invalid type {0} for argument #{2} (should be {1})",
-                        args[i].GetType(), parameters[i].ParameterType, i));
+                        argType, parameters[i].ParameterType, i));
                 }
                 constructorTypeArgs.Add(parameters[i].ParameterType);
             }
