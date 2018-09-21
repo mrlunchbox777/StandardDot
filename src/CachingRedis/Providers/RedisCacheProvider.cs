@@ -59,16 +59,21 @@ namespace StandardDot.Caching.Redis.Providers
             return results;
         }
 
-        public virtual List<RedisCachedObject<T>> SetValues<T>(List<RedisCachedObject<T>> valuesToCache)
+        public virtual RedisCachedObject<T> SetValue<T>(RedisCachedObject<T> value)
+        {
+            return SetValues(new []{value}).SingleOrDefault();
+        }
+
+        public virtual List<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> valuesToCache)
         {
             if (valuesToCache == null)
             {
                 return new List<RedisCachedObject<T>>();
             }
 
-            valuesToCache = valuesToCache.Where(v => !(v?.Id?.HasFullKey ?? false)).ToList();
+            List<RedisCachedObject<T>> values = valuesToCache.Where(v => !(v?.Id?.HasFullKey ?? false)).ToList();
             IDatabase db = GetDatabase();
-            foreach (RedisCachedObject<T> entry in valuesToCache)
+            foreach (RedisCachedObject<T> entry in values)
             {
                 // get the expiration, key and value
                 entry.CachedTime = DateTime.UtcNow;
@@ -77,7 +82,7 @@ namespace StandardDot.Caching.Redis.Providers
                 entry.Status = success ? CacheEntryStatus.Success : CacheEntryStatus.Error;
             }
 
-            return valuesToCache;
+            return values;
         }
 
         public virtual void DeleteValuesByKeys(string[] keys)

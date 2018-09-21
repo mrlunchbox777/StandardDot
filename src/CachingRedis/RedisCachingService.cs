@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using StackExchange.Redis;
 using StandardDot.Abstract.Caching;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
@@ -76,13 +77,21 @@ namespace StandardDot.Caching.Redis
 
         public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
-        public virtual ICollection<string> Keys => Store.Database.HashKeys("*").Select(x => x.ToString()).Paginate(_settings.DefaultScanPageSize);
+        // needs work
+        public virtual ICollection<string> Keys =>
+            Store.Database.HashKeys("*").Select(x => x.ToString())
+            // .Paginate(_settings.DefaultScanPageSize);
+            .ToList();
 
-        public virtual ICollection<ICachedObject<object>> Values => Store.Server("test").d;
+        // needs work
+        public virtual ICollection<ICachedObject<object>> Values => Store.RedisServiceImplementation
+            .GetListFromCache<RedisCachedObject<object>>(new List<RedisId>{new RedisId{HashSetIdentifier = "*", ObjectIdentifier = "*"}})
+            .Cast<ICachedObject<object>>().ToList();
 
-        public int Count => Store;
+        // needs work
+        public int Count => Keys.Count;
 
-        public bool IsReadOnly => Store.IsReadOnly;
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Gets an object from cache, null if not found
@@ -110,7 +119,7 @@ namespace StandardDot.Caching.Redis
             {
                 Invalidate(key);
             }
-            Store.Add(key, CreateCachedObject((object)value.Value, value.CachedTime, value.ExpireTime));
+            Store.CacheProvider.SetValue(CreateCachedObject(key, value.Value, value.CachedTime, value.ExpireTime));
         }
 
         /// <summary>
@@ -122,7 +131,7 @@ namespace StandardDot.Caching.Redis
         /// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
         public void Cache<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
         {
-            Cache<T>(key, CreateCachedObject(value, cachedTime, expireTime));
+            Cache<T>(key, CreateCachedObject(key, value, cachedTime, expireTime));
         }
 
         /// <summary>
@@ -137,7 +146,7 @@ namespace StandardDot.Caching.Redis
                 return null;
             }
 
-            ICachedObject<object> item = Store[key];
+            ICachedObject<T> item = Store.RedisServiceImplementation.GetFromCache<RedisCachedObject<T>>(key);
             if (!(item.Value is T))
             {
                 return null;
@@ -148,7 +157,7 @@ namespace StandardDot.Caching.Redis
                 Invalidate(key);
                 return null;
             }
-            return CreateCachedObject<T>(result, item.CachedTime, item.ExpireTime);
+            return CreateCachedObject<T>(key, result, item.CachedTime, item.ExpireTime);
         }
 
         /// <summary>
