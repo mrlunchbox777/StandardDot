@@ -1,15 +1,15 @@
 namespace StandardDot.Caching.Redis.Enums
 {
-    public enum CacheAction
-    {
-        Create,
+	public enum CacheAction
+	{
+		Create,
 
-        Read,
+		Read,
 
-        Update,
+		Update,
 
-        Delete,
+		Delete,
 
-        Expire
-    }
+		Expire
+	}
 }
