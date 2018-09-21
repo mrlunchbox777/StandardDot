@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.DataStructures;
 
 namespace StandardDot.Caching
 {
@@ -51,14 +52,18 @@ namespace StandardDot.Caching
 
 		public virtual TimeSpan DefaultCacheLifespan { get; }
 
-		public virtual ICollection<string> Keys => Store.Keys;
+		ICollection<string> IDictionary<string, ICachedObject<object>>.Keys => Keys;
 
-		public virtual ICollection<ICachedObject<object>> Values => Store.Values;
+		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values => Values;
 
 		public int Count => Store.Count;
 
 		public bool IsReadOnly => Store.IsReadOnly;
 
+		public virtual ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
+
+		public virtual ILazyCollection<ICachedObject<object>> Values => new LazyCollectionWrapper<ICachedObject<object>>(Store.Values);
+		
 		/// <summary>
 		/// Gets an object from cache, null if not found
 		/// </summary>
@@ -301,6 +306,11 @@ namespace StandardDot.Caching
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return Store.GetEnumerator();
+		}
+
+		public IDictionary<string, ICachedObject<object>> EnumerateDictionary()
+		{
+			return this;
 		}
 	}
 }
