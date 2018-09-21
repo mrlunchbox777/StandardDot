@@ -7,7 +7,7 @@ namespace StandardDot.Caching.Redis.Abstract
 	{
 		List<RedisCachedObject<T>> GetValuesByKeys<T>(string[] keys);
 
-		List<RedisCachedObject<T>> SetValues<T>(List<RedisCachedObject<T>> valuesToCache);
+		List<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> valuesToCache);
 
 		void DeleteValuesByKeys(string[] keys);
 	}
