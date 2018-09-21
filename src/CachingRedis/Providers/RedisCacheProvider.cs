@@ -25,19 +25,41 @@ namespace StandardDot.Caching.Redis.Providers
 
 		public IDatabase Database { get; set; }
 
-		public virtual List<RedisCachedObject<T>> GetValuesByKeys<T>(string[] keys)
+		public ConnectionMultiplexer GetRedis()
+		{
+			if (Redis == null)
+			{
+				Initialize();
+			}
+			return Redis;
+		}
+
+		public IDatabase GetDatabase()
+		{
+			if (Database != null)
+			{
+				return Database;
+			}
+
+			return GetRedis().GetDatabase();
+		}
+
+		// Abstract implementation
+
+		// basic, needs to use get list thing
+		public virtual List<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
 		{
 			if (keys == null)
 			{
 				return new List<RedisCachedObject<T>>();
 			}
 
-			keys = keys.Where(k => !string.IsNullOrWhiteSpace(k)).ToArray();
+			keys = keys.Where(k => !string.IsNullOrWhiteSpace(k?.FullKey)).ToArray();
 			IDatabase db = GetDatabase();
 			List<RedisCachedObject<T>> results = new List<RedisCachedObject<T>>();
-			foreach (string key in keys)
+			foreach (RedisId key in keys)
 			{
-				RedisValue result = db.StringGet(key);
+				RedisValue result = db.StringGet(key.FullKey);
 				// deserialize the value
 				if (result.HasValue)
 				{
@@ -48,7 +70,7 @@ namespace StandardDot.Caching.Redis.Providers
 				}
 				else
 				{
-					results.Add(new RedisCachedObject<T>(key)
+					results.Add(new RedisCachedObject<T>(key.FullKey)
 					{
 						Value = default(T),
 						RetrievedSuccesfully = false,
@@ -60,11 +82,13 @@ namespace StandardDot.Caching.Redis.Providers
 			return results;
 		}
 
-		public virtual RedisCachedObject<T> SetValue<T>(RedisCachedObject<T> value)
+		// not implemented
+		public List<RedisCachedObject<T>> GetValue<T>(RedisId key)
 		{
-			return SetValues(new[] { value }).SingleOrDefault();
+			throw new NotImplementedException();
 		}
 
+		// basic
 		public virtual List<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> valuesToCache)
 		{
 			if (valuesToCache == null)
@@ -86,17 +110,18 @@ namespace StandardDot.Caching.Redis.Providers
 			return values;
 		}
 
-		public virtual void DeleteValue(string prefix, string key)
+		// single call of list
+		public virtual RedisCachedObject<T> SetValue<T>(RedisCachedObject<T> value)
 		{
-			IDatabase db = GetDatabase();
-			db.HashDelete(prefix, key);
+			return SetValues(new[] { value }).SingleOrDefault();
 		}
 
-		public virtual void DeleteValuesByKeys(string[] keys)
+		// basic
+		public virtual void DeleteValues(IEnumerable<RedisId> keys)
 		{
 			//remove all keys that are null, empty or set to "*"
-			string[] keysToExpire = (keys == null ? new string[] { } : keys)
-				.Select(k => (k ?? "").Trim()).Where(k => k != "*" && k != "").ToArray();
+			string[] keysToExpire = (keys == null ? new RedisId[] { } : keys)
+				.Select(k => (k?.FullKey ?? "").Trim()).Where(k => k != "*" && k != "").ToArray();
 
 			IDatabase db = GetDatabase();
 			foreach (string key in keysToExpire)
@@ -118,6 +143,21 @@ namespace StandardDot.Caching.Redis.Providers
 			}
 		}
 
+		// hashset
+		public virtual void DeleteValue(RedisId key)
+		{
+			IDatabase db = GetDatabase();
+			db.HashDelete(key.HashSetIdentifier, key.ObjectIdentifier);
+		}
+
+		// not implemented
+		public int KeyCount()
+		{
+			throw new NotImplementedException();
+		}
+
+		// Protected
+
 		protected virtual void Initialize()
 		{
 			ConnectLog = new StringWriter();
@@ -125,26 +165,7 @@ namespace StandardDot.Caching.Redis.Providers
 				CacheSettings.ConfigurationOptions, ConnectLog);
 		}
 
-		public ConnectionMultiplexer GetRedis()
-		{
-			if (Redis == null)
-			{
-				Initialize();
-			}
-			return Redis;
-		}
-
-		public IDatabase GetDatabase()
-		{
-			if (Database != null)
-			{
-				return Database;
-			}
-
-			return GetRedis().GetDatabase();
-		}
-
-		public virtual string GetValueToCache<T>(RedisCachedObject<T> cachedObject)
+		protected virtual string GetValueToCache<T>(RedisCachedObject<T> cachedObject)
 		{
 			string redisValue = CacheSettings.SerializationService.SerializeObject(cachedObject);
 			if (CacheSettings.CompressValues)
@@ -154,7 +175,7 @@ namespace StandardDot.Caching.Redis.Providers
 			return redisValue;
 		}
 
-		public virtual RedisCachedObject<T> GetCachedValue<T>(string redisValue)
+		protected virtual RedisCachedObject<T> GetCachedValue<T>(string redisValue)
 		{
 			if (CacheSettings.CompressValues)
 			{
@@ -164,7 +185,7 @@ namespace StandardDot.Caching.Redis.Providers
 			;
 		}
 
-		public static string CompressValue(string redisValue)
+		protected static string CompressValue(string redisValue)
 		{
 			if (redisValue == null)
 			{
@@ -174,7 +195,7 @@ namespace StandardDot.Caching.Redis.Providers
 			return Convert.ToBase64String(redisValue.Zip());
 		}
 
-		public static string DecompressValue(string redisValue)
+		protected static string DecompressValue(string redisValue)
 		{
 			if (redisValue == null)
 			{
@@ -184,22 +205,7 @@ namespace StandardDot.Caching.Redis.Providers
 			return redisValue.Unzip();
 		}
 
-		public List<RedisCachedObject<T>> GetValuesByKeys<T>(IEnumerable<RedisId> keys)
-		{
-			throw new NotImplementedException();
-		}
-
-		public List<RedisCachedObject<T>> GetValue<T>(RedisId[] key)
-		{
-			throw new NotImplementedException();
-		}
-
 		List<RedisCachedObject<T>> ICacheProvider.SetValue<T>(RedisCachedObject<T> value)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void DeleteValues(IEnumerable<string> keys)
 		{
 			throw new NotImplementedException();
 		}

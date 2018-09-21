@@ -49,7 +49,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public void DeleteFromCache(RedisId key)
 		{
-			RedisService.CacheProvider.DeleteValuesByKeys(new[] { key + "*" });
+			RedisService.CacheProvider.DeleteValue(key);
 		}
 
 		public void DeleteFromCache(IEnumerable<RedisId> keys)
