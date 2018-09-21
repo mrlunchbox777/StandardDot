@@ -86,6 +86,12 @@ namespace StandardDot.Caching.Redis.Providers
 			return values;
 		}
 
+		public virtual void DeleteValue(string prefix, string key)
+		{
+			IDatabase db = GetDatabase();
+			db.HashDelete(prefix, key);
+		}
+
 		public virtual void DeleteValuesByKeys(string[] keys)
 		{
 			//remove all keys that are null, empty or set to "*"
@@ -98,11 +104,11 @@ namespace StandardDot.Caching.Redis.Providers
 				if (key.Last() == '*')
 				{
 					string luaScript = @"
-                    local keys = redis.call('keys', ARGV[1]) 
-                    for i=1,#keys,5000 do 
-                        redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) 
-                    end 
-                    return keys";
+					local keys = redis.call('keys', ARGV[1]) 
+					for i=1,#keys,5000 do 
+						redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) 
+					end 
+					return keys";
 					RedisResult result = db.ScriptEvaluate(luaScript, null, new RedisValue[] { key });
 				}
 				else
@@ -176,6 +182,26 @@ namespace StandardDot.Caching.Redis.Providers
 			}
 
 			return redisValue.Unzip();
+		}
+
+		public List<RedisCachedObject<T>> GetValuesByKeys<T>(IEnumerable<RedisId> keys)
+		{
+			throw new NotImplementedException();
+		}
+
+		public List<RedisCachedObject<T>> GetValue<T>(RedisId[] key)
+		{
+			throw new NotImplementedException();
+		}
+
+		List<RedisCachedObject<T>> ICacheProvider.SetValue<T>(RedisCachedObject<T> value)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DeleteValues(IEnumerable<string> keys)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

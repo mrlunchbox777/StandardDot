@@ -20,5 +20,7 @@ namespace StandardDot.Caching.Redis.Abstract
 		ConfigurationOptions ConfigurationOptions { get; set; }
 
 		ISerializationService SerializationService { get; set; }
+
+		string PrefixIdentifier { get; set; }
 	}
 }

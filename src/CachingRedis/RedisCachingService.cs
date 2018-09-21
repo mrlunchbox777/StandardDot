@@ -24,6 +24,16 @@ namespace StandardDot.Caching.Redis
 			UseStaticProvider = useStaticProvider;
 		}
 
+		protected virtual RedisId GetRedisId(string key)
+		{
+			return new RedisId
+			{
+				ServiceType = _settings.RedisServiceImplementationType,
+				ObjectIdentifier = key,
+				HashSetIdentifier = _settings.PrefixIdentifier
+			};
+		}
+
 		protected virtual bool UseStaticProvider { get; }
 
 		protected virtual ICacheProviderSettings _settings { get; }
@@ -78,18 +88,19 @@ namespace StandardDot.Caching.Redis
 		public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
 		// needs work
-		public virtual ICollection<string> Keys =>
-			Store.Database.HashKeys("*").Select(x => x.ToString())
+		ICollection<string> IDictionary<string, ICachedObject<object>>.Keys => throw new NotImplementedException();
+			// Store.Database.HashKeys("*").Select(x => x.ToString())
 			// .Paginate(_settings.DefaultScanPageSize);
-			.ToList();
+			// .ToList();
 
 		// needs work
-		public virtual ICollection<ICachedObject<object>> Values => Store.RedisServiceImplementation
-			.GetListFromCache<RedisCachedObject<object>>(new List<RedisId> { new RedisId { HashSetIdentifier = "*", ObjectIdentifier = "*" } })
-			.Cast<ICachedObject<object>>().ToList();
+		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values => throw new NotImplementedException();
+			// => Store.RedisServiceImplementation
+			// .GetListFromCache<RedisCachedObject<object>>(new List<RedisId> { new RedisId { HashSetIdentifier = "*", ObjectIdentifier = "*" } })
+			// .Cast<ICachedObject<object>>().ToList();
 
 		// needs work
-		public int Count => Keys.Count;
+		public int Count => throw new NotImplementedException();
 
 		public bool IsReadOnly => false;
 
@@ -146,7 +157,7 @@ namespace StandardDot.Caching.Redis
 				return null;
 			}
 
-			ICachedObject<T> item = Store.RedisServiceImplementation.GetFromCache<RedisCachedObject<T>>(key);
+			ICachedObject<T> item = Store.RedisServiceImplementation.GetFromCache<RedisCachedObject<T>>(GetRedisId(key));
 			if (!(item.Value is T))
 			{
 				return null;
@@ -169,7 +180,9 @@ namespace StandardDot.Caching.Redis
 		{
 			if (ContainsKey(key))
 			{
-				return Store.Remove(key);
+				RedisId redisId = GetRedisId(key);
+				Store.CacheProvider.DeleteValue(redisId.HashSetIdentifier, redisId.ObjectIdentifier);
+				return true;
 			}
 			return false;
 		}

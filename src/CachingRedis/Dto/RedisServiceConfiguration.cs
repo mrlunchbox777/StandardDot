@@ -8,15 +8,18 @@ namespace StandardDot.Caching.Redis.Dto
 {
 	public class RedisServiceConfiguration : ICacheProviderSettings
 	{
-		public RedisServiceConfiguration(ISerializationService serializationService, ConfigurationOptions configurationOptions, Guid? Id = null)
+		public RedisServiceConfiguration(ISerializationService serializationService, ConfigurationOptions configurationOptions
+			, string prefixIdentifier, Guid? Id = null)
 		{
 			ConfigurationOptions = configurationOptions;
 			SerializationService = serializationService;
 			CacheProviderSettingsId = Id ?? Guid.NewGuid();
+			PrefixIdentifier = prefixIdentifier;
 		}
 
-		public RedisServiceConfiguration(ISerializationService serializationService, string configurationOptionsString, Guid? Id = null)
-			: this(serializationService, ConfigurationOptions.Parse(configurationOptionsString, true), Id)
+		public RedisServiceConfiguration(ISerializationService serializationService, string configurationOptionsString
+			, string prefixIdentifier, Guid? Id = null)
+			: this(serializationService, ConfigurationOptions.Parse(configurationOptionsString, true), prefixIdentifier, Id)
 		{ }
 
 		public TimeSpan? DefaultExpireTimeSpan { get; set; } = TimeSpan.FromSeconds(3600);
@@ -32,5 +35,7 @@ namespace StandardDot.Caching.Redis.Dto
 		public ISerializationService SerializationService { get; set; }
 
 		public Guid CacheProviderSettingsId { get; }
+
+		public string PrefixIdentifier { get; set; }
 	}
 }
