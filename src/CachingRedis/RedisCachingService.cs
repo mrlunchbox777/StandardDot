@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using StackExchange.Redis;
 using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.CoreServices;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Providers;
@@ -17,10 +18,11 @@ namespace StandardDot.Caching.Redis
 	{
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-		public RedisCachingService(ICacheProviderSettings settings, CacheInfo cacheInfo, bool useStaticProvider = true)
+		public RedisCachingService(ICacheProviderSettings settings, ILoggingService loggingService, CacheInfo cacheInfo, bool useStaticProvider = true)
 		{
 			_settings = settings;
 			_cacheInfo = cacheInfo;
+			_loggingService = loggingService;
 			UseStaticProvider = useStaticProvider;
 		}
 
@@ -40,6 +42,10 @@ namespace StandardDot.Caching.Redis
 
 		protected virtual CacheInfo _cacheInfo { get; }
 
+		private ILoggingService _loggingService;
+
+		public ILoggingService LoggingService => _loggingService;
+
 		private static ConcurrentDictionary<Guid, RedisService> _store
 			= new ConcurrentDictionary<Guid, RedisService>();
 
@@ -56,7 +62,7 @@ namespace StandardDot.Caching.Redis
 						return provider;
 					}
 				}
-				provider = new RedisService(_settings);
+				provider = new RedisService(_settings, LoggingService, (s, l) => new RedisCacheProvider(s, l));
 				if (UseStaticProvider)
 				{
 					_store[_settings.CacheProviderSettingsId] = provider;

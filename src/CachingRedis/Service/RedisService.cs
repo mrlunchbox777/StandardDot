@@ -17,9 +17,11 @@ namespace StandardDot.Caching.Redis.Service
 {
 	internal class RedisService : IRedisService
 	{
-		public RedisService(ICacheProviderSettings settings, Func<ICacheProviderSettings, ICacheProvider> resetProvider)
+		public RedisService(ICacheProviderSettings settings, ILoggingService loggingService
+			, Func<ICacheProviderSettings, ILoggingService, ICacheProvider> resetProvider)
 		{
 			_cacheSettings = settings;
+			_loggingService = loggingService;
 			ResetProvider = resetProvider;
 		}
 
@@ -29,6 +31,10 @@ namespace StandardDot.Caching.Redis.Service
 		/// Set this before using anything
 		/// </summary>
 		public ICacheProviderSettings CacheSettings => _cacheSettings;
+
+		private ILoggingService _loggingService;
+
+		public ILoggingService LoggingService => _loggingService;
 
 		private static ICacheProvider _cacheProvider;
 
@@ -45,7 +51,7 @@ namespace StandardDot.Caching.Redis.Service
 			private set { _cacheProvider = value; }
 		}
 
-		protected virtual Func<ICacheProviderSettings, ICacheProvider> ResetProvider { get; }
+		protected virtual Func<ICacheProviderSettings, ILoggingService, ICacheProvider> ResetProvider { get; }
 
 		private static ConnectionMultiplexer _redis;
 
@@ -154,7 +160,7 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			if (provider == null || forceReset)
 			{
-				CacheProvider = ResetProvider(this.CacheSettings);
+				CacheProvider = ResetProvider(this.CacheSettings, this.LoggingService);
 			}
 			else
 			{
