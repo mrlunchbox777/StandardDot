@@ -29,7 +29,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.StartsWith(LogLevel.Debug.ToString() + _partSeperator, fullLogName);
 
 			string timestampString = fullLogName.Split('_')[1];
@@ -53,10 +53,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<object>)cachingService.Single().Value.Value;
+			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			Assert.NotNull(log);
 			Assert.Null(log.Target);
@@ -89,10 +89,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			string description = "Message Log with object - " + typeof(Foobar).FullName;
 
@@ -130,10 +130,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			string description = "Message Log with object - " + typeof(Foobar).FullName;
 
@@ -177,10 +177,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<object>)cachingService.Single().Value.Value;
+			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.Value;
 			string description = "Exception Log - " + title;
 
 			Assert.NotNull(log);
@@ -221,10 +221,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<Object>)cachingService.Single().Value.Value;
+			Log<object> log = (Log<Object>)cachingService.EnumerateDictionary().Single().Value.Value;
 			string description = "Exception Log - " + title;
 
 			Assert.NotNull(log);
@@ -271,10 +271,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			string description = "Exception Log - " + title;
 
@@ -325,10 +325,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			string description = "Exception Log - " + title;
 
@@ -390,10 +390,10 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 
 			Assert.Single(cachingService);
 
-			string fullLogName = cachingService.Single().Key;
+			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
 
 			Assert.NotNull(log);
 			Assert.True(log.TimeStamp >= log.TimeStamp.AddMilliseconds(-.5) && log.TimeStamp <= log.TimeStamp.AddMilliseconds(.5));
