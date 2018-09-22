@@ -1,9 +1,10 @@
 ﻿using System;
+using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Enums;
 
 namespace StandardDot.Caching.Redis.Dto
 {
-	public class RedisCachedObject<T> : DefaultCachedObject<T>
+	public class RedisCachedObject<T> : DefaultCachedObject<T>, IRedisCachedObject<T>
 	{
 		public RedisCachedObject(string objectIdentifier)
 		{

@@ -100,13 +100,14 @@ namespace StandardDot.Caching.Redis
 			// .ToList();
 
 		// needs work
-		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values => throw new NotImplementedException();
-			// => Store.RedisServiceImplementation
-			// .GetListFromCache<RedisCachedObject<object>>(new List<RedisId> { new RedisId { HashSetIdentifier = "*", ObjectIdentifier = "*" } })
-			// .Cast<ICachedObject<object>>().ToList();
+		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values
+			// => throw new NotImplementedException();
+			=> Store.RedisServiceImplementation
+			.GetListFromCache<RedisCachedObject<object>>(new List<RedisId> { new RedisId { HashSetIdentifier = "*", ObjectIdentifier = "*" } })
+			.Cast<ICachedObject<object>>().ToList();
 
 		// needs work
-		public int Count => throw new NotImplementedException();
+		public long Count => Store.KeyCount();
 
 		public bool IsReadOnly => false;
 
