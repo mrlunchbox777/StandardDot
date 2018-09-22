@@ -26,7 +26,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public RedisServiceType ServiceType => RedisServiceType.KeyValue;
 
-		private void HardAddToCache(RedisId key, string value, DateTime expiration)
+		protected virtual void HardAddToCache(RedisId key, string value, DateTime expiration)
 		{
 			string realValue = RedisService.CacheSettings.CompressValues
 				? RedisService.CacheProvider.CompressValue(value)
@@ -34,7 +34,7 @@ namespace StandardDot.Caching.Redis.Service
 			RedisService.Database.StringSet(key.FullKey, realValue, expiration - DateTime.UtcNow);
 		}
 
-		private string HardGetFromCache(RedisId key)
+		protected virtual string HardGetFromCache(RedisId key)
 		{
 			string value = RedisService.Database.StringGet(key.FullKey);
 			value = (!string.IsNullOrWhiteSpace(value)) && RedisService.CacheSettings.CompressValues
