@@ -40,7 +40,7 @@
 	<ItemGroup>
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.12" />
 		<PackageReference Include="StandardDot.Dto" Version="0.0.0.7" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.15" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.16" />
 	</ItemGroup>
 
 </Project>
