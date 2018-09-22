@@ -187,15 +187,16 @@ namespace StandardDot.Caching.Redis.Service
 			}
 			else
 			{
-				ISerializationService serializationService = GetSerializationService<T>(dataContractResolver);
+				ISerializationService serializationService = GetSerializationService<T>();
 				retVal = serializationService.DeserializeObject<T>(stringToConvert);
 			}
 
 			return retVal;
 		}
 
-		protected internal virtual ISerializationService GetSerializationService<T>(IDataContractResolver dataContractResolver)
+		protected internal virtual ISerializationService GetSerializationService<T>()
 		{
+			// use data contract resolver
 			return CacheSettings.SerializationService;
 		}
 
@@ -263,7 +264,6 @@ namespace StandardDot.Caching.Redis.Service
 }
 
 /*
-
 		// basic, needs to use get list thing
 		public virtual List<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
 		{

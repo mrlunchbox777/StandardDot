@@ -49,13 +49,46 @@ namespace StandardDot.Caching.Redis.Providers
 			return redisValue;
 		}
 
-		public virtual RedisCachedObject<T> GetCachedValue<T>(string redisValue)
+		public virtual RedisCachedObject<T> GetCachedValue<T>(string redisValue, IRedisService service)
 		{
+			if (string.IsNullOrWhiteSpace(redisValue))
+			{
+				return null;
+			}
 			if (CacheSettings.CompressValues)
 			{
 				redisValue = DecompressValue(redisValue);
 			}
-			return CacheSettings.SerializationService.DeserializeObject<RedisCachedObject<T>>(redisValue);
+			if (string.IsNullOrWhiteSpace(redisValue))
+			{
+				return null;
+			}
+			RedisCachedObject<T> value = CacheSettings.SerializationService.DeserializeObject<RedisCachedObject<T>>(redisValue);
+
+			if (value != null && value.ExpireTime < DateTime.UtcNow)
+			{
+				if (value.Id != null)
+				{
+					service.DeleteValue(value.Id);
+				}
+				value = null;
+			}
+
+			return value;
+		}
+
+		public virtual RedisCachedObject<T> CreateCachedValue<T>(RedisId redisKey = null)
+		{
+			return new RedisCachedObject<T>(redisKey?.ObjectIdentifier)
+			{
+				RetrievedSuccesfully = false,
+				Value = default(T),
+				CachedTime = DateTime.MinValue,
+				Status = CacheEntryStatus.Error,
+				Metadata = CacheSettings.ProviderInfo,
+				Id = redisKey,
+				ExpireTime = DateTime.MinValue,
+			};
 		}
 
 		public ConnectionMultiplexer GetRedis()
@@ -82,9 +115,7 @@ namespace StandardDot.Caching.Redis.Providers
 			ConnectLog.Dispose();
 		}
 
-		// Protected
-
-		protected virtual string CompressValue(string redisValue)
+		public virtual string CompressValue(string redisValue)
 		{
 			if (redisValue == null)
 			{
@@ -94,7 +125,7 @@ namespace StandardDot.Caching.Redis.Providers
 			return Convert.ToBase64String(redisValue.Zip());
 		}
 
-		protected virtual string DecompressValue(string redisValue)
+		public virtual string DecompressValue(string redisValue)
 		{
 			if (redisValue == null)
 			{

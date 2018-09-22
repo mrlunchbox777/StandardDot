@@ -25,7 +25,7 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		void DeleteValue(RedisId key);
 
-		int KeyCount();
+		long KeyCount();
 
 		/// <summary>
 		/// Gets the TTL for a key
@@ -33,7 +33,7 @@ namespace StandardDot.Caching.Redis.Abstract
 		/// <param name="key">The key to get a TTL for</param>
 		/// <param name="dataContractResolver">The datacontract resolver to use for serialization (polymorphic dtos)</param>
 		/// <returns>Time to live from redis</returns>
-		Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null);
+		Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key);
 
 		/// <summary>
 		/// Gets the TTL for a key
@@ -41,7 +41,7 @@ namespace StandardDot.Caching.Redis.Abstract
 		/// <param name="keys">The keys to get TTLs for</param>
 		/// <param name="dataContractResolver">The datacontract resolver to use for serialization (polymorphic dtos)</param>
 		/// <returns>Times to live from redis</returns>
-		Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null);
+		Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys);
 	}
 }
 

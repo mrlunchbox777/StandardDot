@@ -1,6 +1,7 @@
 ﻿using System;
 using StackExchange.Redis;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
 
 namespace StandardDot.Caching.Redis.Abstract
@@ -21,6 +22,12 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		ISerializationService SerializationService { get; set; }
 
-		string PrefixIdentifier { get; set; }
+		string PrefixIdentifier { get; }
+
+		CacheInfo ProviderInfo { get; set; }
+
+
+		/// <summary>The datacontract resolver to use for serialization (polymorphic dtos)</summary>
+		IDataContractResolver DataContractResolver { get; set; }
 	}
 }

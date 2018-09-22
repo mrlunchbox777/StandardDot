@@ -7,10 +7,16 @@ namespace StandardDot.Caching.Redis.Abstract
 	{
 		string GetValueToCache<T>(RedisCachedObject<T> cachedObject);
 
-		RedisCachedObject<T> GetCachedValue<T>(string redisValue);
+		RedisCachedObject<T> GetCachedValue<T>(string redisValue, IRedisService service);
+
+		RedisCachedObject<T> CreateCachedValue<T>(RedisId redisKey = null);
 
 		ConnectionMultiplexer GetRedis();
 
 		IDatabase GetDatabase();
+
+		string CompressValue(string redisValue);
+
+		string DecompressValue(string redisValue);
 	}
 }

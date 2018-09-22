@@ -26,148 +26,166 @@ namespace StandardDot.Caching.Redis.Service
 
 		public RedisServiceType ServiceType => RedisServiceType.KeyValue;
 
-		public void AddToCache<T>(RedisHashSetCachedObject<T> source, IDataContractResolver dataContractResolver = null)
+		private void HardAddToCache(RedisId key, string value, DateTime expiration)
 		{
-			if ((source?.Id?.HasFullKey ?? false) || source.Value.Equals(default(T)))
-			{
-				return;
-			}
-
-			string compressedVal;
-			if (source.Value is string)
-			{
-				compressedVal = source.Value as string;
-			}
-			else
-			{
-				ISerializationService sz = RedisService.GetSerializationService<T>(dataContractResolver);
-				compressedVal = sz.SerializeObject<RedisHashSetCachedObject<T>>(source);
-			}
-
-			HardAddToCache(source.Id, compressedVal, source.ExpireTime);
+			string realValue = RedisService.CacheSettings.CompressValues
+				? RedisService.CacheProvider.CompressValue(value)
+				: value;
+			RedisService.Database.StringSet(key.FullKey, realValue, expiration - DateTime.UtcNow);
 		}
 
-		public void DeleteFromCache(RedisId key)
+		private string HardGetFromCache(RedisId key)
 		{
-			RedisService.CacheProvider.DeleteValue(key);
+			string value = RedisService.Database.StringGet(key.FullKey);
+			value = (!string.IsNullOrWhiteSpace(value)) && RedisService.CacheSettings.CompressValues
+				? RedisService.CacheProvider.DecompressValue(value)
+				: value;
+			return value;
 		}
 
-		public void DeleteFromCache(IEnumerable<RedisId> keys)
+		// Abstract Implementation
+
+		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
-			foreach (RedisId key in keys)
-			{
-				DeleteFromCache(key);
-			}
+			// if (!(key?.HasFullKey ?? false))
+			// {
+			// 	return new List<RedisId>();
+			// }
+
+			// return RedisService.Server(key.FullKey).Keys(RedisService.Database.Database, key.FullKey,
+			// 	RedisService.CacheSettings.DefaultScanPageSize)
+			// 	.Select(x => new RedisId { HashSetIdentifier = null, ObjectIdentifier = x, ServiceType = RedisServiceType.KeyValue });
+
+			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey) && RedisService.Database.KeyExists(key.FullKey));
 		}
 
-		public T GetFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null)
+		public IEnumerable<RedisId> GetKey<T>(RedisId key)
 		{
-			if (!(key?.HasFullKey ?? false))
-			{
-				return default(T);
-			}
-
-			T retVal = default(T);
-			string compressedVal = HardGetFromCache(key);
-			if (!string.IsNullOrWhiteSpace(compressedVal))
-			{
-				retVal = RedisService.ConvertString<T>(compressedVal, key, dataContractResolver);
-			}
-
-			return retVal;
+			return GetKeys<T>(new[] { key });
 		}
 
-		public IEnumerable<RedisId> GetKeys(RedisId key, IDataContractResolver dataContractResolver = null)
-		{
-			if (!(key?.HasFullKey ?? false))
-			{
-				return new List<RedisId>();
-			}
-
-			return RedisService.Server(key.FullKey).Keys(RedisService.Database.Database, key.FullKey,
-				RedisService.CacheSettings.DefaultScanPageSize)
-				.Select(x => new RedisId { HashSetIdentifier = null, ObjectIdentifier = x, ServiceType = RedisServiceType.KeyValue });
-		}
-
-		public IEnumerable<string> GetKeysStrings(RedisId key, IDataContractResolver dataContractResolver = null)
-		{
-			return GetKeys(key).Select(k => k.FullKey);
-		}
-
-		public IEnumerable<T> GetListFromCache<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
-		{
-			IEnumerable<Tuple<RedisId, string>> values = GetStringListFromCache<T>(keys, dataContractResolver);
-			return values.Select(value => RedisService.ConvertString<T>(value.Item2, value.Item1, dataContractResolver));
-		}
-
-		public IEnumerable<T> GetListFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null)
-		{
-			return GetListFromCache<T>(new[] { key }, dataContractResolver);
-		}
-
-		private IEnumerable<Tuple<RedisId, string>> GetStringListFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null)
-		{
-			return GetStringListFromCache<T>(new[] { key }, dataContractResolver);
-		}
-
-		// redis id is null on this
-		private IEnumerable<Tuple<RedisId, string>> GetStringListFromCache<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
+		public IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
 		{
 			if (!(keys?.Any() ?? false))
 			{
-				return new List<Tuple<RedisId, string>>();
+				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
 			}
 
-			for (int i = 0; i < keys.Count; i++)
+			RedisId[] keysToUse = keys.ToArray();
+			for (int i = 0; i < keysToUse.Count(); i++)
 			{
-				keys[i].ObjectIdentifier = keys[i].ObjectIdentifier + "*";
+				keysToUse[i].ObjectIdentifier = keysToUse[i].ObjectIdentifier + "*";
 			}
 
 			// get the keys, in a non-blocking way
 			List<RedisKey> redisKeys = new List<RedisKey>();
-			foreach (RedisId key in keys)
-			{
-				redisKeys.AddRange(GetKeys(key).Select(x => (RedisKey)x.FullKey));
-			}
+			redisKeys.AddRange(GetKeys<T>(keysToUse).Select(x => (RedisKey)x.FullKey));
 
 			if (!redisKeys.Any())
 			{
-				return new List<Tuple<RedisId, string>>();
+				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
 			}
 
 			RedisValue[] results = RedisService.Database.StringGet(redisKeys.ToArray());
-
-			IEnumerable<Tuple<RedisId, string>> values = results.Select(redisValue => new Tuple<RedisId, string>(null, (string)redisValue));
+			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
+			foreach (RedisValue result in results)
+			{
+				RedisCachedObject<T> current = RedisService.CacheProvider.GetCachedValue<T>(result, this);
+				if (current != null)
+				{
+					values.Add(current);
+				}
+			}
 
 			return values;
 		}
 
-		public TimeSpan? GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null)
+		public IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
 		{
-			if (string.IsNullOrWhiteSpace(key?.FullKey))
+			return GetValues<T>(new[] { key });
+		}
+
+		public IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
+		{
+			RedisCachedObject<T>[] valuesEnumerated = values.ToArray();
+			for (int i = 0; i < valuesEnumerated.Length; i++)
+			{
+				valuesEnumerated[i] = SetValue(valuesEnumerated[i]).SingleOrDefault();
+			}
+			return valuesEnumerated;
+		}
+
+		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
+		{
+			if ((value?.Id?.HasFullKey ?? false) || value.Value.Equals(default(T)))
 			{
 				return null;
 			}
-			return RedisService.Database.KeyTimeToLive(key.FullKey);
+
+			string compressedVal;
+			if (value.Value is string)
+			{
+				compressedVal = value.Value as string;
+			}
+			else
+			{
+				ISerializationService sz = RedisService.GetSerializationService<T>();
+				compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value);
+			}
+
+			HardAddToCache(value.Id, compressedVal, value.ExpireTime);
+			return new[] { value };
 		}
 
-		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> allKeys, IDataContractResolver dataContractResolver = null)
+		public void DeleteValues(IEnumerable<RedisId> keys)
+		{
+			foreach (RedisId key in keys)
+			{
+				DeleteValue(key);
+			}
+		}
+
+		public void DeleteValue(RedisId key)
+		{
+			if (string.IsNullOrWhiteSpace(key?.FullKey))
+			{
+				return;
+			}
+			RedisService.Database.KeyDelete(key.FullKey);
+		}
+
+		// slow and bad
+		public long KeyCount()
+		{
+			return GetKeys<object>(new[]
+			{
+				new RedisId
+				{
+					HashSetIdentifier = RedisService.CacheSettings.PrefixIdentifier,
+					ObjectIdentifier = "*",
+					ServiceType = RedisServiceType.KeyValue
+				}
+			}).LongCount();
+		}
+
+		// slow and bad
+		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> allKeys)
 		{
 			IEnumerable<RedisId> keys = allKeys.Where(x => !string.IsNullOrWhiteSpace(x?.FullKey));
 			// Lua uses 1-based arrays
 			// Redis has the global "Table" (basically an array with generic indexing) KEYS for key arguments
 			// https://www.lua.org/pil/2.5.html
 			string luaScript = @"
-                    local keys = KEYS
+					local keys = KEYS
 					local retVal = ''
 					local splitString = '|||||'
-                    local splitKvp = '^^^^^'
-                    local result = {}
-                    for i=1,#keys,1 do 
-                        local ttlthing = redis.call('ttl', keys[i])
-                        retVal = (retVal) .. (keys[i]) .. (splitKvp) .. ttlthing .. (splitString)
-                    end
-                    return retVal"; // retVal = (retVal) .. (splitString) //  .. (keys[i])
+					local splitKvp = '^^^^^'
+					local result = {}
+					for i=1,#keys,1 do 
+						local ttlthing = redis.call('ttl', keys[i])
+						retVal = (retVal) .. (keys[i]) .. (splitKvp) .. ttlthing .. (splitString)
+					end
+					return retVal"; // retVal = (retVal) .. (splitString) //  .. (keys[i])
 			RedisKey[] redisValues = keys.Select(x => (RedisKey)x.FullKey).ToArray();
 			RedisResult result = RedisService.Database.ScriptEvaluate(luaScript, redisValues);
 			string[] splitResult = result.ToString()
@@ -200,16 +218,11 @@ namespace StandardDot.Caching.Redis.Service
 			return ttls;
 		}
 
-		private void HardAddToCache(RedisId key, string value, DateTime expiration)
+		// slow and bad
+		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
-			RedisService.Database.StringSet(key.FullKey, value, expiration - DateTime.UtcNow);
+			return GetTimeToLive<T>(new[]{key});
 		}
-
-		private string HardGetFromCache(RedisId key)
-		{
-			return RedisService.Database.StringGet(key.FullKey);
-		}
-
 	}
 }
 
