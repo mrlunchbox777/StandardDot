@@ -7,7 +7,7 @@ namespace StandardDot.Abstract.Caching
 	/// <summary>
 	/// An interface that defines a lazy caching service
 	/// </summary>
-	public interface ICachingService : ILazyDictionary<string, ICachedObject<object>>
+	public interface ICachingService : ILazyDictionary<string, ICachedObjectBasic>
 	{
 		TimeSpan DefaultCacheLifespan { get; }
 
