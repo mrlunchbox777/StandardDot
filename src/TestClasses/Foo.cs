@@ -1,7 +1,7 @@
 namespace StandardDot.TestClasses
 {
-    public class Foo
-    {
-        public int Value { get; set; }
-    }
+	public class Foo
+	{
+		public int Value { get; set; }
+	}
 }

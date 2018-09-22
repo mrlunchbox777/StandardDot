@@ -34,7 +34,8 @@ namespace StandardDot.Abstract.DataStructures
 		{
 			IEnumerator<T> enumerated = _enumeratedSoFar.GetEnumerator();
 			enumerated.Reset();
-			while (enumerated.MoveNext()) {
+			while (enumerated.MoveNext())
+			{
 				yield return enumerated.Current;
 			}
 

@@ -7,23 +7,23 @@ using Xunit;
 
 namespace StandardDot.CoreExtensions.UnitTests
 {
-  public class StreamExtensionsTest
-    {
-        [Fact]
-        public void GetStringFromStream()
-        {
-            string original = "foobar";
-            Stream testStream = original.ToStream();
-            Assert.Equal(original, testStream.GetString());
-        }
+	public class StreamExtensionsTest
+	{
+		[Fact]
+		public void GetStringFromStream()
+		{
+			string original = "foobar";
+			Stream testStream = original.ToStream();
+			Assert.Equal(original, testStream.GetString());
+		}
 
-        [Fact]
-        public void GetByteArrayFromStream()
-        {
-            string original = "foobar";
-            byte[] originalByteArray = Encoding.UTF8.GetBytes(original);
-            Stream testStream = original.ToStream();
-            Assert.Equal(originalByteArray, testStream.ToByteArray());
-        }
-    }
+		[Fact]
+		public void GetByteArrayFromStream()
+		{
+			string original = "foobar";
+			byte[] originalByteArray = Encoding.UTF8.GetBytes(original);
+			Stream testStream = original.ToStream();
+			Assert.Equal(originalByteArray, testStream.ToByteArray());
+		}
+	}
 }
