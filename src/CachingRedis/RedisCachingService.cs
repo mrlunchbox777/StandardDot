@@ -6,7 +6,9 @@ using System.Linq;
 using StackExchange.Redis;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Abstract;
+using StandardDot.Caching.Redis.DataStructures;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Providers;
 using StandardDot.Caching.Redis.Service;
@@ -94,17 +96,16 @@ namespace StandardDot.Caching.Redis
 		public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
 		// needs work
-		ICollection<string> IDictionary<string, ICachedObject<object>>.Keys => throw new NotImplementedException();
+		ILazyCollection<string> Keys => throw new NotImplementedException();
 			// Store.Database.HashKeys("*").Select(x => x.ToString())
 			// .Paginate(_settings.DefaultScanPageSize);
 			// .ToList();
 
 		// needs work
-		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values
+		ILazyCollection<ICachedObject<object>> Values
 			// => throw new NotImplementedException();
-			=> Store.RedisServiceImplementation
-			.GetListFromCache<RedisCachedObject<object>>(new List<RedisId> { new RedisId { HashSetIdentifier = "*", ObjectIdentifier = "*" } })
-			.Cast<ICachedObject<object>>().ToList();
+			=> new RedisLazyCollection<ICachedObject<object>, object>(Store.RedisServiceImplementation
+				.GetValues<object>(new List<RedisId> { GetRedisId("*") }), this);
 
 		// needs work
 		public long Count => Store.KeyCount();
