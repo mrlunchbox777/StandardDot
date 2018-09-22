@@ -52,7 +52,7 @@ namespace StandardDot.CoreServices.Logging
             return CachingService
                 .Select(i => i.Value)
                 .Where(i => i.ExpireTime >= DateTime.UtcNow)
-                .Select(i => i.Value as Log<T>)
+                .Select(i => i.UntypedValue as Log<T>)
                 .Where(i => !OnlySerializeLogsOfTheCorrectType || i != null)
                 .GetEnumerator();
         }

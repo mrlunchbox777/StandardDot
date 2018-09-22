@@ -16,5 +16,7 @@ namespace StandardDot.Caching
         public T Value { get; set; }
 
         public bool RetrievedSuccesfully { get; set; }
-    }
+		
+		public object UntypedValue { get => Value; set => Value = (value is T ? (T)value : default(T)); }
+	}
 }

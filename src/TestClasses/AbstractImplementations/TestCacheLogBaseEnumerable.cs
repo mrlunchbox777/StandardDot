@@ -50,7 +50,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
             return CachingService
                 .Select(i => i.Value)
                 .Where(i => i.ExpireTime >= DateTime.UtcNow)
-                .Select(i => i.Value as LogBase)
+                .Select(i => i.UntypedValue as LogBase)
                 .Where(i => !OnlySerializeLogsOfTheCorrectType || i != null)
                 .GetEnumerator();
         }

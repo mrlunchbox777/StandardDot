@@ -38,7 +38,7 @@ namespace StandardDot.Caching.UnitTests
             Assert.Single(service.Keys);
             Assert.Equal(cachableKey, service.Keys.Single());
             Assert.Single(service.Values);
-            Assert.Equal(cachable, service.Values.Single().Value);
+            Assert.Equal(cachable, service.Values.Single().UntypedValue);
         }
 
         [Fact]
@@ -170,12 +170,12 @@ namespace StandardDot.Caching.UnitTests
             string cachableKey = this.cachableKey;
             service.Cache(cachableKey, cachable);
             ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
-            KeyValuePair<string, ICachedObject<object>>[] cache = new KeyValuePair<string, ICachedObject<object>>[1];
+            KeyValuePair<string, ICachedObjectBasic>[] cache = new KeyValuePair<string, ICachedObjectBasic>[1];
             service.CopyTo(cache, 0);
             Assert.NotNull(cache);
             Assert.NotEmpty(cache);
             Assert.Single(cache);
-            Assert.Equal(existsRetrievedWrapper.Value, cache[0].Value.Value);
+            Assert.Equal(existsRetrievedWrapper.Value, cache[0].Value.UntypedValue);
             Assert.Equal(cachableKey, cache[0].Key);
 
             MemoryCachingService service2 = new MemoryCachingService(cacheLifeTime, cache.ToDictionary(x => x.Key, y => y.Value));
@@ -230,7 +230,7 @@ namespace StandardDot.Caching.UnitTests
             service.Cache(cachableKey, cachable);
             Assert.Single(service.Values);
             Assert.NotNull(service.Values.Single());
-            Assert.Equal(cachable, service.Values.Single().Value);
+            Assert.Equal(cachable, service.Values.Single().UntypedValue);
         }
 
         [Fact]
@@ -264,8 +264,8 @@ namespace StandardDot.Caching.UnitTests
 
             service[cachableKey] = dto;
             Assert.Single(service);
-            ICachedObject<object> retrieved = service[cachableKey];
-            Assert.Equal(dto.Value, retrieved.Value);
+            ICachedObjectBasic retrieved = service[cachableKey];
+            Assert.Equal(dto.Value, retrieved.UntypedValue);
         }
 
         [Fact]
@@ -326,14 +326,14 @@ namespace StandardDot.Caching.UnitTests
             TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             string cachableKey = this.cachableKey;
-            ICachedObject<object> result;
+            ICachedObjectBasic result;
             Assert.False(service.TryGetValue(cachableKey, out result));
             Foobar cachable = GetCachableObject();
 
             service.Cache(cachableKey, cachable);
             bool success = service.TryGetValue(cachableKey, out result);
             Assert.True(success);
-            Assert.Equal(cachable, result.Value);
+            Assert.Equal(cachable, result.UntypedValue);
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace StandardDot.Caching.UnitTests
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             Foobar cachable = GetCachableObject();
             string cachableKey = this.cachableKey;
-            KeyValuePair<string, ICachedObject<object>> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
+            KeyValuePair<string, ICachedObjectBasic> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
 
             service.Add(item);
             ICachedObject<Foobar> result = service.Retrieve<Foobar>(cachableKey);
@@ -373,7 +373,7 @@ namespace StandardDot.Caching.UnitTests
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             Foobar cachable = GetCachableObject();
             string cachableKey = this.cachableKey;
-            KeyValuePair<string, ICachedObject<object>> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
+            KeyValuePair<string, ICachedObjectBasic> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
 
             Assert.DoesNotContain(item, service);
             service.Add(item);
@@ -387,8 +387,8 @@ namespace StandardDot.Caching.UnitTests
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             Foobar cachable = GetCachableObject();
             string cachableKey = this.cachableKey;
-            KeyValuePair<string, ICachedObject<object>> originalItem = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
-            KeyValuePair<string, ICachedObject<object>> item;
+            KeyValuePair<string, ICachedObjectBasic> originalItem = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
+            KeyValuePair<string, ICachedObjectBasic> item;
             DateTime originalTime = originalItem.Value.CachedTime;
 
             Assert.DoesNotContain(originalItem, service);
@@ -435,12 +435,12 @@ namespace StandardDot.Caching.UnitTests
             string cachableKey = this.cachableKey;
             service.Cache(cachableKey, cachable);
             ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
-            KeyValuePair<string, ICachedObject<object>>[] cache = new KeyValuePair<string, ICachedObject<object>>[1];
+            KeyValuePair<string, ICachedObjectBasic>[] cache = new KeyValuePair<string, ICachedObjectBasic>[1];
             service.CopyTo(cache, 0);
             Assert.NotNull(cache);
             Assert.NotEmpty(cache);
             Assert.Single(cache);
-            Assert.Equal(existsRetrievedWrapper.Value, cache[0].Value.Value);
+            Assert.Equal(existsRetrievedWrapper.Value, cache[0].Value.UntypedValue);
             Assert.Equal(cachableKey, cache[0].Key);
         }
 
@@ -451,7 +451,7 @@ namespace StandardDot.Caching.UnitTests
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             Foobar cachable = GetCachableObject();
             string cachableKey = this.cachableKey;
-            KeyValuePair<string, ICachedObject<object>> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
+            KeyValuePair<string, ICachedObjectBasic> item = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
             bool succeded = service.Remove(item);
             Assert.False(succeded);
 
@@ -470,8 +470,8 @@ namespace StandardDot.Caching.UnitTests
             MemoryCachingService service = new MemoryCachingService(cacheLifeTime);
             Foobar cachable = GetCachableObject();
             string cachableKey = this.cachableKey;
-            KeyValuePair<string, ICachedObject<object>> originalItem = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
-            KeyValuePair<string, ICachedObject<object>> item;
+            KeyValuePair<string, ICachedObjectBasic> originalItem = GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
+            KeyValuePair<string, ICachedObjectBasic> item;
             DateTime originalTime = originalItem.Value.CachedTime;
 
             Assert.False(service.Remove(originalItem));;
@@ -518,7 +518,7 @@ namespace StandardDot.Caching.UnitTests
             string cachableKey = this.cachableKey;
             service.Cache(cachableKey, cachable);
 
-            IEnumerator<KeyValuePair<string, ICachedObject<object>>> typedEnumerator
+            IEnumerator<KeyValuePair<string, ICachedObjectBasic>> typedEnumerator
                 = service.GetEnumerator();
             IEnumerator enumerator = ((IEnumerable)service).GetEnumerator();
             typedEnumerator.MoveNext();
@@ -544,10 +544,10 @@ namespace StandardDot.Caching.UnitTests
 
         private string cachableKey =>  _random.Next(100, 100).ToString();
 
-        private KeyValuePair<string, ICachedObject<object>> GetCachableKvp(DateTime originalTime,
+        private KeyValuePair<string, ICachedObjectBasic> GetCachableKvp(DateTime originalTime,
             TimeSpan cacheLifeTime, Foobar cachable, string cachableKey)
         {
-            return new KeyValuePair<string, ICachedObject<object>>
+            return new KeyValuePair<string, ICachedObjectBasic>
             (
                 cachableKey,
                 new DefaultCachedObject<object>
