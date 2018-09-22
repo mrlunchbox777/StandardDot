@@ -13,138 +13,138 @@ using Xunit;
 
 namespace StandardDot.CoreServices.IntegrationTests.Logging
 {
-    public class TextLogBaseEnumerableTests
-    {
-        [Fact]
-        public void TestBasicEnumeration()
-        {
-            TextLoggingService service = GetLogsService();
-            ClearTestLogDirectory(service);
+	public class TextLogBaseEnumerableTests
+	{
+		[Fact]
+		public void TestBasicEnumeration()
+		{
+			TextLoggingService service = GetLogsService();
+			ClearTestLogDirectory(service);
 
-            Tuple<Foobar, BarredFoo> objects = CreateObjects();
-            service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
-            service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogBaseEnumerable collection = service.GetLogs();
+			Tuple<Foobar, BarredFoo> objects = CreateObjects();
+			service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
+			service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
+			ILogBaseEnumerable collection = service.GetLogs();
 
-            Assert.NotEmpty(collection);
-            foreach (LogBase log in collection)
-            {
-                Assert.NotNull(log);
-            }
-            int collectionCount = collection.Count(); 
-            Assert.Equal(2, collectionCount);
+			Assert.NotEmpty(collection);
+			foreach (LogBase log in collection)
+			{
+				Assert.NotNull(log);
+			}
+			int collectionCount = collection.Count();
+			Assert.Equal(2, collectionCount);
 
-            ClearTestLogDirectory(service);
-        }
+			ClearTestLogDirectory(service);
+		}
 
-        [Fact]
-        public void TestCachedEnumeration()
-        {
-            TextLoggingService service = GetLogsService();
-            ClearTestLogDirectory(service);
+		[Fact]
+		public void TestCachedEnumeration()
+		{
+			TextLoggingService service = GetLogsService();
+			ClearTestLogDirectory(service);
 
-            Tuple<Foobar, BarredFoo> objects = CreateObjects();
-            service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
-            service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogBaseEnumerable collection = service.GetLogs();
+			Tuple<Foobar, BarredFoo> objects = CreateObjects();
+			service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
+			service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
+			ILogBaseEnumerable collection = service.GetLogs();
 
-            LogBase[] logs = collection.ToArray();
-            int index = 0;
-            foreach (LogBase log in collection)
-            {
-                Assert.Equal(log, logs[index]);
-                index++;
-            }
-            int collectionCount = collection.Count(); 
-            Assert.Equal(2, collectionCount);
-            
-            index = 0; 
-            foreach (LogBase log in collection)
-            {
-                Assert.Equal(log, logs[index]);
-                index++;
-            }
+			LogBase[] logs = collection.ToArray();
+			int index = 0;
+			foreach (LogBase log in collection)
+			{
+				Assert.Equal(log, logs[index]);
+				index++;
+			}
+			int collectionCount = collection.Count();
+			Assert.Equal(2, collectionCount);
 
-            ClearTestLogDirectory(service);
-        }  
+			index = 0;
+			foreach (LogBase log in collection)
+			{
+				Assert.Equal(log, logs[index]);
+				index++;
+			}
 
-        [Fact]
-        public void TestNonGenricEnumerator()
-        {
-            TextLoggingService service = GetLogsService();
-            ClearTestLogDirectory(service);
+			ClearTestLogDirectory(service);
+		}
 
-            Tuple<Foobar, BarredFoo> objects = CreateObjects();
-            service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
-            service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
-            ILogBaseEnumerable collection = service.GetLogs();
+		[Fact]
+		public void TestNonGenricEnumerator()
+		{
+			TextLoggingService service = GetLogsService();
+			ClearTestLogDirectory(service);
 
-            LogBase[] logs = collection.ToArray();
-            int index = 0;
-            foreach (LogBase log in ((IEnumerable)collection))
-            {
-                Assert.Equal(log, logs[index]);
-                index++;
-            }
-            int collectionCount = collection.Count(); 
-            Assert.Equal(2, collectionCount);
-            
-            index = 0; 
-            foreach (LogBase log in ((IEnumerable)collection))
-            {
-                Assert.Equal(log, logs[index]);
-                index++;
-            }
+			Tuple<Foobar, BarredFoo> objects = CreateObjects();
+			service.LogMessage("Logging object 1", objects.Item1, LogLevel.Debug, "Foobar log");
+			service.LogMessage("Logging object 2", objects.Item2, LogLevel.Debug, "BarredFoo log");
+			ILogBaseEnumerable collection = service.GetLogs();
 
-            ClearTestLogDirectory(service);
-        } 
+			LogBase[] logs = collection.ToArray();
+			int index = 0;
+			foreach (LogBase log in ((IEnumerable)collection))
+			{
+				Assert.Equal(log, logs[index]);
+				index++;
+			}
+			int collectionCount = collection.Count();
+			Assert.Equal(2, collectionCount);
 
-        public Tuple<Foobar, BarredFoo> CreateObjects()
-        {
-            Foobar original = new Foobar
-            {
-                Foo = random.Next(-10000, 10000),
-                Bar = random.Next(-10000, 10000)
-            };
-            
-            BarredFoo original2 = new BarredFoo
-            {
-                Foo = random.Next(-10000, 10000),
-                Barred = random.Next(-10000, 10000)
-            };
+			index = 0;
+			foreach (LogBase log in ((IEnumerable)collection))
+			{
+				Assert.Equal(log, logs[index]);
+				index++;
+			}
 
-            return new Tuple<Foobar, BarredFoo>(original, original2);
-        }
+			ClearTestLogDirectory(service);
+		}
 
-        private TextLoggingService GetLogsService()
-        {
-            Json serializationService = new Json();
-            TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
+		public Tuple<Foobar, BarredFoo> CreateObjects()
+		{
+			Foobar original = new Foobar
+			{
+				Foo = random.Next(-10000, 10000),
+				Bar = random.Next(-10000, 10000)
+			};
 
-            return loggingService;
-        }
+			BarredFoo original2 = new BarredFoo
+			{
+				Foo = random.Next(-10000, 10000),
+				Barred = random.Next(-10000, 10000)
+			};
 
-        private void ClearTestLogDirectory(TextLoggingService service)
-        {
-            if (!Directory.Exists(service.LogPath))
-            {
-                return;
-            }
-            List<string> allLogs = Directory.EnumerateFiles(service.LogPath).ToList();
-            if (!allLogs.Any())
-            {
-                return;
-            }
-            foreach (string log in allLogs)
-            {
-                File.Delete(log);
-            }
-        }
+			return new Tuple<Foobar, BarredFoo>(original, original2);
+		}
 
-        private string Path = Environment.CurrentDirectory + "/test/" + Guid.NewGuid().ToString("N") + "/";
+		private TextLoggingService GetLogsService()
+		{
+			Json serializationService = new Json();
+			TextLoggingService loggingService = new TextLoggingService(Path, serializationService, LogExtension);
 
-        private Random random = new Random();
+			return loggingService;
+		}
 
-        private string LogExtension = ".json";
-    }
+		private void ClearTestLogDirectory(TextLoggingService service)
+		{
+			if (!Directory.Exists(service.LogPath))
+			{
+				return;
+			}
+			List<string> allLogs = Directory.EnumerateFiles(service.LogPath).ToList();
+			if (!allLogs.Any())
+			{
+				return;
+			}
+			foreach (string log in allLogs)
+			{
+				File.Delete(log);
+			}
+		}
+
+		private string Path = Environment.CurrentDirectory + "/test/" + Guid.NewGuid().ToString("N") + "/";
+
+		private Random random = new Random();
+
+		private string LogExtension = ".json";
+	}
 }

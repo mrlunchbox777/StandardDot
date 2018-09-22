@@ -5,86 +5,86 @@ using Xunit;
 
 namespace StandardDot.Abstract.IntegrationTests.Caching
 {
-    public class ICachingServiceTests
-    {
-        [Fact]
-        public void PropertiesTest()
-        {
-            Mock<ICachingService> cachingService = GetService();
-            Assert.Equal(300, (int)cachingService.Object.DefaultCacheLifespan.TotalSeconds);
-        }
+	public class ICachingServiceTests
+	{
+		[Fact]
+		public void PropertiesTest()
+		{
+			Mock<ICachingService> cachingService = GetService();
+			Assert.Equal(300, (int)cachingService.Object.DefaultCacheLifespan.TotalSeconds);
+		}
 
-        [Fact]
-        public void CacheTest()
-        {
-            Mock<ICachingService> cachingService = GetService();
-            ICachedObject<string> cachedObject = GetCachedObject();
+		[Fact]
+		public void CacheTest()
+		{
+			Mock<ICachingService> cachingService = GetService();
+			ICachedObject<string> cachedObject = GetCachedObject();
 
-            cachingService.Setup(x => x.Cache(key, cachedObject));
+			cachingService.Setup(x => x.Cache(key, cachedObject));
 
-            cachingService.Object.Cache(key, cachedObject);
-        }
+			cachingService.Object.Cache(key, cachedObject);
+		}
 
-        [Fact]
-        public void CacheTest2()
-        {
-            Mock<ICachingService> cachingService = GetService();
-            ICachedObject<string> cachedObject = GetCachedObject();
+		[Fact]
+		public void CacheTest2()
+		{
+			Mock<ICachingService> cachingService = GetService();
+			ICachedObject<string> cachedObject = GetCachedObject();
 
-            cachingService.Setup(x => x.Cache(key, cachedObject.Value, cachedObject.CachedTime, cachedObject.ExpireTime));
+			cachingService.Setup(x => x.Cache(key, cachedObject.Value, cachedObject.CachedTime, cachedObject.ExpireTime));
 
-            cachingService.Object.Cache(key, cachedObject.Value, cachedObject.CachedTime, cachedObject.ExpireTime);
-        }
+			cachingService.Object.Cache(key, cachedObject.Value, cachedObject.CachedTime, cachedObject.ExpireTime);
+		}
 
-        [Fact]
-        public void RetrieveTest()
-        {
-            Mock<ICachingService> cachingService = GetService();
-            ICachedObject<string> cachedObject = GetCachedObject();
+		[Fact]
+		public void RetrieveTest()
+		{
+			Mock<ICachingService> cachingService = GetService();
+			ICachedObject<string> cachedObject = GetCachedObject();
 
-            cachingService.Setup(x => x.Retrieve<string>(key)).Returns(cachedObject);
+			cachingService.Setup(x => x.Retrieve<string>(key)).Returns(cachedObject);
 
-            Assert.Equal(cachedObject, cachingService.Object.Retrieve<string>(key));
-        }
+			Assert.Equal(cachedObject, cachingService.Object.Retrieve<string>(key));
+		}
 
-        [Fact]
-        public void InvalidateTest()
-        {
-            Mock<ICachingService> cachingService = GetService();
-            ICachedObject<string> cachedObject = GetCachedObject();
+		[Fact]
+		public void InvalidateTest()
+		{
+			Mock<ICachingService> cachingService = GetService();
+			ICachedObject<string> cachedObject = GetCachedObject();
 
-            cachingService.Setup(x => x.Invalidate(key)).Returns(true);
+			cachingService.Setup(x => x.Invalidate(key)).Returns(true);
 
-            Assert.True(cachingService.Object.Invalidate(key));
-        }
+			Assert.True(cachingService.Object.Invalidate(key));
+		}
 
-        private const string key = "a key";
+		private const string key = "a key";
 
-        private const string value = "a value";
-        
-        private DateTime time = DateTime.UtcNow;
-        
-        private DateTime expireTime = DateTime.UtcNow.AddMinutes(5);
+		private const string value = "a value";
 
-        private ICachedObject<string> GetCachedObject()
-        {
-            Mock<ICachedObject<string>> cachedObjectProxy = new Mock<ICachedObject<string>>();
-            cachedObjectProxy.SetupAllProperties();
-            ICachedObject<string> cachedObject = cachedObjectProxy.Object;
+		private DateTime time = DateTime.UtcNow;
 
-            cachedObject.ExpireTime = expireTime;
-            cachedObject.CachedTime = time;
-            cachedObject.Value = value;
+		private DateTime expireTime = DateTime.UtcNow.AddMinutes(5);
 
-            return cachedObject;
-        }
+		private ICachedObject<string> GetCachedObject()
+		{
+			Mock<ICachedObject<string>> cachedObjectProxy = new Mock<ICachedObject<string>>();
+			cachedObjectProxy.SetupAllProperties();
+			ICachedObject<string> cachedObject = cachedObjectProxy.Object;
 
-        private Mock<ICachingService> GetService()
-        {
-            Mock<ICachingService> cachingServiceProxy = new Mock<ICachingService>(MockBehavior.Strict);
-            TimeSpan defaultCacheTime = TimeSpan.FromMinutes(5);
-            cachingServiceProxy.SetupGet(x => x.DefaultCacheLifespan).Returns(defaultCacheTime);
-            return cachingServiceProxy;
-        }
-    }
+			cachedObject.ExpireTime = expireTime;
+			cachedObject.CachedTime = time;
+			cachedObject.Value = value;
+
+			return cachedObject;
+		}
+
+		private Mock<ICachingService> GetService()
+		{
+			Mock<ICachingService> cachingServiceProxy = new Mock<ICachingService>(MockBehavior.Strict);
+			TimeSpan defaultCacheTime = TimeSpan.FromMinutes(5);
+			cachingServiceProxy.SetupGet(x => x.DefaultCacheLifespan).Returns(defaultCacheTime);
+			return cachingServiceProxy;
+		}
+	}
 }

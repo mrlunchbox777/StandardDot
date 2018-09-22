@@ -4,30 +4,30 @@ using System.Reflection;
 
 namespace StandardDot.Dto.UnitTests.Exception
 {
-    public class CustomException : System.Exception
-    {
-        public CustomException()
-            : base ()
-        {}
+	public class CustomException : System.Exception
+	{
+		public CustomException()
+			: base()
+		{ }
 
-        public CustomException(int hResult, string stackTrace,
-            string message, IDictionary data, CustomException innerException)
-            : base(message, innerException)
-        {
-            HResult = hResult;
-            StackTrace = stackTrace;
-            Message = message;
-            Data = data;
-        }
+		public CustomException(int hResult, string stackTrace,
+			string message, IDictionary data, CustomException innerException)
+			: base(message, innerException)
+		{
+			HResult = hResult;
+			StackTrace = stackTrace;
+			Message = message;
+			Data = data;
+		}
 
-        public override string Source { get; set; }
+		public override string Source { get; set; }
 
-        public override string HelpLink { get; set; }
-        
-        public override string StackTrace { get; }
-        
-        public override string Message { get; }
-        
-        public override IDictionary Data { get; }
-    }
+		public override string HelpLink { get; set; }
+
+		public override string StackTrace { get; }
+
+		public override string Message { get; }
+
+		public override IDictionary Data { get; }
+	}
 }
