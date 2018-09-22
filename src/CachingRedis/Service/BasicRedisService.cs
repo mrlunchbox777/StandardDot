@@ -168,7 +168,7 @@ namespace StandardDot.Caching.Redis.Service
 			}).LongCount();
 		}
 
-		// slow and bad
+		// not too slow, but could be problematic
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> allKeys)
 		{
 			IEnumerable<RedisId> keys = allKeys.Where(x => !string.IsNullOrWhiteSpace(x?.FullKey));
@@ -218,7 +218,6 @@ namespace StandardDot.Caching.Redis.Service
 			return ttls;
 		}
 
-		// slow and bad
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
 			return GetTimeToLive<T>(new[]{key});

@@ -246,17 +246,17 @@ namespace StandardDot.Caching.Redis.Service
 			GetRedisServiceImplementation().DeleteValue(key);
 		}
 
-		public virtual int KeyCount()
+		public virtual long KeyCount()
 		{
 			return GetRedisServiceImplementation().KeyCount();
 		}
 
-		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null)
+		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
 			throw new NotImplementedException();
 		}
 
-		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
+		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys)
 		{
 			throw new NotImplementedException();
 		}
