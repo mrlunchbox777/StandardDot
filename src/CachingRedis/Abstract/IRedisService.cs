@@ -9,25 +9,23 @@ namespace StandardDot.Caching.Redis.Abstract
 	{
 		RedisServiceType ServiceType { get; }
 
-		void AddToCache<T>(RedisHashSetCachedObject<T> source, IDataContractResolver dataContractResolver = null);
+		IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys);
 
-		void DeleteFromCache(RedisId key);
+		IEnumerable<RedisId> GetKey<T>(RedisId key);
 
-		void DeleteFromCache(IEnumerable<RedisId> keys);
+		IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys);
 
-		T GetFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null);
+		IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key);
 
-		IEnumerable<RedisId> GetKeys(RedisId key, IDataContractResolver dataContractResolver = null);
+		IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values);
 
-		IEnumerable<string> GetKeysStrings(RedisId key, IDataContractResolver dataContractResolver = null);
+		IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value);
 
-		IEnumerable<T> GetListFromCache<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null);
+		void DeleteValues(IEnumerable<RedisId> keys);
 
-		IEnumerable<T> GetListFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null);
+		void DeleteValue(RedisId key);
 
-		// IEnumerable<Tuple<RedisId, string>> GetStringListFromCache<T>(RedisId key, IDataContractResolver dataContractResolver = null);
-
-		// IEnumerable<Tuple<RedisId, string>> GetStringListFromCache<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null);
+		int KeyCount();
 
 		/// <summary>
 		/// Gets the TTL for a key
@@ -35,7 +33,7 @@ namespace StandardDot.Caching.Redis.Abstract
 		/// <param name="key">The key to get a TTL for</param>
 		/// <param name="dataContractResolver">The datacontract resolver to use for serialization (polymorphic dtos)</param>
 		/// <returns>Time to live from redis</returns>
-		TimeSpan? GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null);
+		Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null);
 
 		/// <summary>
 		/// Gets the TTL for a key

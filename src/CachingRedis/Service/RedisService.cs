@@ -15,11 +15,12 @@ using StandardDot.Caching.Redis.Providers;
 
 namespace StandardDot.Caching.Redis.Service
 {
-	internal class RedisService
+	internal class RedisService : IRedisService
 	{
-		public RedisService(ICacheProviderSettings settings)
+		public RedisService(ICacheProviderSettings settings, Func<ICacheProviderSettings, ICacheProvider> resetProvider)
 		{
 			_cacheSettings = settings;
+			ResetProvider = resetProvider;
 		}
 
 		private ICacheProviderSettings _cacheSettings;
@@ -29,9 +30,9 @@ namespace StandardDot.Caching.Redis.Service
 		/// </summary>
 		public ICacheProviderSettings CacheSettings => _cacheSettings;
 
-		private static RedisCacheProvider _cacheProvider;
+		private static ICacheProvider _cacheProvider;
 
-		internal RedisCacheProvider CacheProvider
+		internal ICacheProvider CacheProvider
 		{
 			get
 			{
@@ -43,6 +44,8 @@ namespace StandardDot.Caching.Redis.Service
 			}
 			private set { _cacheProvider = value; }
 		}
+
+		protected virtual Func<ICacheProviderSettings, ICacheProvider> ResetProvider { get; }
 
 		private static ConnectionMultiplexer _redis;
 
@@ -151,7 +154,7 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			if (provider == null || forceReset)
 			{
-				CacheProvider = new RedisCacheProvider(this.CacheSettings);
+				CacheProvider = ResetProvider(this.CacheSettings);
 			}
 			else
 			{
@@ -195,5 +198,179 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			return CacheSettings.SerializationService;
 		}
+
+		// Abstract Implementation
+
+		public RedisServiceType ServiceType => RedisServiceType.Provider;
+
+		public RedisServiceType ActiveServiceType => CacheSettings.RedisServiceImplementationType;
+
+		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
+		{
+			return GetRedisServiceImplementation().GetKeys<T>(keys);
+		}
+
+		public IEnumerable<RedisId> GetKey<T>(RedisId key)
+		{
+			return GetRedisServiceImplementation().GetKey<T>(key);
+		}
+
+		public IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
+		{
+			return GetRedisServiceImplementation().GetValues<T>(keys);
+		}
+
+		public IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
+		{
+			return GetRedisServiceImplementation().GetValue<T>(key);
+		}
+
+		public IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
+		{
+			return GetRedisServiceImplementation().SetValues<T>(values);
+		}
+
+		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
+		{
+			return GetRedisServiceImplementation().SetValue<T>(value);
+		}
+
+		public void DeleteValues(IEnumerable<RedisId> keys)
+		{
+			GetRedisServiceImplementation().DeleteValues(keys);
+		}
+
+		public void DeleteValue(RedisId key)
+		{
+			GetRedisServiceImplementation().DeleteValue(key);
+		}
+
+		public int KeyCount()
+		{
+			return GetRedisServiceImplementation().KeyCount();
+		}
+
+		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null)
+		{
+			throw new NotImplementedException();
+		}
+
+		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
+
+/*
+
+		// basic, needs to use get list thing
+		public virtual List<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
+		{
+			if (keys == null)
+			{
+				return new List<RedisCachedObject<T>>();
+			}
+
+			keys = keys.Where(k => !string.IsNullOrWhiteSpace(k?.FullKey)).ToArray();
+			IDatabase db = GetDatabase();
+			List<RedisCachedObject<T>> results = new List<RedisCachedObject<T>>();
+			foreach (RedisId key in keys)
+			{
+				RedisValue result = db.StringGet(key.FullKey);
+				// deserialize the value
+				if (result.HasValue)
+				{
+					RedisCachedObject<T> value = GetCachedValue<T>(result);
+					value.RetrievedSuccesfully = true;
+					value.Status = CacheEntryStatus.Success;
+					results.Add(value);
+				}
+				else
+				{
+					results.Add(new RedisCachedObject<T>(key.FullKey)
+					{
+						Value = default(T),
+						RetrievedSuccesfully = false,
+						Status = CacheEntryStatus.Error,
+					});
+				}
+			}
+
+			return results;
+		}
+
+		// not implemented
+		public List<RedisCachedObject<T>> GetValue<T>(RedisId key)
+		{
+			throw new NotImplementedException();
+		}
+
+		// basic
+		public virtual List<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> valuesToCache)
+		{
+			if (valuesToCache == null)
+			{
+				return new List<RedisCachedObject<T>>();
+			}
+
+			List<RedisCachedObject<T>> values = valuesToCache.Where(v => !(v?.Id?.HasFullKey ?? false)).ToList();
+			IDatabase db = GetDatabase();
+			foreach (RedisCachedObject<T> entry in values)
+			{
+				// get the expiration, key and value
+				entry.CachedTime = DateTime.UtcNow;
+				string valueToStore = GetValueToCache(entry);
+				bool success = db.StringSet(entry.Id.FullKey, valueToStore, entry.ExpireTime - entry.CachedTime);
+				entry.Status = success ? CacheEntryStatus.Success : CacheEntryStatus.Error;
+			}
+
+			return values;
+		}
+
+		// single call of list
+		public virtual RedisCachedObject<T> SetValue<T>(RedisCachedObject<T> value)
+		{
+			return SetValues(new[] { value }).SingleOrDefault();
+		}
+
+		// basic
+		public virtual void DeleteValues(IEnumerable<RedisId> keys)
+		{
+			//remove all keys that are null, empty or set to "*"
+			string[] keysToExpire = (keys == null ? new RedisId[] { } : keys)
+				.Select(k => (k?.FullKey ?? "").Trim()).Where(k => k != "*" && k != "").ToArray();
+
+			IDatabase db = GetDatabase();
+			foreach (string key in keysToExpire)
+			{
+				if (key.Last() == '*')
+				{
+					string luaScript = @"
+					local keys = redis.call('keys', ARGV[1]) 
+					for i=1,#keys,5000 do 
+						redis.call('del', unpack(keys, i, math.min(i+4999, #keys))) 
+					end 
+					return keys";
+					RedisResult result = db.ScriptEvaluate(luaScript, null, new RedisValue[] { key });
+				}
+				else
+				{
+					db.KeyDelete(key);
+				}
+			}
+		}
+
+		// hashset
+		public virtual void DeleteValue(RedisId key)
+		{
+			IDatabase db = GetDatabase();
+			db.HashDelete(key.HashSetIdentifier, key.ObjectIdentifier);
+		}
+
+		// not implemented
+		public int KeyCount()
+		{
+			throw new NotImplementedException();
+		}
+ */

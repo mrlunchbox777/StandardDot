@@ -1,18 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using StackExchange.Redis;
 using StandardDot.Caching.Redis.Dto;
 
 namespace StandardDot.Caching.Redis.Abstract
 {
 	public interface ICacheProvider
 	{
-		List<RedisCachedObject<T>> GetValuesByKeys<T>(IEnumerable<RedisId> keys);
+		string GetValueToCache<T>(RedisCachedObject<T> cachedObject);
 
-		List<RedisCachedObject<T>> GetValue<T>(RedisId[] key);
+		RedisCachedObject<T> GetCachedValue<T>(string redisValue);
 
-		List<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values);
+		ConnectionMultiplexer GetRedis();
 
-		List<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value);
-
-		void DeleteValues(IEnumerable<string> keys);
+		IDatabase GetDatabase();
 	}
 }

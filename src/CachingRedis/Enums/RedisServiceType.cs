@@ -3,6 +3,7 @@
 	public enum RedisServiceType
 	{
 		HashSet = 0,
-		KeyValue = 1
+		KeyValue = 1,
+		Provider = 2
 	}
 }
