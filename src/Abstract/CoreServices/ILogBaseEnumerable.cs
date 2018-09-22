@@ -7,9 +7,9 @@ using StandardDot.Enums;
 
 namespace StandardDot.Abstract.CoreServices
 {
-    /// <summary>
-    /// An Enumerator to get logs
-    /// </summary>
-    public interface ILogBaseEnumerable : IEnumerable<LogBase>
-    {}
+	/// <summary>
+	/// An Enumerator to get logs
+	/// </summary>
+	public interface ILogBaseEnumerable : IEnumerable<LogBase>
+	{ }
 }

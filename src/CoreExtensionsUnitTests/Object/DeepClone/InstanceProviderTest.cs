@@ -5,52 +5,52 @@ using Xunit;
 
 namespace StandardDot.CoreExtensions.UnitTests.Object.DeepClone
 {
-    public class InstanceProviderTest
-    {
-        [Fact]
-        public void BrushIsCopiedWithInstanceProvider()
-        {
-            FooBarProvider.NumCalls = 0;
+	public class InstanceProviderTest
+	{
+		[Fact]
+		public void BrushIsCopiedWithInstanceProvider()
+		{
+			FooBarProvider.NumCalls = 0;
 
-            FooBar a = new FooBar(4);
-            FooBar b = (FooBar)a.Copy();
-            
-            Assert.NotSame(a, b);
-            Assert.True(FooBarProvider.NumCalls > 0);
-            Assert.Equal(a.Foo, b.Foo);
-            Assert.Equal(4, a.Foo);
-        }
+			FooBar a = new FooBar(4);
+			FooBar b = (FooBar)a.Copy();
 
-        [Fact]
-        public void BrushIsCopiedWithSuppliedInstance()
-        {
-            FooBar a = new FooBar(4);
-            FooBar b = new FooBar(6);
-            a.Copy(b);
+			Assert.NotSame(a, b);
+			Assert.True(FooBarProvider.NumCalls > 0);
+			Assert.Equal(a.Foo, b.Foo);
+			Assert.Equal(4, a.Foo);
+		}
 
-            Assert.NotSame(a, b);
-            Assert.Equal(a.Foo, b.Foo);
-        }
-    }
-    
-    internal class FooBar
-    {
-        public FooBar(int foo)
-        {
-            Foo = foo;
-        }
+		[Fact]
+		public void BrushIsCopiedWithSuppliedInstance()
+		{
+			FooBar a = new FooBar(4);
+			FooBar b = new FooBar(6);
+			a.Copy(b);
 
-        public int Foo { get; }
-    }
+			Assert.NotSame(a, b);
+			Assert.Equal(a.Foo, b.Foo);
+		}
+	}
 
-    internal class FooBarProvider : InstanceProvider<FooBar>
-    {
-        public static int NumCalls { get; set; }
+	internal class FooBar
+	{
+		public FooBar(int foo)
+		{
+			Foo = foo;
+		}
 
-        public override FooBar CreateTypedCopy(FooBar toBeCopied)
-        {
-            NumCalls++;
-            return new FooBar(toBeCopied.Foo);
-        }
-    }
+		public int Foo { get; }
+	}
+
+	internal class FooBarProvider : InstanceProvider<FooBar>
+	{
+		public static int NumCalls { get; set; }
+
+		public override FooBar CreateTypedCopy(FooBar toBeCopied)
+		{
+			NumCalls++;
+			return new FooBar(toBeCopied.Foo);
+		}
+	}
 }

@@ -5,16 +5,16 @@ using StandardDot.Authentication.Hmac;
 
 namespace StandardDot.Authentication.IntegrationTests.AuthenticationServiceTestObjects
 {
-    public class GetHeaderValuesOverride : AuthenticationService
-    {
-        public GetHeaderValuesOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
-            : base(loggingService, apiKeyService, cachingService)
-        {
-        }
+	public class GetHeaderValuesOverride : AuthenticationService
+	{
+		public GetHeaderValuesOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
+			: base(loggingService, apiKeyService, cachingService)
+		{
+		}
 
-        public string[] GetHeaderValues(string header)
-        {
-            return GetAuthorizationHeaderValues(header);
-        }
-    }
+		public string[] GetHeaderValues(string header)
+		{
+			return GetAuthorizationHeaderValues(header);
+		}
+	}
 }

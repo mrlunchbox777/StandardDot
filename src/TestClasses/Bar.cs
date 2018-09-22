@@ -1,6 +1,6 @@
 namespace StandardDot.TestClasses
 {
-    public class Bar : Foo
-    {
-    }
+	public class Bar : Foo
+	{
+	}
 }

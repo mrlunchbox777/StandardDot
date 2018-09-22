@@ -7,16 +7,16 @@ using StandardDot.Authentication.Hmac;
 
 namespace StandardDot.Authentication.IntegrationTests.AuthenticationServiceTestObjects
 {
-    public class ComputeHashOverride : AuthenticationService
-    {
-        public ComputeHashOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
-            : base(loggingService, apiKeyService, cachingService)
-        {
-        }
+	public class ComputeHashOverride : AuthenticationService
+	{
+		public ComputeHashOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
+			: base(loggingService, apiKeyService, cachingService)
+		{
+		}
 
-        public Tuple<Stream, byte[], string> GetComputeHash(Stream content)
-        {
-            return ComputeHash(content);
-        }
-    }
+		public Tuple<Stream, byte[], string> GetComputeHash(Stream content)
+		{
+			return ComputeHash(content);
+		}
+	}
 }
