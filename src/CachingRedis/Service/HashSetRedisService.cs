@@ -247,12 +247,12 @@ namespace StandardDot.Caching.Redis.Service
 			return ttls;
 		}
 
-		private void HardAddToCache(RedisId key, string value)
+		protected virtual void HardAddToCache(RedisId key, string value)
 		{
 			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
 		}
 
-		private string HardGetFromCache(RedisId key)
+		protected virtual string HardGetFromCache(RedisId key)
 		{
 			return RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
 		}

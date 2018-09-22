@@ -49,7 +49,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		private static ConnectionMultiplexer _redis;
 
-		private ConnectionMultiplexer Redis
+		protected ConnectionMultiplexer Redis
 		{
 			get
 			{
@@ -66,7 +66,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		private static IDatabase _db;
 
-		internal IDatabase Database
+		protected internal virtual IDatabase Database
 		{
 			get
 			{
@@ -77,23 +77,23 @@ namespace StandardDot.Caching.Redis.Service
 
 		private static IServer _server;
 
-		internal IServer Server(string key)
+		protected internal virtual IServer Server(string key)
 		{
 			_server = Redis?.GetServer(Database.IdentifyEndpoint(key));
 			return _server;
 		}
 
-		private static readonly ConcurrentDictionary<RedisServiceType, IRedisService> _redisServiceImplementation =
+		protected static readonly ConcurrentDictionary<RedisServiceType, IRedisService> _redisServiceImplementation =
 			new ConcurrentDictionary<RedisServiceType, IRedisService>();
 
 		/// <summary>
 		/// If you are going to set this, make sure that you change the redisserviceimplementationtype first
 		/// </summary>
-		public IRedisService RedisServiceImplementation
+		public virtual IRedisService RedisServiceImplementation
 		{
 			get
 			{
-				return GetEnsureValidRedisServiceImplementation(CacheSettings.RedisServiceImplementationType);
+				return EnsureValidRedisServiceImplementation(CacheSettings.RedisServiceImplementationType);
 			}
 			set
 			{
@@ -106,7 +106,7 @@ namespace StandardDot.Caching.Redis.Service
 			}
 		}
 
-		private IRedisService GetEnsureValidRedisServiceImplementation(
+		protected virtual IRedisService EnsureValidRedisServiceImplementation(
 			RedisServiceType redisServiceImplementationType)
 		{
 			if (_redisServiceImplementation.ContainsKey(CacheSettings.RedisServiceImplementationType)
@@ -139,18 +139,18 @@ namespace StandardDot.Caching.Redis.Service
 			return _redisServiceImplementation[redisServiceImplementationType];
 		}
 
-		private IRedisService GetRedisServiceImplementation(RedisServiceType? type = null)
+		protected virtual IRedisService GetRedisServiceImplementation(RedisServiceType? type = null)
 		{
 			if (type == null)
 			{
 				return RedisServiceImplementation;
 			}
 
-			return GetEnsureValidRedisServiceImplementation((RedisServiceType)type);
+			return EnsureValidRedisServiceImplementation((RedisServiceType)type);
 		}
 
 
-		private void ResetCache(RedisCacheProvider provider = null, bool forceReset = false)
+		protected virtual void ResetCache(RedisCacheProvider provider = null, bool forceReset = false)
 		{
 			if (provider == null || forceReset)
 			{
@@ -171,7 +171,7 @@ namespace StandardDot.Caching.Redis.Service
 		/// <param name="dataContractResolver">The datacontract resolver to use for serialization
 		/// (polymorphic dtos)</param>
 		/// <returns>Object from string</returns>
-		internal T ConvertString<T>(string stringToConvert, RedisId key,
+		protected internal virtual T ConvertString<T>(string stringToConvert, RedisId key,
 			IDataContractResolver dataContractResolver = null)
 		{
 			T retVal = default(T);
@@ -194,68 +194,68 @@ namespace StandardDot.Caching.Redis.Service
 			return retVal;
 		}
 
-		internal ISerializationService GetSerializationService<T>(IDataContractResolver dataContractResolver)
+		protected internal virtual ISerializationService GetSerializationService<T>(IDataContractResolver dataContractResolver)
 		{
 			return CacheSettings.SerializationService;
 		}
 
 		// Abstract Implementation
 
-		public RedisServiceType ServiceType => RedisServiceType.Provider;
+		public virtual RedisServiceType ServiceType => RedisServiceType.Provider;
 
-		public RedisServiceType ActiveServiceType => CacheSettings.RedisServiceImplementationType;
+		public virtual RedisServiceType ActiveServiceType => CacheSettings.RedisServiceImplementationType;
 
-		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
+		public virtual IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
 			return GetRedisServiceImplementation().GetKeys<T>(keys);
 		}
 
-		public IEnumerable<RedisId> GetKey<T>(RedisId key)
+		public virtual IEnumerable<RedisId> GetKey<T>(RedisId key)
 		{
 			return GetRedisServiceImplementation().GetKey<T>(key);
 		}
 
-		public IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
+		public virtual IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
 		{
 			return GetRedisServiceImplementation().GetValues<T>(keys);
 		}
 
-		public IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
+		public virtual IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
 		{
 			return GetRedisServiceImplementation().GetValue<T>(key);
 		}
 
-		public IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
+		public virtual IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
 		{
 			return GetRedisServiceImplementation().SetValues<T>(values);
 		}
 
-		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
+		public virtual IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
 		{
 			return GetRedisServiceImplementation().SetValue<T>(value);
 		}
 
-		public void DeleteValues(IEnumerable<RedisId> keys)
+		public virtual void DeleteValues(IEnumerable<RedisId> keys)
 		{
 			GetRedisServiceImplementation().DeleteValues(keys);
 		}
 
-		public void DeleteValue(RedisId key)
+		public virtual void DeleteValue(RedisId key)
 		{
 			GetRedisServiceImplementation().DeleteValue(key);
 		}
 
-		public int KeyCount()
+		public virtual int KeyCount()
 		{
 			return GetRedisServiceImplementation().KeyCount();
 		}
 
-		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null)
+		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key, IDataContractResolver dataContractResolver = null)
 		{
 			throw new NotImplementedException();
 		}
 
-		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
+		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IList<RedisId> keys, IDataContractResolver dataContractResolver = null)
 		{
 			throw new NotImplementedException();
 		}
