@@ -49,7 +49,7 @@ namespace StandardDot.Caching.Redis.Service
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
 			List<RedisId> values = new List<RedisId>();
-			foreach(RedisId key in keys)
+			foreach (RedisId key in keys)
 			{
 				values.AddRange(GetKey<T>(key));
 			}
@@ -105,7 +105,7 @@ namespace StandardDot.Caching.Redis.Service
 					values.Add(current);
 				}
 			}
-			
+
 			// do some cache cleaning
 			IEnumerable<RedisId> itemsToDelete = values.Where(x => (x?.ExpireTime ?? DateTime.MinValue) < DateTime.UtcNow)
 				.Select(x => x.Id);
@@ -122,7 +122,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
 		{
-			return GetValues<T>(new[]{key});
+			return GetValues<T>(new[] { key });
 		}
 
 		public IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
@@ -150,7 +150,7 @@ namespace StandardDot.Caching.Redis.Service
 
 			HardAddToCache(value.Id, compressedVal);
 
-			return new[]{value};
+			return new[] { value };
 		}
 
 		public long DeleteValues(IEnumerable<RedisId> keys)
@@ -201,7 +201,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
-			return GetTimeToLive<T>(new[]{key});
+			return GetTimeToLive<T>(new[] { key });
 		}
 
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys)

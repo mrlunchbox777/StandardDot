@@ -32,7 +32,7 @@ namespace StandardDot.Caching.Redis.DataStructures
 
 		public override void Clear()
 		{
-			while(Source?.Any() ?? false)
+			while (Source?.Any() ?? false)
 			{
 				bool removed = Remove(Source.FirstOrDefault());
 				if (!removed)

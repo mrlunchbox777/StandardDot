@@ -217,7 +217,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
-			return GetTimeToLive<T>(new[]{key});
+			return GetTimeToLive<T>(new[] { key });
 		}
 
 		public long ContainsKeys(IEnumerable<RedisId> keys)
