@@ -8,10 +8,10 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.13" />
-		<PackageReference Include="StandardDot.Caching" Version="0.0.0.13" />
-		<PackageReference Include="StandardDot.Configuration" Version="0.0.0.13" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.21" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.15" />
+		<PackageReference Include="StandardDot.Caching" Version="0.0.0.15" />
+		<PackageReference Include="StandardDot.Configuration" Version="0.0.0.15" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.23" />
 		<PackageReference Include="xunit" Version="2.4.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
 		<DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
