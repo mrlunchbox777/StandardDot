@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.DataStructures;
 
@@ -311,6 +312,14 @@ namespace StandardDot.Caching
 		public IDictionary<string, ICachedObjectBasic> EnumerateDictionary()
 		{
 			return this;
+		}
+
+		public ICachingService Query<T>(string key)
+		{
+			return new MemoryCachingService(DefaultCacheLifespan, Store
+				.Where(x => (key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false))
+				.ToDictionary(x => x.Key, x => x.Value)
+			);
 		}
 	}
 }

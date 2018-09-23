@@ -315,7 +315,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		public ICachingService Query<T>(string key)
 		{
 			return new TestMemoryCachingService(DefaultCacheLifespan, Store
-				.Where(x => (key == null && x.Key == null) || (x.Key?.Contains(key) ?? false))
+				.Where(x => (key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false))
 				.ToDictionary(x => x.Key, x => x.Value)
 			);
 		}
