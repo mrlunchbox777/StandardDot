@@ -9,7 +9,7 @@ namespace StandardDot.Caching.Redis.Dto
 		{
 			CacheGroup = source.CacheGroup;
 			CacheDomain = source.CacheDomain;
-			ObjectPrefix = source.ObjectPrefix;
+			ObjectPrefix = source.ObjectPrefix = "";
 		}
 		
 		/// <summary>
@@ -25,6 +25,6 @@ namespace StandardDot.Caching.Redis.Dto
 		/// <summary>
 		/// The object prefix to look for
 		/// </summary>
-		public string ObjectPrefix { get; set; }
+		public string ObjectPrefix { get; set; } = "";
 	}
 }

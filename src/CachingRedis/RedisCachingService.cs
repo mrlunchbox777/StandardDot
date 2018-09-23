@@ -33,7 +33,7 @@ namespace StandardDot.Caching.Redis
 			return new RedisId
 			{
 				ServiceType = _settings.RedisServiceImplementationType,
-				ObjectIdentifier = key,
+				ObjectIdentifier = _cacheInfo.ObjectPrefix + key,
 				HashSetIdentifier = _settings.PrefixIdentifier
 			};
 		}
