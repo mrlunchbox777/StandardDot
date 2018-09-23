@@ -29,7 +29,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		protected virtual void HardAddToCache(RedisId key, string value)
 		{
-			string realValue = RedisService.CacheSettings.CompressValues
+			string realValue = RedisService.CacheSettings.ServiceSettings.CompressValues
 				? RedisService.CacheProvider.CompressValue(value)
 				: value;
 			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, realValue);
@@ -38,7 +38,7 @@ namespace StandardDot.Caching.Redis.Service
 		protected virtual string HardGetFromCache(RedisId key)
 		{
 			string value = RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
-			value = (!string.IsNullOrWhiteSpace(value)) && RedisService.CacheSettings.CompressValues
+			value = (!string.IsNullOrWhiteSpace(value)) && RedisService.CacheSettings.ServiceSettings.CompressValues
 				? RedisService.CacheProvider.DecompressValue(value)
 				: value;
 			return value;
@@ -64,7 +64,7 @@ namespace StandardDot.Caching.Redis.Service
 			}
 
 			IEnumerable<HashEntry> fieldIdentifiers = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
-				RedisService.CacheSettings.DefaultScanPageSize);
+				RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize);
 
 			IEnumerable<RedisId> resultingKeys =
 				// get the name, and add it to the hash name
@@ -196,7 +196,7 @@ namespace StandardDot.Caching.Redis.Service
 		// might be slow
 		public long KeyCount()
 		{
-			return RedisService.Database.HashGetAll(RedisService.CacheSettings.PrefixIdentifier + "*").LongLength;
+			return RedisService.Database.HashGetAll(RedisService.CacheSettings.ServiceSettings.PrefixIdentifier + "*").LongLength;
 		}
 
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)

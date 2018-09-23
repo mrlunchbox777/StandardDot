@@ -42,7 +42,7 @@ namespace StandardDot.Caching.Redis.Providers
 		public virtual string GetValueToCache<T>(RedisCachedObject<T> cachedObject)
 		{
 			string redisValue = CacheSettings.SerializationService.SerializeObject(cachedObject);
-			if (CacheSettings.CompressValues)
+			if (CacheSettings.ServiceSettings.CompressValues)
 			{
 				redisValue = CompressValue(redisValue);
 			}
@@ -55,7 +55,7 @@ namespace StandardDot.Caching.Redis.Providers
 			{
 				return null;
 			}
-			if (CacheSettings.CompressValues)
+			if (CacheSettings.ServiceSettings.CompressValues)
 			{
 				redisValue = DecompressValue(redisValue);
 			}
@@ -85,7 +85,7 @@ namespace StandardDot.Caching.Redis.Providers
 				Value = default(T),
 				CachedTime = DateTime.MinValue,
 				Status = CacheEntryStatus.Error,
-				Metadata = CacheSettings.ProviderInfo,
+				Metadata = CacheSettings.ServiceSettings.ProviderInfo,
 				Id = redisKey,
 				ExpireTime = DateTime.MinValue,
 			};

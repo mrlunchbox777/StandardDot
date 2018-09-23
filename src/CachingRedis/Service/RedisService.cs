@@ -100,26 +100,26 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			get
 			{
-				return EnsureValidRedisServiceImplementation(CacheSettings.RedisServiceImplementationType);
+				return EnsureValidRedisServiceImplementation(CacheSettings.ServiceSettings.RedisServiceImplementationType);
 			}
 			set
 			{
 
-				if (_redisServiceImplementation.ContainsKey(CacheSettings.RedisServiceImplementationType))
+				if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.RedisServiceImplementationType))
 				{
-					_redisServiceImplementation[CacheSettings.RedisServiceImplementationType] = value;
+					_redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType] = value;
 				}
-				_redisServiceImplementation.TryAdd(CacheSettings.RedisServiceImplementationType, value);
+				_redisServiceImplementation.TryAdd(CacheSettings.ServiceSettings.RedisServiceImplementationType, value);
 			}
 		}
 
 		protected virtual IRedisService EnsureValidRedisServiceImplementation(
 			RedisServiceType redisServiceImplementationType)
 		{
-			if (_redisServiceImplementation.ContainsKey(CacheSettings.RedisServiceImplementationType)
-				&& (_redisServiceImplementation[CacheSettings.RedisServiceImplementationType] != null))
+			if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.RedisServiceImplementationType)
+				&& (_redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType] != null))
 			{
-				return _redisServiceImplementation[CacheSettings.RedisServiceImplementationType];
+				return _redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType];
 			}
 
 			IRedisService helper;
@@ -211,7 +211,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public virtual RedisServiceType ServiceType => RedisServiceType.Provider;
 
-		public virtual RedisServiceType ActiveServiceType => CacheSettings.RedisServiceImplementationType;
+		public virtual RedisServiceType ActiveServiceType => CacheSettings.ServiceSettings.RedisServiceImplementationType;
 
 		public virtual IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{

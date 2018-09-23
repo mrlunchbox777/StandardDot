@@ -32,9 +32,9 @@ namespace StandardDot.Caching.Redis
 		{
 			return new RedisId
 			{
-				ServiceType = _settings.RedisServiceImplementationType,
+				ServiceType = _settings.ServiceSettings.RedisServiceImplementationType,
 				ObjectIdentifier = _cacheInfo.ObjectPrefix + key,
-				HashSetIdentifier = _settings.PrefixIdentifier
+				HashSetIdentifier = _settings.ServiceSettings.PrefixIdentifier
 			};
 		}
 
@@ -56,9 +56,9 @@ namespace StandardDot.Caching.Redis
 			get
 			{
 				RedisService provider;
-				if (UseStaticProvider && _store.ContainsKey(_settings.CacheProviderSettingsId))
+				if (UseStaticProvider && _store.ContainsKey(_settings.ServiceSettings.CacheProviderSettingsId))
 				{
-					provider = _store[_settings.CacheProviderSettingsId];
+					provider = _store[_settings.ServiceSettings.CacheProviderSettingsId];
 					if (_settings == provider.CacheSettings)
 					{
 						return provider;
@@ -67,7 +67,7 @@ namespace StandardDot.Caching.Redis
 				provider = new RedisService(_settings, LoggingService, (s, l) => new RedisCacheProvider(s, l));
 				if (UseStaticProvider)
 				{
-					_store[_settings.CacheProviderSettingsId] = provider;
+					_store[_settings.ServiceSettings.CacheProviderSettingsId] = provider;
 				}
 				return provider;
 			}
@@ -93,7 +93,7 @@ namespace StandardDot.Caching.Redis
 			};
 		}
 
-		public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
+		public virtual TimeSpan DefaultCacheLifespan => _settings.ServiceSettings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
 		// probably pretty slow
 		public ILazyCollection<string> Keys
