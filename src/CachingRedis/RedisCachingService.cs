@@ -362,5 +362,15 @@ namespace StandardDot.Caching.Redis
 		{
 			return this.ToDictionary(x => x.Key, x => x.Value);
 		}
+
+		public ICachingService Query<T>(string key)
+		{
+			return new RedisCachingService(_settings, LoggingService,
+				new CacheInfo(_cacheInfo)
+				{
+					ObjectPrefix = _cacheInfo.ObjectPrefix + key
+				}, UseStaticProvider
+			);
+		}
 	}
 }
