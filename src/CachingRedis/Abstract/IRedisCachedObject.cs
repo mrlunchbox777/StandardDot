@@ -3,7 +3,7 @@ using StandardDot.Caching.Redis.Enums;
 
 namespace StandardDot.Caching.Redis.Abstract
 {
-	public interface IRedisCachedObject<T>
+	public interface IRedisCachedObject
 	{
 		RedisId Id { get; set; }
 

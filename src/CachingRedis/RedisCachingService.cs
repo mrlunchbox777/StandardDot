@@ -95,19 +95,17 @@ namespace StandardDot.Caching.Redis
 
 		public virtual TimeSpan DefaultCacheLifespan => _settings.DefaultExpireTimeSpan ?? TimeSpan.FromSeconds(300);
 
-		// needs work
-		ILazyCollection<string> Keys => throw new NotImplementedException();
-			// Store.Database.HashKeys("*").Select(x => x.ToString())
-			// .Paginate(_settings.DefaultScanPageSize);
-			// .ToList();
+		// probably pretty slow
+		ILazyCollection<string> Keys
+			=> new RedisLazyCollection<string>(Store.RedisServiceImplementation
+				.GetKeys<object>(new List<RedisId> { GetRedisId("*") }).Select(x => (string)x), this);
 
-		// needs work
-		ILazyCollection<ICachedObject<object>> Values
-			// => throw new NotImplementedException();
-			=> new RedisLazyCollection<ICachedObject<object>, object>(Store.RedisServiceImplementation
+		// probably pretty slow
+		ILazyCollection<ICachedObjectBasic> Values
+			=> new RedisLazyCollection<ICachedObjectBasic>(Store.RedisServiceImplementation
 				.GetValues<object>(new List<RedisId> { GetRedisId("*") }), this);
 
-		// needs work
+		// probably pretty slow
 		public long Count => Store.KeyCount();
 
 		public bool IsReadOnly => false;
@@ -138,7 +136,7 @@ namespace StandardDot.Caching.Redis
 			{
 				Invalidate(key);
 			}
-			Store.CacheProvider.SetValue(CreateCachedObject(key, value.Value, value.CachedTime, value.ExpireTime));
+			Store.SetValue(CreateCachedObject(key, value.Value, value.CachedTime, value.ExpireTime));
 		}
 
 		/// <summary>
@@ -165,7 +163,7 @@ namespace StandardDot.Caching.Redis
 				return null;
 			}
 
-			ICachedObject<T> item = Store.RedisServiceImplementation.GetFromCache<RedisCachedObject<T>>(GetRedisId(key));
+			ICachedObject<T> item = Store.GetValue<T>(GetRedisId(key)).SingleOrDefault();
 			if (!(item.Value is T))
 			{
 				return null;
@@ -176,7 +174,7 @@ namespace StandardDot.Caching.Redis
 				Invalidate(key);
 				return null;
 			}
-			return CreateCachedObject<T>(key, result, item.CachedTime, item.ExpireTime);
+			return item;
 		}
 
 		/// <summary>
@@ -189,7 +187,7 @@ namespace StandardDot.Caching.Redis
 			if (ContainsKey(key))
 			{
 				RedisId redisId = GetRedisId(key);
-				Store.CacheProvider.DeleteValue(redisId.HashSetIdentifier, redisId.ObjectIdentifier);
+				Store.DeleteValue(redisId);
 				return true;
 			}
 			return false;
@@ -212,7 +210,7 @@ namespace StandardDot.Caching.Redis
 		/// <returns>If the object was found and valid</returns>
 		public bool ContainsKey(string key)
 		{
-			return Store.ContainsKey(key);
+			return Store.key(key);
 		}
 
 		/// <summary>

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using StackExchange.Redis;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
@@ -221,6 +222,24 @@ namespace StandardDot.Caching.Redis.Service
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
 		{
 			return GetTimeToLive<T>(new[]{key});
+		}
+
+		public long ContainsKeys(IEnumerable<RedisId> keys)
+		{
+			if (!(keys?.Any() ?? false))
+			{
+				return 0;
+			}
+			return RedisService.Database.KeyExists(keys.Select(x => (RedisKey)((string)x)).ToArray());
+		}
+
+		public bool ContainsKey(RedisId key)
+		{
+			if (key == null)
+			{
+				return false;
+			}
+			return RedisService.Database.KeyExists(key.FullKey);
 		}
 	}
 }

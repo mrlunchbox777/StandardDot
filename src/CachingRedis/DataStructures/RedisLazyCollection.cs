@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using StandardDot.Abstract.DataStructures;
@@ -5,8 +6,7 @@ using StandardDot.Caching.Redis.Abstract;
 
 namespace StandardDot.Caching.Redis.DataStructures
 {
-	public class RedisLazyCollection<T, TK> : BaseLazyCollection<T>
-		where T : IRedisCachedObject<TK>
+	public class RedisLazyCollection<T> : BaseLazyCollection<T>
 	{
 		public RedisLazyCollection(IEnumerable<T> source, RedisCachingService service)
 			: base(source)
@@ -26,7 +26,8 @@ namespace StandardDot.Caching.Redis.DataStructures
 
 		public override void Add(T item)
 		{
-			Service.Cache(item.Id, item);
+			IRedisCachedObject castedItem = GetCastedItem(item);
+			Service.Cache(castedItem.Id, item);
 		}
 
 		public override void Clear()
@@ -54,12 +55,23 @@ namespace StandardDot.Caching.Redis.DataStructures
 
 		public override bool Remove(T item)
 		{
-			if (string.IsNullOrWhiteSpace(item?.Id?.ObjectIdentifier))
+			IRedisCachedObject castedItem = GetCastedItem(item, false);
+			if (string.IsNullOrWhiteSpace(castedItem?.Id?.ObjectIdentifier))
 			{
 				return false;
 			}
-			Source = Source.Where(x => x.Id.FullKey != item.Id.FullKey);
-			return Service.Invalidate(item.Id);
+			Source = Source.Cast<IRedisCachedObject>().Where(x => x.Id.FullKey != castedItem.Id.FullKey).Cast<T>();
+			return Service.Invalidate(castedItem.Id);
+		}
+
+		protected virtual IRedisCachedObject GetCastedItem(T item, bool throwException = true)
+		{
+			IRedisCachedObject castedItem = item as IRedisCachedObject;
+			if (throwException && castedItem == null)
+			{
+				throw new InvalidOperationException("Cannot add an item that doesn't derive from IRedisCachedObject");
+			}
+			return castedItem;
 		}
 	}
 }

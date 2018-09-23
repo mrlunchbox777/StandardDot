@@ -8,6 +8,7 @@ using System.Runtime.Serialization.Json;
 using System.Text;
 using StackExchange.Redis;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
@@ -263,6 +264,16 @@ namespace StandardDot.Caching.Redis.Service
 		}
 
 		public virtual Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ILazyDictionary<RedisId, bool> ContainsKeys(IEnumerable<RedisId> keys)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ILazyDictionary<RedisId, bool> ContainsKey(RedisId key)
 		{
 			throw new NotImplementedException();
 		}

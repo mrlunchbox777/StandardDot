@@ -9,6 +9,7 @@ using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Abstract.DataStructures;
 
 namespace StandardDot.Caching.Redis.Service
 {
@@ -213,6 +214,16 @@ namespace StandardDot.Caching.Redis.Service
 			Dictionary<RedisId, TimeSpan?> ttls = goodWrappers.ToDictionary(x => x.Id,
 				hashSetWrapper => (TimeSpan?)(hashSetWrapper.ExpireTime - DateTime.UtcNow));
 			return ttls;
+		}
+
+		public ILazyDictionary<RedisId, bool> ContainsKeys(IEnumerable<RedisId> keys)
+		{
+			throw new NotImplementedException();
+		}
+
+		public ILazyDictionary<RedisId, bool> ContainsKey(RedisId key)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
 
@@ -8,6 +9,10 @@ namespace StandardDot.Caching.Redis.Abstract
 	public interface IRedisService
 	{
 		RedisServiceType ServiceType { get; }
+
+		long ContainsKeys(IEnumerable<RedisId> keys);
+
+		bool ContainsKey(RedisId key);
 
 		IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys);
 

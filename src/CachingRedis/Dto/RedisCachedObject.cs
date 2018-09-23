@@ -4,7 +4,7 @@ using StandardDot.Caching.Redis.Enums;
 
 namespace StandardDot.Caching.Redis.Dto
 {
-	public class RedisCachedObject<T> : DefaultCachedObject<T>, IRedisCachedObject<T>
+	public class RedisCachedObject<T> : DefaultCachedObject<T>, IRedisCachedObject
 	{
 		public RedisCachedObject(string objectIdentifier)
 		{
