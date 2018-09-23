@@ -26,9 +26,9 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value);
 
-		void DeleteValues(IEnumerable<RedisId> keys);
+		long DeleteValues(IEnumerable<RedisId> keys);
 
-		void DeleteValue(RedisId key);
+		bool DeleteValue(RedisId key);
 
 		long KeyCount();
 

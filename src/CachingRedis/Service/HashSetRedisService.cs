@@ -153,15 +153,20 @@ namespace StandardDot.Caching.Redis.Service
 			return new[]{value};
 		}
 
-		public void DeleteValues(IEnumerable<RedisId> keys)
+		public long DeleteValues(IEnumerable<RedisId> keys)
 		{
+			long deleteCount = 0;
 			foreach (RedisId key in keys)
 			{
-				DeleteValue(key);
+				if (DeleteValue(key))
+				{
+					deleteCount++;
+				}
 			}
+			return deleteCount;
 		}
 
-		public void DeleteValue(RedisId key)
+		public bool DeleteValue(RedisId key)
 		{
 			// get all the keys to be deleted
 			IEnumerable<RedisId> keys = GetKey<object>(key);
@@ -177,12 +182,15 @@ namespace StandardDot.Caching.Redis.Service
 				hashsetDictionary[currentKey.HashSetIdentifier].Add(currentKey.ObjectIdentifier);
 			}
 
+			long deleteCount = 0;
 			// delete keys by hashset (still there should only be one)
 			foreach (string hashsetDictionaryKey in hashsetDictionary.Keys)
 			{
-				RedisService.Database.HashDelete(hashsetDictionaryKey,
+				deleteCount += RedisService.Database.HashDelete(hashsetDictionaryKey,
 					hashsetDictionary[hashsetDictionaryKey].Select(x => (RedisValue)x).ToArray());
 			}
+
+			return deleteCount > 0;
 		}
 
 		// might be slow
@@ -216,14 +224,14 @@ namespace StandardDot.Caching.Redis.Service
 			return ttls;
 		}
 
-		public ILazyDictionary<RedisId, bool> ContainsKeys(IEnumerable<RedisId> keys)
+		public long ContainsKeys(IEnumerable<RedisId> keys)
 		{
-			throw new NotImplementedException();
+			return keys.Select(ContainsKey).LongCount(x => x);
 		}
 
-		public ILazyDictionary<RedisId, bool> ContainsKey(RedisId key)
+		public bool ContainsKey(RedisId key)
 		{
-			throw new NotImplementedException();
+			return RedisService.Database.HashExists(key.ObjectIdentifier, key.HashSetIdentifier);
 		}
 	}
 }

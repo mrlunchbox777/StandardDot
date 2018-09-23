@@ -48,15 +48,6 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
-			// if (!(key?.HasFullKey ?? false))
-			// {
-			// 	return new List<RedisId>();
-			// }
-
-			// return RedisService.Server(key.FullKey).Keys(RedisService.Database.Database, key.FullKey,
-			// 	RedisService.CacheSettings.DefaultScanPageSize)
-			// 	.Select(x => new RedisId { HashSetIdentifier = null, ObjectIdentifier = x, ServiceType = RedisServiceType.KeyValue });
-
 			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey) && RedisService.Database.KeyExists(key.FullKey));
 		}
 
@@ -138,21 +129,26 @@ namespace StandardDot.Caching.Redis.Service
 			return new[] { value };
 		}
 
-		public void DeleteValues(IEnumerable<RedisId> keys)
+		public long DeleteValues(IEnumerable<RedisId> keys)
 		{
+			long deleteCount = 0;
 			foreach (RedisId key in keys)
 			{
-				DeleteValue(key);
+				if (DeleteValue(key))
+				{
+					deleteCount++;
+				}
 			}
+			return deleteCount;
 		}
 
-		public void DeleteValue(RedisId key)
+		public bool DeleteValue(RedisId key)
 		{
 			if (string.IsNullOrWhiteSpace(key?.FullKey))
 			{
-				return;
+				return false;
 			}
-			RedisService.Database.KeyDelete(key.FullKey);
+			return RedisService.Database.KeyDelete(key.FullKey);
 		}
 
 		// slow and bad
