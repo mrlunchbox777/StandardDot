@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Abstract.DataStructures;
@@ -309,6 +310,14 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		public IDictionary<string, ICachedObjectBasic> EnumerateDictionary()
 		{
 			return this;
+		}
+
+		public ICachingService Query<T>(string key)
+		{
+			return new TestMemoryCachingService(DefaultCacheLifespan, Store
+				.Where(x => (key == null && x.Key == null) || (x.Key?.Contains(key) ?? false))
+				.ToDictionary(x => x.Key, x => x.Value)
+			);
 		}
 	}
 }

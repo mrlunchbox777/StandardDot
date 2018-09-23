@@ -38,6 +38,14 @@ namespace StandardDot.Abstract.Caching
 		ICachedObject<T> Retrieve<T>(string key);
 
 		/// <summary>
+		/// Gets a subset of the cache that matches the key
+		/// </summary>
+		/// <typeparam name="T">The type of object that will be queried for</typeparam>
+		/// <param name="key">The key that identifies the subset</param>
+		/// <returns>A cache that represents the subset</returns>
+		ICachingService Query<T>(string key);
+
+		/// <summary>
 		/// Invalidates an object in the cache
 		/// </summary>
 		/// <param name="key">The key that identifies the object</param>
