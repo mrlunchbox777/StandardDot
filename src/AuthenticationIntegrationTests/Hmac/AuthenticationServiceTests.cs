@@ -108,7 +108,7 @@ namespace StandardDot.Authentication.IntegrationTests
 			Assert.Equal(2, cachingService.Count);
 			Assert.Contains(GoodKey, cachingService.Keys);
 			Assert.Equal(goodCurrentTime.FromUnixTimeStamp(), cachingService[GoodKey].CachedTime);
-			Assert.Equal(GoodKey, cachingService[GoodKey].Value);
+			Assert.Equal(GoodKey, cachingService[GoodKey].UntypedValue);
 		}
 
 		[Fact]
