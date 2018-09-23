@@ -10,15 +10,15 @@ using StandardDot.TestClasses.AbstractImplementations;
 
 namespace StandardDot.CoreServices.UnitTests.Logging
 {
-    public class TestMemoryCacheProvider
-    {
-        public static CacheLoggingService GetLogsService(ISerializationService serializationService = null, TimeSpan? cacheLife = null)
-        {
-            serializationService = serializationService ?? new Json();
-            ICachingService cachingService = new TestMemoryCachingService(cacheLife ?? TimeSpan.FromMinutes(5));
-            CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService);
+	public class TestMemoryCacheProvider
+	{
+		public static CacheLoggingService GetLogsService(ISerializationService serializationService = null, TimeSpan? cacheLife = null)
+		{
+			serializationService = serializationService ?? new Json();
+			ICachingService cachingService = new TestMemoryCachingService(cacheLife ?? TimeSpan.FromMinutes(5));
+			CacheLoggingService loggingService = new CacheLoggingService(cachingService, serializationService);
 
-            return loggingService;
-        }
-    }
+			return loggingService;
+		}
+	}
 }

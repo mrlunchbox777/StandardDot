@@ -7,15 +7,15 @@ using Xunit;
 
 namespace StandardDot.Abstract.UnitTests.CoreServices
 {
-    public class ILogEnumerableTests
-    {
-        [Fact]
-        public void GenericTypeTest()
-        {
-            Mock<ILogEnumerable<object>> enumerableProxy = new Mock<ILogEnumerable<object>>(MockBehavior.Strict);
-            Type proxyType = enumerableProxy.Object.GetType();
-            Assert.True(typeof(ILogEnumerable<object>).IsAssignableFrom(proxyType));
-            Assert.True(typeof(IEnumerable<Log<object>>).IsAssignableFrom(proxyType));
-        }
-    }
+	public class ILogEnumerableTests
+	{
+		[Fact]
+		public void GenericTypeTest()
+		{
+			Mock<ILogEnumerable<object>> enumerableProxy = new Mock<ILogEnumerable<object>>(MockBehavior.Strict);
+			Type proxyType = enumerableProxy.Object.GetType();
+			Assert.True(typeof(ILogEnumerable<object>).IsAssignableFrom(proxyType));
+			Assert.True(typeof(IEnumerable<Log<object>>).IsAssignableFrom(proxyType));
+		}
+	}
 }

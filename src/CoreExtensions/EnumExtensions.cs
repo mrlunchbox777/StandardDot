@@ -6,35 +6,35 @@ using System.Runtime.Serialization.Json;
 
 namespace StandardDot.CoreExtensions
 {
-    /// <summary>
-    /// Extensions for Enum.
-    /// </summary>
-    public static class EnumExtensions
-    {
-        /// <summary>
-        /// Gets the value of an enum from a string, or returns null
-        /// </summary>
-        /// <typeparam name="T">Enum Type</typeparam>
-        /// <param name="target">Target enum</param>
-        /// <param name="source">The string that has the enum</param>
-        /// <returns>The enum from the string, or null</returns>
-        public static T? TryParseEnumSafe<T>(this string source)
-            where T : struct, IConvertible
-        {
-            if (!typeof(T).IsEnum)
-            {
-                throw new ArgumentException("T must be an enumerated type");
-            }
+	/// <summary>
+	/// Extensions for Enum.
+	/// </summary>
+	public static class EnumExtensions
+	{
+		/// <summary>
+		/// Gets the value of an enum from a string, or returns null
+		/// </summary>
+		/// <typeparam name="T">Enum Type</typeparam>
+		/// <param name="target">Target enum</param>
+		/// <param name="source">The string that has the enum</param>
+		/// <returns>The enum from the string, or null</returns>
+		public static T? TryParseEnumSafe<T>(this string source)
+			where T : struct, IConvertible
+		{
+			if (!typeof(T).IsEnum)
+			{
+				throw new ArgumentException("T must be an enumerated type");
+			}
 
-            string trimmedSource = source?.Trim();
+			string trimmedSource = source?.Trim();
 
-            T? target = string.IsNullOrWhiteSpace(trimmedSource)
-                ? null
-                : Enum.TryParse(trimmedSource, true, out T val)
-                    ? val
-                    : (T?)null;
-                    
-            return target;
-        }
-    }
+			T? target = string.IsNullOrWhiteSpace(trimmedSource)
+				? null
+				: Enum.TryParse(trimmedSource, true, out T val)
+					? val
+					: (T?)null;
+
+			return target;
+		}
+	}
 }

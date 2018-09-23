@@ -12,10 +12,10 @@ namespace StandardDot.TestClasses.AbstractImplementations
 	{
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-		public TestMemoryCachingService(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObject<object>> cache = null)
+		public TestMemoryCachingService(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObjectBasic> cache = null)
 		{
 			DefaultCacheLifespan = defaultCacheLifespan;
-			Store = cache ?? new ConcurrentDictionary<string, ICachedObject<object>>();
+			Store = cache ?? new ConcurrentDictionary<string, ICachedObjectBasic>();
 		}
 
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
@@ -23,12 +23,12 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		public TestMemoryCachingService(TimeSpan defaultCacheLifespan, bool useStaticCache)
 		{
 			DefaultCacheLifespan = defaultCacheLifespan;
-			Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObject<object>>();
+			Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObjectBasic>();
 		}
 
-		private static IDictionary<string, ICachedObject<object>> _store = new ConcurrentDictionary<string, ICachedObject<object>>();
+		private static IDictionary<string, ICachedObjectBasic> _store = new ConcurrentDictionary<string, ICachedObjectBasic>();
 
-		protected virtual IDictionary<string, ICachedObject<object>> Store { get; }
+		protected virtual IDictionary<string, ICachedObjectBasic> Store { get; }
 
 		/// <summary>
 		/// Wraps an object for caching
@@ -52,24 +52,24 @@ namespace StandardDot.TestClasses.AbstractImplementations
 
 		public virtual ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
 
-		public virtual ILazyCollection<ICachedObject<object>> Values => new LazyCollectionWrapper<ICachedObject<object>>(Store.Values);
+		public virtual ILazyCollection<ICachedObjectBasic> Values => new LazyCollectionWrapper<ICachedObjectBasic>(Store.Values);
 
 		public int Count => Store.Count;
 
 		public bool IsReadOnly => Store.IsReadOnly;
 
-		ICollection<string> IDictionary<string, ICachedObject<object>>.Keys => Keys;
+		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys;
 
-		ICollection<ICachedObject<object>> IDictionary<string, ICachedObject<object>>.Values => Values;
+		ICollection<ICachedObjectBasic> IDictionary<string, ICachedObjectBasic>.Values => Values;
 
 		/// <summary>
 		/// Gets an object from cache, null if not found
 		/// </summary>
 		/// <param name="key">The key that identifies the object</param>
 		/// <returns>The cached wrapped object, default null</returns>
-		public ICachedObject<object> this[string key]
+		public ICachedObjectBasic this[string key]
 		{
-			get => Retrieve<object>(key);
+			get => ((ICachedObjectBasic)Retrieve<object>(key));
 			set => Cache<object>(key, value);
 		}
 
@@ -88,7 +88,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			{
 				Invalidate(key);
 			}
-			Store.Add(key, CreateCachedObject((object)value.Value, value.CachedTime, value.ExpireTime));
+			Store.Add(key, value);
 		}
 
 		/// <summary>
@@ -100,7 +100,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
 		public void Cache<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
-			Cache<T>(key, CreateCachedObject(value, cachedTime, expireTime));
+			Cache<T>(key, CreateCachedObject<T>(value, cachedTime, expireTime));
 		}
 
 		/// <summary>
@@ -115,12 +115,12 @@ namespace StandardDot.TestClasses.AbstractImplementations
 				return null;
 			}
 
-			ICachedObject<object> item = Store[key];
-			if (!(item.Value is T))
+			ICachedObjectBasic item = Store[key];
+			if (!(item.UntypedValue is T))
 			{
 				return null;
 			}
-			T result = (T)item.Value;
+			T result = (T)item.UntypedValue;
 			if (item.ExpireTime < DateTime.UtcNow)
 			{
 				Invalidate(key);
@@ -148,7 +148,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// </summary>
 		/// <param name="key">The key that identifies the object</param>
 		/// <param name="value">The wrapped object to cache</param>
-		public void Add(string key, ICachedObject<object> value)
+		public void Add(string key, ICachedObjectBasic value)
 		{
 			Cache<object>(key, value);
 		}
@@ -179,7 +179,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// <param name="key">The key that identifies the object</param>
 		/// <param name="value">The wrapped object to cache</param>
 		/// <returns>If the value was able to be retrieved</returns>
-		public bool TryGetValue(string key, out ICachedObject<object> value)
+		public bool TryGetValue(string key, out ICachedObjectBasic value)
 		{
 			value = Retrieve<object>(key);
 			return value != null;
@@ -189,7 +189,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// Caches an object, overwrites it if it is already cached
 		/// </summary>
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
-		public void Add(KeyValuePair<string, ICachedObject<object>> item)
+		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
 			Cache(item.Key, item.Value);
 		}
@@ -207,16 +207,16 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// </summary>
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		/// <returns>If the object was found and valid</returns>
-		public bool Contains(KeyValuePair<string, ICachedObject<object>> item)
+		public bool Contains(KeyValuePair<string, ICachedObjectBasic> item)
 		{
 			if (!ContainsKey(item.Key))
 			{
 				return false;
 			}
 
-			ICachedObject<object> value = Store[item.Key];
+			ICachedObjectBasic value = Store[item.Key];
 
-			if (value.Value == null)
+			if (value.UntypedValue == null)
 			{
 				return false;
 			}
@@ -233,7 +233,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			{
 				return false;
 			}
-			if (value.Value != item.Value.Value)
+			if (value.UntypedValue != item.Value.UntypedValue)
 			{
 				return false;
 			}
@@ -245,7 +245,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// </summary>
 		/// <param name="array">The destination of the copy</param>
 		/// <param name="arrayIndex">Where to start the copy at in the destination</param>
-		public void CopyTo(KeyValuePair<string, ICachedObject<object>>[] array, int arrayIndex)
+		public void CopyTo(KeyValuePair<string, ICachedObjectBasic>[] array, int arrayIndex)
 		{
 			Store.CopyTo(array, arrayIndex);
 		}
@@ -255,16 +255,16 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// </summary>
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		/// <returns>If the object was able to be removed</returns>
-		public bool Remove(KeyValuePair<string, ICachedObject<object>> item)
+		public bool Remove(KeyValuePair<string, ICachedObjectBasic> item)
 		{
 			if (!ContainsKey(item.Key))
 			{
 				return false;
 			}
 
-			ICachedObject<object> value = Store[item.Key];
+			ICachedObjectBasic value = Store[item.Key];
 
-			if (value.Value == null)
+			if (value.UntypedValue == null)
 			{
 				return false;
 			}
@@ -281,7 +281,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			{
 				return false;
 			}
-			if (value.Value != item.Value.Value)
+			if (value.UntypedValue != item.Value.UntypedValue)
 			{
 				return false;
 			}
@@ -292,7 +292,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// Gets the typed enumerator for the cache
 		/// </summary>
 		/// <returns>The typed enumerator</returns>
-		public IEnumerator<KeyValuePair<string, ICachedObject<object>>> GetEnumerator()
+		public IEnumerator<KeyValuePair<string, ICachedObjectBasic>> GetEnumerator()
 		{
 			return Store.GetEnumerator();
 		}
@@ -306,7 +306,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			return Store.GetEnumerator();
 		}
 
-		public IDictionary<string, ICachedObject<object>> EnumerateDictionary()
+		public IDictionary<string, ICachedObjectBasic> EnumerateDictionary()
 		{
 			return this;
 		}

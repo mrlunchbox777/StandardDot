@@ -5,16 +5,16 @@ using StandardDot.Authentication.Hmac;
 
 namespace StandardDot.Authentication.IntegrationTests.AuthenticationServiceTestObjects
 {
-    public class IsReplayRequestOverride : AuthenticationService
-    {
-        public IsReplayRequestOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
-            : base(loggingService, apiKeyService, cachingService)
-        {
-        }
+	public class IsReplayRequestOverride : AuthenticationService
+	{
+		public IsReplayRequestOverride(ILoggingService loggingService, IApiKeyService apiKeyService, ICachingService cachingService)
+			: base(loggingService, apiKeyService, cachingService)
+		{
+		}
 
-        public bool CheckReplayRequest(string nonce, string requestTimeStamp)
-        {
-            return IsReplayRequest(nonce, requestTimeStamp);
-        }
-    }
+		public bool CheckReplayRequest(string nonce, string requestTimeStamp)
+		{
+			return IsReplayRequest(nonce, requestTimeStamp);
+		}
+	}
 }
