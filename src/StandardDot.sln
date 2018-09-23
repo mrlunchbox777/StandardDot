@@ -1,4 +1,4 @@
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.16
 MinimumVisualStudioVersion = 15.0.26124.0
@@ -51,6 +51,8 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AbstractIntegrationTests", "AbstractIntegrationTests\AbstractIntegrationTests.csproj", "{E000C98B-026E-4356-BA4D-F892CC0EB13B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CachingRedis", "CachingRedis\CachingRedis.csproj", "{B00AD11A-5E19-4AB3-8297-C9801491B035}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CachingRedisUnitTests", "CachingRedisUnitTests\CachingRedisUnitTests.csproj", "{EF7FEA8F-56B7-4B0F-9476-869276F669B5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -362,6 +364,18 @@ Global
 		{B00AD11A-5E19-4AB3-8297-C9801491B035}.Release|x64.Build.0 = Release|Any CPU
 		{B00AD11A-5E19-4AB3-8297-C9801491B035}.Release|x86.ActiveCfg = Release|Any CPU
 		{B00AD11A-5E19-4AB3-8297-C9801491B035}.Release|x86.Build.0 = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x64.Build.0 = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
