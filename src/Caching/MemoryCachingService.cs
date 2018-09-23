@@ -101,7 +101,7 @@ namespace StandardDot.Caching
 		public ICachedObjectBasic this[string key]
 		{
 			get => Retrieve<object>(key);
-			set => Cache<object>(key, value);
+			set => Cache<object>(key, value?.UntypedValue, value?.CachedTime, value?.ExpireTime);
 		}
 
 		/// <summary>
@@ -181,7 +181,7 @@ namespace StandardDot.Caching
 		/// <param name="value">The wrapped object to cache</param>
 		public void Add(string key, ICachedObjectBasic value)
 		{
-			Cache<object>(key, value);
+			Cache<object>(key, value.UntypedValue, value.CachedTime, value.ExpireTime);
 		}
 
 		/// <summary>
@@ -222,7 +222,7 @@ namespace StandardDot.Caching
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
-			Cache(item.Key, item.Value);
+			Cache(item.Key, item.Value.UntypedValue, item.Value.CachedTime, item.Value.ExpireTime);
 		}
 
 		/// <summary>
