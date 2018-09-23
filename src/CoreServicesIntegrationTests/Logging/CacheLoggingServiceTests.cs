@@ -56,7 +56,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			Assert.NotNull(log);
 			Assert.Null(log.Target);
@@ -92,7 +92,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			string description = "Message Log with object - " + typeof(Foobar).FullName;
 
@@ -133,7 +133,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			string description = "Message Log with object - " + typeof(Foobar).FullName;
 
@@ -180,7 +180,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<object> log = (Log<object>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 			string description = "Exception Log - " + title;
 
 			Assert.NotNull(log);
@@ -224,7 +224,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<object> log = (Log<Object>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<object> log = (Log<Object>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 			string description = "Exception Log - " + title;
 
 			Assert.NotNull(log);
@@ -274,7 +274,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			string description = "Exception Log - " + title;
 
@@ -328,7 +328,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			string description = "Exception Log - " + title;
 
@@ -393,7 +393,7 @@ namespace StandardDot.CoreServices.IntegrationTests.Logging
 			string fullLogName = cachingService.EnumerateDictionary().Single().Key;
 			Assert.NotNull(fullLogName);
 
-			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.Value;
+			Log<Foobar> log = (Log<Foobar>)cachingService.EnumerateDictionary().Single().Value.UntypedValue;
 
 			Assert.NotNull(log);
 			Assert.True(log.TimeStamp >= log.TimeStamp.AddMilliseconds(-.5) && log.TimeStamp <= log.TimeStamp.AddMilliseconds(.5));
