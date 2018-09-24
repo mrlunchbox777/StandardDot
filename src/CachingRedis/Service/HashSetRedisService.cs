@@ -146,7 +146,7 @@ namespace StandardDot.Caching.Redis.Service
 
 			ISerializationService sz =
 				RedisService.GetSerializationService<RedisCachedObject<T>>();
-			compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value);
+			compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value, RedisService.CacheSettings.SerializationSettings);
 
 			HardAddToCache(value.Id, compressedVal);
 

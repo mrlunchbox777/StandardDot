@@ -326,7 +326,7 @@ namespace StandardDot.Caching.Redis
 				return false;
 			}
 			ISerializationService service = Store.GetSerializationService<object>();
-			if (service.SerializeObject(value.Value) != service.SerializeObject(item.Value.UntypedValue))
+			if (service.SerializeObject(value.Value) != service.SerializeObject(item.Value.UntypedValue, _settings.SerializationSettings))
 			{
 				return false;
 			}

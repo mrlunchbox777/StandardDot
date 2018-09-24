@@ -19,13 +19,13 @@ namespace StandardDot.CoreExtensions.Object
 		/// <param name="target">The object to serialize</param>
 		/// <param name="loggingService">The logging service to use</param>
 		/// <param name="throwOnFail">If the serialization should throw upon failure to serialize</param>
-		/// <param name="dataContractResolver">The object that provides known types and data contract resolvers</param>
+		/// <param name="serializationSettings">The object that provides known types and data contract resolvers</param>
 		/// <returns>The serialized json string representation of an object</returns>
 		/// <exception cref="System.Exception">
 		/// Thrown when the serialization fails, and will be the type that serializer throws. Not thrown if <c>throwOnFail</c> is false.
 		/// </exception>
 		public static string SerializeJson<T>(this T target, ILoggingService loggingService = null, bool throwOnFail = true
-			, ISerializationSettings dataContractResolver = null)
+			, ISerializationSettings serializationSettings = null)
 		{
 			if (target == null)
 			{
@@ -36,7 +36,7 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				using (MemoryStream stream = new MemoryStream())
 				{
-					DataContractJsonSerializer ds = DataContractJsonSerializerHelpers.GetSerializer<T>(dataContractResolver);
+					DataContractJsonSerializer ds = DataContractJsonSerializerHelpers.GetSerializer<T>(serializationSettings);
 					ds.WriteObject(stream, target);
 					string jsonString = stream.GetString();
 					stream.Close();

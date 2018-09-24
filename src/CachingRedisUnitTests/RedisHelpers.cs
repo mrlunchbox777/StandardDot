@@ -97,10 +97,24 @@ namespace StandardDot.Caching.Redis.UnitTests
 			return serviceProxy;
 		}
 
+		private static ISerializationSettings _serializationSettings;
+
+		internal static ISerializationSettings SerializationSettings
+		{
+			get
+			{
+				if (_serializationSettings == null)
+				{
+					_serializationSettings = new TestSerializationSettings();
+				}
+				return _serializationSettings;
+			}
+		}
+
 		internal static ICacheProviderSettings GetCacheProviderSettings()
 		{
 			TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
-			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, config.RedisSettings, null);
+			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, config.RedisSettings, SerializationSettings);
 			return configuration;
 		}
 

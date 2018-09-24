@@ -122,7 +122,7 @@ namespace StandardDot.Caching.Redis.Service
 			else
 			{
 				ISerializationService sz = RedisService.GetSerializationService<T>();
-				compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value);
+				compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value, RedisService.CacheSettings.SerializationSettings);
 			}
 
 			HardAddToCache(value.Id, compressedVal, value.ExpireTime);

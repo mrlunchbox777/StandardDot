@@ -15,6 +15,6 @@ namespace StandardDot.Caching.Redis.Abstract
 		ISerializationService SerializationService { get; set; }
 
 		/// <summary>The datacontract resolver to use for serialization (polymorphic dtos)</summary>
-		IDataContractResolver DataContractResolver { get; set; }
+		ISerializationSettings SerializationSettings { get; set; }
 	}
 }

@@ -169,11 +169,11 @@ namespace StandardDot.Caching.Redis.Service
 		/// <typeparam name="T">Object type to convert to</typeparam>
 		/// <param name="stringToConvert">String to convert to an object</param>
 		/// <param name="key">The key that was used to get the value</param>
-		/// <param name="dataContractResolver">The datacontract resolver to use for serialization
+		/// <param name="serializationSettings">The datacontract resolver to use for serialization
 		/// (polymorphic dtos)</param>
 		/// <returns>Object from string</returns>
 		protected internal virtual T ConvertString<T>(string stringToConvert, RedisId key,
-			IDataContractResolver dataContractResolver = null)
+			ISerializationSettings serializationSettings = null)
 		{
 			T retVal = default(T);
 
@@ -189,7 +189,7 @@ namespace StandardDot.Caching.Redis.Service
 			else
 			{
 				ISerializationService serializationService = GetSerializationService<T>();
-				retVal = serializationService.DeserializeObject<T>(stringToConvert);
+				retVal = serializationService.DeserializeObject<T>(stringToConvert, _cacheSettings.SerializationSettings);
 			}
 
 			return retVal;

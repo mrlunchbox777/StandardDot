@@ -9,32 +9,37 @@ namespace StandardDot.Caching.Redis.Dto
 	public class RedisProviderSettings : ICacheProviderSettings
 	{
 		public RedisProviderSettings(ISerializationService serializationService, ICacheServiceSettings serializableSettings
-			, IDataContractResolver dataContractResolver = null)
-			: this(serializationService, serializableSettings, null, dataContractResolver)
+			, ISerializationSettings serializationSettings = null)
+			: this(serializationService, serializableSettings, null, serializationSettings)
 		{ }
 
 		public RedisProviderSettings(ISerializationService serializationService, ICacheServiceSettings serializableSettings
-			, ConfigurationOptions configurationOptions, IDataContractResolver dataContractResolver = null)
+			, ConfigurationOptions configurationOptions, ISerializationSettings serializationSettings = null)
 		{
 			SerializationService = serializationService;
 			ServiceSettings = serializableSettings;
-			DataContractResolver = dataContractResolver;
+			SerializationSettings = serializationSettings;
 			ConfigurationOptions = configurationOptions == null
 				? ConfigurationOptions.Parse(ServiceSettings.ConfigurationOptions, true)
 				: configurationOptions;
+			
+			if (SerializationSettings?.KnownTypes != null)
+			{
+				// SerializationSettings.KnownTypes.Add(typeof());
+			}
 		}
 
 		public RedisProviderSettings(ISerializationService serializationService, string configurationOptionsString
-			, ICacheServiceSettings serializableSettings, IDataContractResolver dataContractResolver = null)
+			, ICacheServiceSettings serializableSettings, ISerializationSettings serializationSettings = null)
 			: this(serializationService, serializableSettings, ConfigurationOptions.Parse(configurationOptionsString, true)
-				, dataContractResolver)
+				, serializationSettings)
 		{ }
 
 		public ConfigurationOptions ConfigurationOptions { get; set; }
 
 		public ISerializationService SerializationService { get; set; }
 
-		public IDataContractResolver DataContractResolver { get; set; }
+		public ISerializationSettings SerializationSettings { get; set; }
 
 		public ICacheServiceSettings ServiceSettings { get; set; }
 	}
