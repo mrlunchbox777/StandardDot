@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Runtime.Serialization;
 using StandardDot.Caching.Redis.Enums;
 using StandardDot.CoreExtensions;
@@ -8,6 +9,18 @@ namespace StandardDot.Caching.Redis.Dto
 	[DataContract]
 	public class RedisId
 	{
+		public static string[] DataMemberNames =
+		typeof(RedisId).GetProperties()
+			.Select(x => x.GetCustomAttributes(typeof(DataMemberAttribute), true).Cast<DataMemberAttribute>())
+			.SelectMany(x => x).Select(x => x.Name)
+			.ToArray();
+		// new []
+		// {
+		// 	"hashSetIdentifier",
+		// 	"objectIdentifier",
+		// 	"serviceType"
+		// };
+
 		[DataMember(Name = "hashSetIdentifier")]
 		public string HashSetIdentifier { get; set; }
 

@@ -6,11 +6,9 @@ namespace StandardDot.Caching.Redis.Dto
 {
 	public class RedisCachedObject<T> : DefaultCachedObject<T>, IRedisCachedObject
 	{
-		public RedisCachedObject(string objectIdentifier)
+		public RedisCachedObject(RedisId id)
 		{
-			Id = new RedisId();
-			Id.ObjectIdentifier = objectIdentifier;
-			Id.ServiceType = RedisServiceType.HashSet;
+			Id = id;
 		}
 
 		public RedisId Id { get; set; }

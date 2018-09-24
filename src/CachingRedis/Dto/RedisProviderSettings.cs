@@ -9,6 +9,11 @@ namespace StandardDot.Caching.Redis.Dto
 	public class RedisProviderSettings : ICacheProviderSettings
 	{
 		public RedisProviderSettings(ISerializationService serializationService, ICacheServiceSettings serializableSettings
+			, IDataContractResolver dataContractResolver = null)
+			: this(serializationService, serializableSettings, null, dataContractResolver)
+		{ }
+
+		public RedisProviderSettings(ISerializationService serializationService, ICacheServiceSettings serializableSettings
 			, ConfigurationOptions configurationOptions, IDataContractResolver dataContractResolver = null)
 		{
 			SerializationService = serializationService;
@@ -23,11 +28,6 @@ namespace StandardDot.Caching.Redis.Dto
 			, ICacheServiceSettings serializableSettings, IDataContractResolver dataContractResolver = null)
 			: this(serializationService, serializableSettings, ConfigurationOptions.Parse(configurationOptionsString, true)
 				, dataContractResolver)
-		{ }
-
-		public RedisProviderSettings(ISerializationService serializationService, ICacheServiceSettings serializableSettings
-			, IDataContractResolver dataContractResolver = null)
-			: this(serializationService, serializableSettings, null, dataContractResolver)
 		{ }
 
 		public ConfigurationOptions ConfigurationOptions { get; set; }

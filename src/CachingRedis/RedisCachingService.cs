@@ -20,16 +20,30 @@ namespace StandardDot.Caching.Redis
 	{
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-		public RedisCachingService(ICacheProviderSettings settings, ILoggingService loggingService, CacheInfo cacheInfo, bool useStaticProvider = true)
+		public RedisCachingService(ICacheProviderSettings settings, ILoggingService loggingService, CacheInfo cacheInfo = null, bool useStaticProvider = true)
 		{
 			_settings = settings;
-			_cacheInfo = cacheInfo;
+			_cacheInfo = cacheInfo ?? _settings.ServiceSettings.ProviderInfo;
 			_loggingService = loggingService;
 			UseStaticProvider = useStaticProvider;
 		}
 
-		protected virtual RedisId GetRedisId(string key)
+		protected virtual RedisId GetRedisId(RedisId key)
 		{
+			return key;
+		}
+
+		protected virtual RedisId GetRedisId(string key, bool tryJson = true)
+		{
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return null;
+			}
+			if (tryJson && key.StartsWith("{") && key.EndsWith("}")
+				&& RedisId.DataMemberNames.All(x => key.Contains(x)))
+			{
+				return key;
+			}
 			return new RedisId
 			{
 				ServiceType = _settings.ServiceSettings.RedisServiceImplementationType,
@@ -82,7 +96,7 @@ namespace StandardDot.Caching.Redis
 		/// <param name="cachedTime">When the object was cached, default UTC now</param>
 		/// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
 		/// <returns>The wrapped object</returns>
-		protected virtual RedisCachedObject<T> CreateCachedObject<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
+		protected virtual RedisCachedObject<T> CreateCachedObject<T>(RedisId key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
 			return new RedisCachedObject<T>(key)
 			{
@@ -98,12 +112,12 @@ namespace StandardDot.Caching.Redis
 		// probably pretty slow
 		public ILazyCollection<string> Keys
 			=> new RedisLazyCollection<string>(Store.RedisServiceImplementation
-				.GetKeys<object>(new List<RedisId> { GetRedisId("*") }).Select(x => (string)x), this);
+				.GetKeys<object>(new List<RedisId> { GetRedisId("*", false) }).Select(x => (string)x), this);
 
 		// probably pretty slow
 		public ILazyCollection<ICachedObjectBasic> Values
 			=> new RedisLazyCollection<ICachedObjectBasic>(Store.RedisServiceImplementation
-				.GetValues<object>(new List<RedisId> { GetRedisId("*") }), this);
+				.GetValues<object>(new List<RedisId> { GetRedisId("*", false) }), this);
 
 		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys.ToList();
 
@@ -132,8 +146,8 @@ namespace StandardDot.Caching.Redis
 		/// <returns>The cached wrapped object, default null</returns>
 		public ICachedObjectBasic this[string key]
 		{
-			get => Retrieve<object>(key);
-			set => Cache<object>(key, value);
+			get => Retrieve<object>(GetRedisId(key));
+			set => Cache<object>(GetRedisId(key), value);
 		}
 
 		/// <summary>
@@ -147,11 +161,12 @@ namespace StandardDot.Caching.Redis
 			{
 				return;
 			}
-			if (ContainsKey(key))
+			RedisId id = GetRedisId(key);
+			if (ContainsKey(id))
 			{
-				Invalidate(key);
+				Invalidate(id);
 			}
-			Store.SetValue(CreateCachedObject(key, value.Value, value.CachedTime, value.ExpireTime));
+			Store.SetValue(CreateCachedObject(id, value.Value, value.CachedTime, value.ExpireTime));
 		}
 
 		/// <summary>
@@ -163,7 +178,8 @@ namespace StandardDot.Caching.Redis
 		/// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
 		public void Cache<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
-			Cache<T>(key, CreateCachedObject(key, value, cachedTime, expireTime));
+			RedisId id = GetRedisId(key);
+			Cache<T>(id, CreateCachedObject(id, value, cachedTime, expireTime));
 		}
 
 		/// <summary>
@@ -173,12 +189,13 @@ namespace StandardDot.Caching.Redis
 		/// <returns>The cached wrapped object, default null</returns>
 		public ICachedObject<T> Retrieve<T>(string key)
 		{
-			if (!ContainsKey(key))
+			RedisId id = GetRedisId(key);
+			if (!ContainsKey(id))
 			{
 				return null;
 			}
 
-			ICachedObject<T> item = Store.GetValue<T>(GetRedisId(key)).SingleOrDefault();
+			ICachedObject<T> item = Store.GetValue<T>(id).SingleOrDefault();
 			if (!(item.Value is T))
 			{
 				return null;
@@ -186,7 +203,7 @@ namespace StandardDot.Caching.Redis
 			T result = (T)item.Value;
 			if (item.ExpireTime < DateTime.UtcNow)
 			{
-				Invalidate(key);
+				Invalidate(id);
 				return null;
 			}
 			return item;
@@ -199,10 +216,10 @@ namespace StandardDot.Caching.Redis
 		/// <returns>If the object was able to be removed</returns>
 		public bool Invalidate(string key)
 		{
-			if (ContainsKey(key))
+			RedisId id = GetRedisId(key);
+			if (ContainsKey(id))
 			{
-				RedisId redisId = GetRedisId(key);
-				Store.DeleteValue(redisId);
+				Store.DeleteValue(id);
 				return true;
 			}
 			return false;
@@ -215,7 +232,8 @@ namespace StandardDot.Caching.Redis
 		/// <param name="value">The wrapped object to cache</param>
 		public void Add(string key, ICachedObjectBasic value)
 		{
-			Cache<object>(key, value);
+			RedisId id = GetRedisId(key);
+			Cache<object>(id, value);
 		}
 
 		/// <summary>
@@ -225,7 +243,8 @@ namespace StandardDot.Caching.Redis
 		/// <returns>If the object was found and valid</returns>
 		public bool ContainsKey(string key)
 		{
-			return Store.ContainsKey(key);
+			RedisId id = GetRedisId(key);
+			return Store.ContainsKey(id);
 		}
 
 		/// <summary>
@@ -235,7 +254,8 @@ namespace StandardDot.Caching.Redis
 		/// <returns>If the object was able to be removed</returns>
 		public bool Remove(string key)
 		{
-			return Store.DeleteValue(key);
+			RedisId id = GetRedisId(key);
+			return Store.DeleteValue(id);
 		}
 
 		/// <summary>
@@ -246,7 +266,8 @@ namespace StandardDot.Caching.Redis
 		/// <returns>If the value was able to be retrieved</returns>
 		public bool TryGetValue(string key, out ICachedObjectBasic value)
 		{
-			value = Retrieve<object>(key);
+			RedisId id = GetRedisId(key);
+			value = Retrieve<object>(id);
 			return value != null;
 		}
 
@@ -256,7 +277,8 @@ namespace StandardDot.Caching.Redis
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
-			Cache(item.Key, item.Value);
+			RedisId id = GetRedisId(item.Key);
+			Cache(id, item.Value);
 		}
 
 		/// <summary>
@@ -264,7 +286,7 @@ namespace StandardDot.Caching.Redis
 		/// </summary>
 		public void Clear()
 		{
-			Store.DeleteValue(GetRedisId("*"));
+			Store.DeleteValue(GetRedisId("*", false));
 		}
 
 		/// <summary>
@@ -278,12 +300,13 @@ namespace StandardDot.Caching.Redis
 			{
 				return false;
 			}
-			if (!ContainsKey(item.Key))
+			RedisId id = GetRedisId(item.Key);
+			if (!ContainsKey(id))
 			{
 				return false;
 			}
 
-			ICachedObject<object> value = Store.GetValue<object>(item.Key).SingleOrDefault();
+			ICachedObject<object> value = Store.GetValue<object>(id).SingleOrDefault();
 
 			if (value?.Value == null)
 			{
@@ -291,7 +314,7 @@ namespace StandardDot.Caching.Redis
 			}
 			if (value.ExpireTime < DateTime.UtcNow)
 			{
-				Invalidate(item.Key);
+				Invalidate(id);
 				return false;
 			}
 			if (value.CachedTime != item.Value.CachedTime)
@@ -318,7 +341,7 @@ namespace StandardDot.Caching.Redis
 		public void CopyTo(KeyValuePair<string, ICachedObjectBasic>[] array, int arrayIndex)
 		{
 			KeyValuePair<string, ICachedObject<object>>[] localStore =
-				Store.GetValue<object>(GetRedisId("*"))
+				Store.GetValue<object>(GetRedisId("*", false))
 				.Select(x => new KeyValuePair<string, ICachedObject<object>>(x.Id, x))
 				.ToArray();
 			localStore.CopyTo(array, arrayIndex);
@@ -335,7 +358,8 @@ namespace StandardDot.Caching.Redis
 			{
 				return false;
 			}
-			return Store.DeleteValue(item.Key);
+			RedisId id = GetRedisId(item.Key);
+			return Store.DeleteValue(id);
 		}
 
 		/// <summary>
@@ -344,7 +368,7 @@ namespace StandardDot.Caching.Redis
 		/// <returns>The typed enumerator</returns>
 		public IEnumerator<KeyValuePair<string, ICachedObjectBasic>> GetEnumerator()
 		{
-			return Store.GetValue<object>(GetRedisId("*"))
+			return Store.GetValue<object>(GetRedisId("*", false))
 				.Select(x => new KeyValuePair<string, ICachedObjectBasic>(x.Id, x))
 				.GetEnumerator();
 		}

@@ -20,9 +20,6 @@ namespace StandardDot.Caching.Redis.Dto
 		[DataMember(Name = "defaultScanPageSize")]
 		public int DefaultScanPageSize { get; set; } = 1000;
 
-		[DataMember(Name = "redisServiceImplementationType")]
-		public RedisServiceType RedisServiceImplementationType { get; set; } = RedisServiceType.HashSet;
-
 		[DataMember(Name = "compressValues")]
 		public bool CompressValues { get; set; } = false;
 
@@ -37,6 +34,12 @@ namespace StandardDot.Caching.Redis.Dto
 		/// </summary>
 		[DataMember(Name = "defaultExpireTimeSpan")]
 		public int DefaultExpireTimeSpanSeconds { get; set; } = 3600;
+
+		[DataMember(Name = "redisServiceImplementationType")]
+		public string RedisServiceImplementationTypeString { get; set; } = "HashSet";
+
+		[IgnoreDataMember]
+		public RedisServiceType RedisServiceImplementationType => (RedisServiceType)Enum.Parse(typeof(RedisServiceType), RedisServiceImplementationTypeString);
 
 		[IgnoreDataMember]
 		public Guid CacheProviderSettingsId => Guid.Parse(CacheProviderSettingsIdString);

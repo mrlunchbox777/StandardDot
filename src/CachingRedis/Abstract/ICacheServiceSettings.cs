@@ -12,7 +12,7 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		int DefaultScanPageSize { get; set; }
 
-		RedisServiceType RedisServiceImplementationType { get; set; }
+		RedisServiceType RedisServiceImplementationType { get; }
 
 		bool CompressValues { get; set; }
 

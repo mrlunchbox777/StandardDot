@@ -1,9 +1,14 @@
 using System;
 using System.Collections.Generic;
+using Moq;
 using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.Configuration;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.Caching.Redis.Abstract;
+using StandardDot.Caching.Redis.Dto;
+using StandardDot.Caching.Redis.UnitTests.Configuration;
 using StandardDot.CoreServices.Serialization;
+using StandardDot.Dto.CoreServices;
 using StandardDot.TestClasses;
 
 namespace StandardDot.Caching.Redis.UnitTests
@@ -44,8 +49,9 @@ namespace StandardDot.Caching.Redis.UnitTests
 			{
 				if (_configurationService == null)
 				{
-					_configurationService = new GenerateService()
+					_configurationService = GenerateService(GenerateCache(false)).Object;
 				}
+				return _configurationService;
 			}
 		}
 
@@ -74,18 +80,33 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 		private static Mock<ConfigurationCacheBase> GenerateCache(bool useStrict = true)
 		{
-			Json jsonSerializer = new Json();
 			MemoryCachingService cachingService = new MemoryCachingService(TimeSpan.FromDays(1), false);
 			Mock<ConfigurationCacheBase> cacheProxy =
 				new Mock<ConfigurationCacheBase>(useStrict ? MockBehavior.Strict : MockBehavior.Loose,
-					cachingService, jsonSerializer, TimeSpan.FromDays(1));
+					cachingService, SerializationService, TimeSpan.FromDays(1));
+			cacheProxy.CallBase = !useStrict;
 
 			return cacheProxy;
 		}
 
+		internal static Mock<LoggingServiceBase> GenerateLoggingService()
+		{
+			Mock<LoggingServiceBase> serviceProxy = new Mock<LoggingServiceBase>(MockBehavior.Loose, SerializationService);
+			serviceProxy.CallBase = true;
+
+			return serviceProxy;
+		}
+
 		internal static ICacheProviderSettings GetCacheProviderSettings()
 		{
-			RedisServiceConfiguration configuration = new RedisServiceConfiguration()
+			TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
+			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, config.RedisSettings, null);
+			return configuration;
+		}
+
+		internal static RedisCachingService GetRedis()
+		{
+			return new RedisCachingService(GetCacheProviderSettings(), GenerateLoggingService().Object);
 		}
 	}
 }
