@@ -1,13 +1,13 @@
 using System;
 using System.Linq;
 using System.Runtime.Serialization.Json;
-using Abstract.CoreServices;
+using StandardDot.Abstract.CoreServices;
 
 namespace CoreExtensions.DataContract
 {
 	public static class DataContractJsonSerializerHelpers
 	{
-		public static DataContractJsonSerializer GetSerializer<T>(IDataContractResolver dataContractResolver)
+		public static DataContractJsonSerializer GetSerializer<T>(ISerializationSettings dataContractResolver)
 		{
 			DataContractJsonSerializer ser = null;
 			if ((!(dataContractResolver?.KnownTypes?.Any() ?? false)) && (dataContractResolver?.Resolver == null))

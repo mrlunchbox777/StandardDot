@@ -7,7 +7,7 @@
 	<ItemGroup>
 		<None Update=".\testConfigurationJson.json" CopyToOutputDirectory="PreserveNewest" />
 		<None Update=".\testConfigurationJson2.json" CopyToOutputDirectory="PreserveNewest" />
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.17" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
 	</ItemGroup>
 
 </Project>
