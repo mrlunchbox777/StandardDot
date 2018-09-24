@@ -11,6 +11,16 @@ namespace StandardDot.CoreServices.Serialization
 	/// </summary>
 	public class Json : ISerializationService
 	{
+		public Json()
+		{}
+
+		public Json(ILoggingService loggingService)
+		{
+			LoggingService = loggingService;
+		}
+
+		protected virtual ILoggingService LoggingService { get; }
+
 		/// <summary>
 		/// Deserializes an object from Json string
 		/// </summary>
@@ -61,7 +71,7 @@ namespace StandardDot.CoreServices.Serialization
 			{
 				return "";
 			}
-			return target.SerializeJson(settings);
+			return target.SerializeJson(LoggingService, true, settings);
 		}
 	}
 }
