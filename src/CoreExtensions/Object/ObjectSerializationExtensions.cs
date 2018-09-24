@@ -5,7 +5,6 @@ using System.Runtime.Serialization.Json;
 using StandardDot.Enums;
 using StandardDot.Abstract.CoreServices;
 using CoreExtensions.DataContract;
-using Abstract.CoreServices;
 
 namespace StandardDot.CoreExtensions.Object
 {
@@ -26,7 +25,7 @@ namespace StandardDot.CoreExtensions.Object
 		/// Thrown when the serialization fails, and will be the type that serializer throws. Not thrown if <c>throwOnFail</c> is false.
 		/// </exception>
 		public static string SerializeJson<T>(this T target, ILoggingService loggingService = null, bool throwOnFail = true
-			, IDataContractResolver dataContractResolver = null)
+			, ISerializationSettings dataContractResolver = null)
 		{
 			if (target == null)
 			{
