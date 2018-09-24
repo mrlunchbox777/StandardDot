@@ -233,7 +233,7 @@ namespace StandardDot.Caching.Redis
 		public void Add(string key, ICachedObjectBasic value)
 		{
 			RedisId id = GetRedisId(key);
-			Cache<object>(id, value);
+			Cache<object>(id, value.UntypedValue, value.CachedTime, value.ExpireTime);
 		}
 
 		/// <summary>

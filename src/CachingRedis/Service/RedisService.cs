@@ -1,14 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Json;
-using System.Text;
 using StackExchange.Redis;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
@@ -16,7 +10,7 @@ using StandardDot.Caching.Redis.Providers;
 
 namespace StandardDot.Caching.Redis.Service
 {
-	internal class RedisService : IRedisService
+  internal class RedisService : IRedisService
 	{
 		public RedisService(ICacheProviderSettings settings, ILoggingService loggingService
 			, Func<ICacheProviderSettings, ILoggingService, ICacheProvider> resetProvider)

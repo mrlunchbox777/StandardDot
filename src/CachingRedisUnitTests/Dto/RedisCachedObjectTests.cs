@@ -9,7 +9,8 @@ namespace StandardDot.Caching.Redis.UnitTests.Dto
 		[Fact]
 		public void Properties()
 		{
-			RedisCachedObject<string> cachedObject = new RedisCachedObject<string>("test");
+			RedisCachedObject<string> cachedObject = new RedisCachedObject<string>();
+			cachedObject.Id.ObjectIdentifier = "test";
 			const string value = "a value";
 			DateTime time = DateTime.UtcNow;
 			DateTime expireTime = DateTime.UtcNow.AddMinutes(5);
