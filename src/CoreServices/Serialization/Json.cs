@@ -16,14 +16,15 @@ namespace StandardDot.CoreServices.Serialization
 		/// </summary>
 		/// <typeparam name="T">The target type (must be serializable)</typeparam>
 		/// <param name="target">The Json string representation of the object</param>
+		/// <param name="settings">Serialization Settings</param>
 		/// <returns>The object deserialized from the Json string</returns>
-		public T DeserializeObject<T>(string target)
+		public T DeserializeObject<T>(string target, ISerializationSettings settings = null)
 		{
 			if (string.IsNullOrWhiteSpace(target))
 			{
 				return default(T);
 			}
-			return target.DeserializeJson<T>();
+			return target.DeserializeJson<T>(settings);
 		}
 
 		/// <summary>
@@ -31,14 +32,15 @@ namespace StandardDot.CoreServices.Serialization
 		/// </summary>
 		/// <typeparam name="T">The target type (must be serializable)</typeparam>
 		/// <param name="target">The Json Stream that contains a string representation of the object</param>
+		/// <param name="settings">Serialization Settings</param>
 		/// <returns>The object deserialized from the Json Stream</returns>
-		public T DeserializeObject<T>(Stream target)
+		public T DeserializeObject<T>(Stream target, ISerializationSettings settings = null)
 		{
 			if (target == null)
 			{
 				return default(T);
 			}
-			return target.GetString().DeserializeJson<T>();
+			return target.GetString().DeserializeJson<T>(settings);
 		}
 
 		public void Dispose()
@@ -51,14 +53,15 @@ namespace StandardDot.CoreServices.Serialization
 		/// </summary>
 		/// <typeparam name="T">The target type (must be serializable)</typeparam>
 		/// <param name="target">Target to serialize</param>
+		/// <param name="settings">Serialization Settings</param>
 		/// <returns>A Json string representation of the object</returns>
-		public string SerializeObject<T>(T target)
+		public string SerializeObject<T>(T target, ISerializationSettings settings = null)
 		{
 			if (target == null)
 			{
 				return "";
 			}
-			return target.SerializeJson();
+			return target.SerializeJson(settings);
 		}
 	}
 }

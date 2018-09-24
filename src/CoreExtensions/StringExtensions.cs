@@ -3,8 +3,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Json;
 using System.Text;
-using Abstract.CoreServices;
 using CoreExtensions.DataContract;
+using StandardDot.Abstract.CoreServices;
 
 namespace StandardDot.CoreExtensions
 {
@@ -19,7 +19,7 @@ namespace StandardDot.CoreExtensions
 		/// <param name="jsonString">The json string representation of an object.</param>
 		/// <typeparam name="T">The type to deserialize to.</typeparam>
 		/// <returns>The object represented by the jsonString.</returns>
-		public static T DeserializeJson<T>(this string jsonString, IDataContractResolver dataContractResolver = null)
+		public static T DeserializeJson<T>(this string jsonString, ISerializationSettings dataContractResolver = null)
 		{
 			if (string.IsNullOrWhiteSpace(jsonString))
 			{
