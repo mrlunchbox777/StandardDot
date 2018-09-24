@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 
-namespace Abstract.CoreServices
+namespace StandardDot.Abstract.CoreServices
 {
-	public interface IDataContractResolver
+	public interface ISerializationSettings
 	{
 		List<Type> KnownTypes { get; }
 
