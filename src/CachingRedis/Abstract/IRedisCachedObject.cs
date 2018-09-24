@@ -1,3 +1,4 @@
+using System.Runtime.Serialization;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
 
