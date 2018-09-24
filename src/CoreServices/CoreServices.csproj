@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- This gets defaulted into package version -->
-		<Version>0.0.0.30</Version>
+		<Version>0.0.0.31</Version>
 
 		<!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
 		<IsPackable>true</IsPackable>
@@ -40,7 +40,7 @@
 	<ItemGroup>
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.17" />
 		<PackageReference Include="StandardDot.Dto" Version="0.0.0.11" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.25" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.26" />
 	</ItemGroup>
 
 </Project>

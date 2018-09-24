@@ -3,6 +3,8 @@ using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Json;
 using System.Text;
+using Abstract.CoreServices;
+using CoreExtensions.DataContract;
 
 namespace StandardDot.CoreExtensions
 {
@@ -17,13 +19,13 @@ namespace StandardDot.CoreExtensions
 		/// <param name="jsonString">The json string representation of an object.</param>
 		/// <typeparam name="T">The type to deserialize to.</typeparam>
 		/// <returns>The object represented by the jsonString.</returns>
-		public static T DeserializeJson<T>(this string jsonString)
+		public static T DeserializeJson<T>(this string jsonString, IDataContractResolver dataContractResolver = null)
 		{
 			if (string.IsNullOrWhiteSpace(jsonString))
 			{
 				return default(T);
 			}
-			DataContractJsonSerializer ser = new DataContractJsonSerializer(typeof(T));
+			DataContractJsonSerializer ser = DataContractJsonSerializerHelpers.GetSerializer<T>(dataContractResolver);
 			T obj;
 			using (Stream stream = jsonString.ToStream())
 			{
