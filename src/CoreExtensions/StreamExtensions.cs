@@ -70,14 +70,9 @@ namespace StandardDot.CoreExtensions
 		/// <returns>The uncompressed string</returns>
 		public static string Unzip(this Stream source)
 		{
-			using (MemoryStream output = new MemoryStream())
+			using (GZipStream zipper = new GZipStream(source, CompressionMode.Decompress))
 			{
-				using (GZipStream zipper = new GZipStream(source, CompressionMode.Decompress))
-				{
-					zipper.CopyTo(output);
-				}
-
-				return output.GetString();
+				return zipper.GetString();
 			}
 		}
 	}
