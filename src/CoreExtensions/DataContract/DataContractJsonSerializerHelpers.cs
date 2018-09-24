@@ -7,20 +7,20 @@ namespace CoreExtensions.DataContract
 {
 	public static class DataContractJsonSerializerHelpers
 	{
-		public static DataContractJsonSerializer GetSerializer<T>(ISerializationSettings dataContractResolver)
+		public static DataContractJsonSerializer GetSerializer<T>(ISerializationSettings serializationSettings)
 		{
 			DataContractJsonSerializer ser = null;
-			if ((!(dataContractResolver?.KnownTypes?.Any() ?? false)) && (dataContractResolver?.Resolver == null))
+			if ((!(serializationSettings?.KnownTypes?.Any() ?? false)) && (serializationSettings?.Resolver == null))
 			{
 				ser = new DataContractJsonSerializer(typeof(T));
 			}
-			else if (dataContractResolver?.Resolver != null)
+			else if (serializationSettings?.Resolver != null)
 			{
 				throw new InvalidOperationException("Json serialization doesn't use a resolver.");
 			}
-			else if (dataContractResolver?.KnownTypes?.Any() ?? false)
+			else if (serializationSettings?.KnownTypes?.Any() ?? false)
 			{
-				ser = new DataContractJsonSerializer(typeof(T), dataContractResolver.KnownTypes);
+				ser = new DataContractJsonSerializer(typeof(T), serializationSettings.KnownTypes);
 			}
 			return ser;
 		}

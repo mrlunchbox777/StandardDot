@@ -1,21 +1,19 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using StandardDot.Abstract.Caching;
+using StandardDot.Abstract.CoreServices;
 using StandardDot.Abstract.DataStructures;
 
-namespace StandardDot.Caching
+namespace StandardDot.TestClasses.AbstractImplementations
 {
-	/// <summary>
-	/// A Basic Memory Caching Service (Thread Safe when using defaults)
-	/// </summary>
-	public class MemoryCachingService : ICachingService
+	public class TestMemoryCachingService : ICachingService
 	{
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-		public MemoryCachingService(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObjectBasic> cache = null)
+		public TestMemoryCachingService(TimeSpan defaultCacheLifespan, IDictionary<string, ICachedObjectBasic> cache = null)
 		{
 			DefaultCacheLifespan = defaultCacheLifespan;
 			Store = cache ?? new ConcurrentDictionary<string, ICachedObjectBasic>();
@@ -23,16 +21,16 @@ namespace StandardDot.Caching
 
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="useStaticCache">If this instance should use a static cache (thread safe)</param>
-		public MemoryCachingService(TimeSpan defaultCacheLifespan, bool useStaticCache)
+		public TestMemoryCachingService(TimeSpan defaultCacheLifespan, bool useStaticCache)
 		{
 			DefaultCacheLifespan = defaultCacheLifespan;
-			Store = useStaticCache ? _staticStore : new ConcurrentDictionary<string, ICachedObjectBasic>();
+			Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObjectBasic>();
 		}
 
 		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
 		/// <param name="whereClause">The clause that defines the subset</param>
 		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
-		protected MemoryCachingService(TimeSpan defaultCacheLifespan, Func<KeyValuePair<string, ICachedObjectBasic>, bool> whereClause
+		protected TestMemoryCachingService(TimeSpan defaultCacheLifespan, Func<KeyValuePair<string, ICachedObjectBasic>, bool> whereClause
 			, IDictionary<string, ICachedObjectBasic> cache)
 			: this(defaultCacheLifespan, cache)
 		{
@@ -71,7 +69,7 @@ namespace StandardDot.Caching
 		/// <returns>The wrapped object</returns>
 		protected virtual ICachedObject<T> CreateCachedObject<T>(T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
-			return new DefaultCachedObject<T>
+			return new TestDefaultCachedObject<T>
 			{
 				Value = value,
 				CachedTime = cachedTime ?? DateTime.UtcNow,
@@ -81,17 +79,17 @@ namespace StandardDot.Caching
 
 		public virtual TimeSpan DefaultCacheLifespan { get; }
 
-		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys;
+		public virtual ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
 
-		ICollection<ICachedObjectBasic> IDictionary<string, ICachedObjectBasic>.Values => Values;
+		public virtual ILazyCollection<ICachedObjectBasic> Values => new LazyCollectionWrapper<ICachedObjectBasic>(Store.Values);
 
 		public int Count => Store.Count;
 
 		public bool IsReadOnly => Store.IsReadOnly;
 
-		public virtual ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
+		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys;
 
-		public virtual ILazyCollection<ICachedObjectBasic> Values => new LazyCollectionWrapper<ICachedObjectBasic>(Store.Values);
+		ICollection<ICachedObjectBasic> IDictionary<string, ICachedObjectBasic>.Values => Values;
 
 		/// <summary>
 		/// Gets an object from cache, null if not found
@@ -100,8 +98,8 @@ namespace StandardDot.Caching
 		/// <returns>The cached wrapped object, default null</returns>
 		public ICachedObjectBasic this[string key]
 		{
-			get => Retrieve<object>(key);
-			set => Cache<object>(key, value?.UntypedValue, value?.CachedTime, value?.ExpireTime);
+			get => ((ICachedObjectBasic)Retrieve<object>(key));
+			set => Cache<object>(key, value);
 		}
 
 		/// <summary>
@@ -119,7 +117,7 @@ namespace StandardDot.Caching
 			{
 				Invalidate(key);
 			}
-			Store.Add(key, CreateCachedObject((object)value.Value, value.CachedTime, value.ExpireTime));
+			Store.Add(key, value);
 		}
 
 		/// <summary>
@@ -131,7 +129,7 @@ namespace StandardDot.Caching
 		/// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
 		public void Cache<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
-			Cache<T>(key, CreateCachedObject(value, cachedTime, expireTime));
+			Cache<T>(key, CreateCachedObject<T>(value, cachedTime, expireTime));
 		}
 
 		/// <summary>
@@ -181,7 +179,7 @@ namespace StandardDot.Caching
 		/// <param name="value">The wrapped object to cache</param>
 		public void Add(string key, ICachedObjectBasic value)
 		{
-			Cache<object>(key, value.UntypedValue, value.CachedTime, value.ExpireTime);
+			Cache<object>(key, value);
 		}
 
 		/// <summary>
@@ -222,7 +220,7 @@ namespace StandardDot.Caching
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
-			Cache(item.Key, item.Value.UntypedValue, item.Value.CachedTime, item.Value.ExpireTime);
+			Cache(item.Key, item.Value);
 		}
 
 		/// <summary>
@@ -344,7 +342,7 @@ namespace StandardDot.Caching
 
 		public ICachingService Query<T>(string key)
 		{
-			return new MemoryCachingService(DefaultCacheLifespan,
+			return new TestMemoryCachingService(DefaultCacheLifespan,
 				(x => (WhereClause == null || WhereClause(x)) && ((key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false)))
 				, _store
 			);

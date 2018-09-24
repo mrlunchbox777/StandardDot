@@ -1,23 +1,24 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netcoreapp2.0</TargetFramework>
+<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
 
-    <IsPackable>false</IsPackable>
-  </PropertyGroup>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.28" />
+		<PackageReference Include="xunit" Version="2.4.0" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
+		<DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
+		<PackageReference Include="Moq" Version="4.10.0" />
+	</ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
-    <PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
-    <PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.28" />
-    <PackageReference Include="xunit" Version="2.4.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.0" />
-    <DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\CoreServices\CoreServices.csproj" />
-    <ProjectReference Include="..\TestClasses\TestClasses.csproj" />
-  </ItemGroup>
+	<ItemGroup>
+		<ProjectReference Include="..\CoreServices\CoreServices.csproj" />
+		<ProjectReference Include="..\TestClasses\TestClasses.csproj" />
+	</ItemGroup>
 
 </Project>
