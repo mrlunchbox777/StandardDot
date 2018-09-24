@@ -14,7 +14,7 @@ namespace StandardDot.Abstract.UnitTests.CoreServices
 			string expected = "expected";
 			Foobar foobar = new Foobar { Foo = 4, Bar = 9 };
 			Mock<ISerializationService> serializationServiceProxy = new Mock<ISerializationService>(MockBehavior.Strict);
-			serializationServiceProxy.Setup(x => x.SerializeObject(foobar)).Returns(expected);
+			serializationServiceProxy.Setup(x => x.SerializeObject(foobar, null)).Returns(expected);
 			Assert.Equal(expected, serializationServiceProxy.Object.SerializeObject(foobar));
 		}
 
@@ -24,7 +24,7 @@ namespace StandardDot.Abstract.UnitTests.CoreServices
 			string expected = "expected";
 			Foobar foobar = new Foobar { Foo = 4, Bar = 9 };
 			Mock<ISerializationService> serializationServiceProxy = new Mock<ISerializationService>(MockBehavior.Strict);
-			serializationServiceProxy.Setup(x => x.DeserializeObject<Foobar>(expected)).Returns(foobar);
+			serializationServiceProxy.Setup(x => x.DeserializeObject<Foobar>(expected, null)).Returns(foobar);
 			Assert.Equal(foobar, serializationServiceProxy.Object.DeserializeObject<Foobar>(expected));
 		}
 
@@ -35,7 +35,7 @@ namespace StandardDot.Abstract.UnitTests.CoreServices
 			{
 				Foobar foobar = new Foobar { Foo = 4, Bar = 9 };
 				Mock<ISerializationService> serializationServiceProxy = new Mock<ISerializationService>(MockBehavior.Strict);
-				serializationServiceProxy.Setup(x => x.DeserializeObject<Foobar>(expected)).Returns(foobar);
+				serializationServiceProxy.Setup(x => x.DeserializeObject<Foobar>(expected, null)).Returns(foobar);
 				Assert.Equal(foobar, serializationServiceProxy.Object.DeserializeObject<Foobar>(expected));
 			}
 		}
