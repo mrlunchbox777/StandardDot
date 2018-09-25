@@ -86,16 +86,22 @@ namespace StandardDot.Caching.Redis.Service
 			}
 
 			// get the keys, in a non-blocking way
-			List<RedisKey> redisKeys = new List<RedisKey>();
-			redisKeys.AddRange(GetKeys<T>(keysToUse).Select(x => (RedisKey)x.HashSetIdentifier));
-			redisKeys = redisKeys.Distinct().ToList();
+			var redisKeys = keysToUse.Select(x => new
+			{
+				HashSetIdentifier = (RedisKey)x.HashSetIdentifier,
+				Keys = GetKey<T>(x)
+			});
 
 			if (!redisKeys.Any())
 			{
 				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
 			}
 
-			string[] results = redisKeys.SelectMany(x => RedisService.Database.HashGetAll(x).Select(y => y.Value.ToString())).ToArray();
+			string[] results = redisKeys.SelectMany(x =>
+				x.Keys.Select(y =>
+					RedisService.Database.HashGet(x.HashSetIdentifier, y.ObjectIdentifier)
+					.ToString()
+				)).ToArray();
 			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
 			foreach (RedisValue result in results)
 			{
@@ -196,7 +202,8 @@ namespace StandardDot.Caching.Redis.Service
 		// might be slow
 		public long KeyCount()
 		{
-			return RedisService.Database.HashGetAll(RedisService.CacheSettings.ServiceSettings.PrefixIdentifier + "*").LongLength;
+			return RedisService.Database.HashScan(RedisService.CacheSettings.ServiceSettings.PrefixIdentifier
+				, "*", this.RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).LongCount();
 		}
 
 		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
@@ -231,7 +238,8 @@ namespace StandardDot.Caching.Redis.Service
 
 		public bool ContainsKey(RedisId key)
 		{
-			return RedisService.Database.HashExists(key.ObjectIdentifier, key.HashSetIdentifier);
+			return string.IsNullOrWhiteSpace((RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier
+				, this.RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).FirstOrDefault()).Name);
 		}
 	}
 }

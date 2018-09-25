@@ -134,7 +134,7 @@ namespace StandardDot.Caching.Redis.Providers
 				return null;
 			}
 
-			return redisValue.Unzip();
+			return Convert.FromBase64String(redisValue).Unzip();
 		}
 	}
 }

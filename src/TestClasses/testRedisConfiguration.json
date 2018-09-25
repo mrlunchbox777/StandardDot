@@ -10,6 +10,6 @@
 			"objectPrefix" : ""
 		},
 		"cacheProviderSettingsId" : "468f8255-011e-4910-b084-97c954170e44",
-		"defaultExpireTimeSpan" : 3600
+		"defaultExpireTimeSpan" : 300
 	}
 }

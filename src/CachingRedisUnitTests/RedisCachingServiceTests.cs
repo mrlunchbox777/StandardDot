@@ -22,6 +22,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			foreach (var thing in service)
 			{
 				Debug.Write("test");
