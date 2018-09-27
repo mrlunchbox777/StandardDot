@@ -39,9 +39,9 @@ namespace StandardDot.Caching.Redis.Providers
 
 		// Abstract implementation
 
-		public virtual string GetValueToCache<T>(RedisCachedObject<T> cachedObject)
+		public virtual RedisValue GetValueToCache<T>(RedisCachedObject<T> cachedObject)
 		{
-			string redisValue = CacheSettings.SerializationService.SerializeObject(cachedObject
+			RedisValue redisValue = CacheSettings.SerializationService.SerializeObject(cachedObject
 				, CacheSettings.SerializationSettings);
 			if (CacheSettings.ServiceSettings.CompressValues)
 			{
@@ -50,22 +50,42 @@ namespace StandardDot.Caching.Redis.Providers
 			return redisValue;
 		}
 
-		public virtual RedisCachedObject<T> GetCachedValue<T>(string redisValue, IRedisService service)
+		public virtual RedisCachedObject<T> GetCachedValue<T>(RedisValue redisValue, IRedisService service)
 		{
-			if (string.IsNullOrWhiteSpace(redisValue))
+			string decompressed = null;
+			if (default(RedisValue) == redisValue)
 			{
 				return null;
 			}
 			if (CacheSettings.ServiceSettings.CompressValues)
 			{
-				redisValue = DecompressValue(redisValue);
+				decompressed = DecompressValue(redisValue);
 			}
-			if (string.IsNullOrWhiteSpace(redisValue))
+			if (default(RedisValue) == redisValue)
 			{
 				return null;
 			}
-			RedisCachedObject<T> value = CacheSettings.SerializationService
-				.DeserializeObject<RedisCachedObject<T>>(redisValue, CacheSettings.SerializationSettings);
+			decompressed = decompressed ?? redisValue;
+			RedisCachedObject<T> value;
+			RedisCachedObject<string> stringValue = GetCachedValue<string>(redisValue, service);
+			if (typeof(T) == typeof(object))
+			{
+				value = ChangeType<T, string>(stringValue);
+			}
+			else
+			{
+				ISerializationService sz = CacheSettings.SerializationService;
+				value =  new RedisCachedObject<T>
+				{
+					RetrievedSuccesfully = stringValue.RetrievedSuccesfully,
+					Value = sz.DeserializeObject<T>(stringValue.Value, CacheSettings.SerializationSettings),
+					CachedTime = stringValue.CachedTime,
+					Status = stringValue.Status,
+					Metadata = stringValue.Metadata,
+					Id = stringValue.Id,
+					ExpireTime = stringValue.ExpireTime,
+				};
+			}
 
 			if (value != null && value.ExpireTime < DateTime.UtcNow)
 			{
@@ -117,24 +137,39 @@ namespace StandardDot.Caching.Redis.Providers
 			ConnectLog.Dispose();
 		}
 
-		public virtual string CompressValue(string redisValue)
+		public virtual byte[] CompressValue(string redisValue)
 		{
 			if (redisValue == null)
 			{
-				return null;
+				return default(RedisValue);
 			}
 
-			return Convert.ToBase64String(redisValue.Zip());
+			return redisValue.Zip();
 		}
 
-		public virtual string DecompressValue(string redisValue)
+		public virtual string DecompressValue(byte[] redisValue)
 		{
-			if (redisValue == null)
+			if (redisValue == default(RedisValue))
 			{
 				return null;
 			}
 
-			return Convert.FromBase64String(redisValue).Unzip();
+			return ((byte[])redisValue).Unzip();
+		}
+
+		public virtual RedisCachedObject<T> ChangeType<T, TK>(RedisCachedObject<TK> source)
+		{
+			RedisCachedObject<T> wrapper = new RedisCachedObject<T>
+			{
+				RetrievedSuccesfully = source.RetrievedSuccesfully,
+				Value = (T)source.UntypedValue,
+				CachedTime = source.CachedTime,
+				Status = source.Status,
+				Metadata = source.Metadata,
+				Id = source.Id,
+				ExpireTime = source.ExpireTime,
+			};
+			return wrapper;
 		}
 	}
 }

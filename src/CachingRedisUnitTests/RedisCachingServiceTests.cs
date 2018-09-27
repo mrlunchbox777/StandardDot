@@ -47,9 +47,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Equal(cacheLifeTime, service.DefaultCacheLifespan);
 			Assert.False(service.IsReadOnly);
 			Assert.Single(service.Keys);
-			Assert.Equal(cachableKey, service.Keys.Single());
+			Assert.Equal(cachableKey, ((RedisId)service.Keys.Single()).ObjectIdentifier);
 			Assert.Single(service.Values);
-			Assert.Equal(cachable, service.Values.Single().UntypedValue);
+			string returnedString = service.Values.Single().UntypedValue as string;
+			Assert.False(string.IsNullOrWhiteSpace(returnedString));
+			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
+			Assert.NotNull(returned);
+			Assert.NotEqual(cachable, returned);
+			Assert.Equal(cachable.Foo, returned.Foo);
+			Assert.NotEqual(cachable.Bar, returned.Bar);
+			Assert.Equal(default(int), returned.Bar);
 		}
 
 		[Fact]

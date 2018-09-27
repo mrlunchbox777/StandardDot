@@ -5,9 +5,9 @@ namespace StandardDot.Caching.Redis.Abstract
 {
 	public interface ICacheProvider
 	{
-		string GetValueToCache<T>(RedisCachedObject<T> cachedObject);
+		RedisValue GetValueToCache<T>(RedisCachedObject<T> cachedObject);
 
-		RedisCachedObject<T> GetCachedValue<T>(string redisValue, IRedisService service);
+		RedisCachedObject<T> GetCachedValue<T>(RedisValue redisValue, IRedisService service);
 
 		RedisCachedObject<T> CreateCachedValue<T>(RedisId redisKey = null);
 
@@ -15,8 +15,10 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		IDatabase GetDatabase();
 
-		string CompressValue(string redisValue);
+		byte[] CompressValue(string redisValue);
 
-		string DecompressValue(string redisValue);
+		string DecompressValue(byte[] redisValue);
+
+		RedisCachedObject<T> ChangeType<T, TK>(RedisCachedObject<TK> source);
 	}
 }

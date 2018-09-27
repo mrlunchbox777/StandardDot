@@ -29,18 +29,22 @@ namespace StandardDot.Caching.Redis.Service
 
 		protected virtual void HardAddToCache(RedisId key, string value)
 		{
-			string realValue = RedisService.CacheSettings.ServiceSettings.CompressValues
-				? RedisService.CacheProvider.CompressValue(value)
-				: value;
-			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, realValue);
+			if (RedisService.CacheSettings.ServiceSettings.CompressValues)
+			{
+				RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, RedisService.CacheProvider.CompressValue(value));
+			}
+			else
+			{
+				RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
+			}
 		}
 
 		protected virtual string HardGetFromCache(RedisId key)
 		{
-			string value = RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
-			value = (!string.IsNullOrWhiteSpace(value)) && RedisService.CacheSettings.ServiceSettings.CompressValues
-				? RedisService.CacheProvider.DecompressValue(value)
-				: value;
+			RedisValue rawValue = RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
+			RedisValue value = (default(RedisValue) != rawValue) && RedisService.CacheSettings.ServiceSettings.CompressValues
+				? RedisService.CacheProvider.DecompressValue(rawValue)
+				: (string)rawValue;
 			return value;
 		}
 
@@ -105,7 +109,27 @@ namespace StandardDot.Caching.Redis.Service
 			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
 			foreach (RedisValue result in results)
 			{
-				RedisCachedObject<T> current = RedisService.CacheProvider.GetCachedValue<T>(result, this);
+				RedisCachedObject<T> current;
+				RedisCachedObject<string> stringValue = RedisService.CacheProvider.GetCachedValue<string>(result, this);
+				if (typeof(T) == typeof(object))
+				{
+					current = RedisService.CacheProvider.ChangeType<T, string>(stringValue);
+				}
+				else
+				{
+					ISerializationService sz =
+						RedisService.GetSerializationService<T>();
+					current =  new RedisCachedObject<T>
+					{
+						RetrievedSuccesfully = stringValue.RetrievedSuccesfully,
+						Value = sz.DeserializeObject<T>(stringValue.Value, RedisService.CacheSettings.SerializationSettings),
+						CachedTime = stringValue.CachedTime,
+						Status = stringValue.Status,
+						Metadata = stringValue.Metadata,
+						Id = stringValue.Id,
+						ExpireTime = stringValue.ExpireTime,
+					};
+				}
 				if (current != null)
 				{
 					values.Add(current);
@@ -148,13 +172,26 @@ namespace StandardDot.Caching.Redis.Service
 				return null;
 			}
 
-			string compressedVal;
-
+			string serializedWrapper;
+			string serializedObject;
 			ISerializationService sz =
-				RedisService.GetSerializationService<RedisCachedObject<T>>();
-			compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value, RedisService.CacheSettings.SerializationSettings);
+				RedisService.GetSerializationService<T>();
+			serializedObject = sz.SerializeObject<T>(value.Value, RedisService.CacheSettings.SerializationSettings);
 
-			HardAddToCache(value.Id, compressedVal);
+			RedisCachedObject<string> wrapper = new RedisCachedObject<string>
+			{
+				RetrievedSuccesfully = value.RetrievedSuccesfully,
+				Value = serializedObject,
+				CachedTime = value.CachedTime,
+				Status = value.Status,
+				Metadata = value.Metadata,
+				Id = value.Id,
+				ExpireTime = value.ExpireTime,
+			};
+			sz = RedisService.GetSerializationService<RedisCachedObject<string>>();
+			serializedWrapper = sz.SerializeObject<RedisCachedObject<string>>(wrapper, RedisService.CacheSettings.SerializationSettings);
+
+			HardAddToCache(value.Id, serializedWrapper);
 
 			return new[] { value };
 		}

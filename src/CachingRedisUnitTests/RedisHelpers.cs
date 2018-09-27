@@ -111,16 +111,26 @@ namespace StandardDot.Caching.Redis.UnitTests
 			}
 		}
 
-		internal static ICacheProviderSettings GetCacheProviderSettings()
+		internal static ICacheProviderSettings GetCacheProviderSettings(bool compressValues = false)
 		{
-			TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
-			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, config.RedisSettings, SerializationSettings);
+			RedisServiceSettings settings = null;
+			if (compressValues)
+			{
+				TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
+				settings = config.RedisSettings;
+			}
+			else
+			{
+				TestRedisConfigurationNoCompress config = ConfigurationService.GetConfiguration<TestRedisConfigurationNoCompress, TestRedisConfigurationMetadataNoCompress>();
+				settings = config.RedisSettings;
+			}
+			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, settings, SerializationSettings);
 			return configuration;
 		}
 
-		internal static RedisCachingService GetRedis()
+		internal static RedisCachingService GetRedis(bool compressValues = false)
 		{
-			return new RedisCachingService(GetCacheProviderSettings(), GenerateLoggingService().Object);
+			return new RedisCachingService(GetCacheProviderSettings(compressValues), GenerateLoggingService().Object);
 		}
 	}
 }
