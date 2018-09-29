@@ -26,5 +26,31 @@ namespace StandardDot.CoreExtensions
 		{
 			return Constants.DateTime.UnixEpoch.Add(TimeSpan.FromSeconds(source));
 		}
+
+		/// <summary>
+		/// Compares two DateTimes with a tolerance, default 1 second
+		/// </summary>
+		/// <param name="source">The first DateTime</param>
+		/// <param name="other">The second DateTime</param>
+		/// <param name="tolerance">The tolerance that is acceptable for equality</param>
+		/// <returns>If the DateTimes are equal within a tolerance</returns>
+		public static bool Compare(this DateTime source, DateTime other, TimeSpan? tolerance = null)
+		{
+			if (source == other)
+			{
+				return true;
+			}
+
+			if (source == null || other == null)
+			{
+				return false;
+			}
+
+			if (other > source)
+			{
+				return (other - source) <= (tolerance ?? new TimeSpan(0, 0, 1));
+			}
+			return (source - other) <= (tolerance ?? new TimeSpan(0, 0, 1));
+		}
 	}
 }
