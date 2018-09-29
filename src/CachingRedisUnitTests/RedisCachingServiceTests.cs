@@ -13,11 +13,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 {
 	public class RedisCachingServiceTests
 	{
-		[Fact]
-		public void BasicVerification()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void BasicVerification(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			foreach (var thing in service)
 			{
@@ -30,11 +34,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Empty(service.Values);
 		}
 
-		[Fact]
-		public void Caching()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Caching(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -53,11 +62,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
-		[Fact]
-		public void Retrieval()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Retrieval(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -76,11 +89,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 				&& retrievedWrapper.ExpireTime <= endedCaching.Add(cacheLifeTime));
 		}
 
-		[Fact]
-		public void ManualExpiration()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void ManualExpiration(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -96,11 +114,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Null(retrievedWrapper);
 		}
 
-		[Fact]
-		public void AutomatedExpiration()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void AutomatedExpiration(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromSeconds(1);
-			RedisCachingService service = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
+			RedisCachingService service = RedisHelpers.GetCustomRedis(compressValues: compressValues, useBasic: useBasic, defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -115,11 +138,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Null(retrievedWrapper);
 		}
 
-		[Fact]
-		public void StaticUsage()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void StaticUsage(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromSeconds(1);
-			RedisCachingService service = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
+			RedisCachingService service = RedisHelpers.GetCustomRedis(compressValues: compressValues, useBasic: useBasic, defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -128,7 +156,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 			DateTime endedCaching = DateTime.UtcNow;
 			ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 
-			RedisCachingService service2 = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
+			RedisCachingService service2 = RedisHelpers.GetCustomRedis(compressValues: compressValues, useBasic: useBasic, defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
 			ICachedObject<Foobar> existsRetrievedWrapper2 = service2.Retrieve<Foobar>(cachableKey);
 
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, existsRetrievedWrapper.Value));
@@ -139,10 +167,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Null(service.Retrieve<Foobar>(cachableKey));
 		}
 
-		[Fact]
-		public void DoubleCache()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void DoubleCache(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -160,10 +193,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Single(service);
 		}
 
-		[Fact]
-		public void DoubleRetrieve()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void DoubleRetrieve(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -177,10 +215,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Single(service);
 		}
 
-		[Fact]
-		public void AutomatedCustomExpiration()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void AutomatedCustomExpiration(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -198,10 +241,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 		// Dictonary Tests
 
-		[Fact]
-		public void Keys()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Keys(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Assert.Empty(service.Keys);
 			Foobar cachable = RedisHelpers.GetCachableObject();
@@ -212,10 +259,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Equal(cachableKey, ((RedisId)(service.Keys.Single())).ObjectIdentifier);
 		}
 
-		[Fact]
-		public void Values()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Values(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Assert.Empty(service.Values);
 			Foobar cachable = RedisHelpers.GetCachableObject();
@@ -230,10 +281,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
-		[Fact]
-		public void Count()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Count(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Assert.Empty(service);
 			Foobar cachable = RedisHelpers.GetCachableObject();
@@ -243,11 +298,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Single(service);
 		}
 
-		[Fact]
-		public void Indexing()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Indexing(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			// this shouldn't throw
@@ -270,11 +329,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality((Foobar)dto.Value, returned));
 		}
 
-		[Fact]
-		public void Add()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Add(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			DefaultCachedObject<object> dto = new DefaultCachedObject<object>
@@ -292,11 +356,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
-		[Fact]
-		public void ContainsKey()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void ContainsKey(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -305,10 +374,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(service.ContainsKey(cachableKey));
 		}
 
-		[Fact]
-		public void Remove()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Remove(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -324,10 +398,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Null(retrievedWrapper);
 		}
 
-		[Fact]
-		public void TryGetValue()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void TryGetValue(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			ICachedObjectBasic result;
@@ -343,11 +421,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
-		[Fact]
-		public void AddKvp()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void AddKvp(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
 			KeyValuePair<string, ICachedObjectBasic> item = RedisHelpers.GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
@@ -357,10 +440,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, result.Value));
 		}
 
-		[Fact]
-		public void Clear()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Clear(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			Foobar cachable = RedisHelpers.GetCachableObject();
@@ -374,11 +461,15 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Empty(service);
 		}
 
-		[Fact]
-		public void Contains()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void Contains(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
@@ -389,11 +480,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Contains(item, service);
 		}
 
-		[Fact]
-		public void ContainsBranching()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void ContainsBranching(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
 			KeyValuePair<string, ICachedObjectBasic> originalItem = RedisHelpers.GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
@@ -434,10 +530,14 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.DoesNotContain(originalItem, service);
 		}
 
-		[Fact]
-		public void CopyTo()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void CopyTo(bool compressValues, bool useBasic)
 		{
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
 			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -456,11 +556,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Equal(cachableKey, ((RedisId)cache[0].Key).ObjectIdentifier);
 		}
 
-		[Fact]
-		public void RemoveKvp()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void RemoveKvp(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
 			KeyValuePair<string, ICachedObjectBasic> item = RedisHelpers.GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
@@ -475,11 +580,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Empty(service);
 		}
 
-		[Fact]
-		public void RemoveBranching()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void RemoveBranching(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
 			KeyValuePair<string, ICachedObjectBasic> originalItem = RedisHelpers.GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);
@@ -520,11 +630,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.False(service.Remove(originalItem));
 		}
 
-		[Fact]
-		public void TestEnumerators()
+		[Theory]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
+		public void TestEnumerators(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;

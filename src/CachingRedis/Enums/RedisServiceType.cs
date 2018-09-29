@@ -8,7 +8,7 @@ namespace StandardDot.Caching.Redis.Enums
 		[EnumMember(Value = "HashSet")]
 		HashSet = 0,
 		
-		[EnumMember(Value = "Basic")]
+		[EnumMember(Value = "KeyValue")]
 		KeyValue = 1,
 		
 		[EnumMember(Value = "Provider")]

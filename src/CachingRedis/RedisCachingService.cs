@@ -62,18 +62,19 @@ namespace StandardDot.Caching.Redis
 
 		public ILoggingService LoggingService => _loggingService;
 
-		private static ConcurrentDictionary<Guid, RedisService> _store
-			= new ConcurrentDictionary<Guid, RedisService>();
+		private static ConcurrentDictionary<string, RedisService> _store
+			= new ConcurrentDictionary<string, RedisService>();
 
 		private RedisService Store
 		{
 			get
 			{
 				RedisService provider;
-				if (UseStaticProvider && _store.ContainsKey(_settings.ServiceSettings.CacheProviderSettingsId))
+				if (UseStaticProvider && _store.ContainsKey(_settings.ServiceSettings.CacheProviderSettingsId.ToString()))
 				{
-					provider = _store[_settings.ServiceSettings.CacheProviderSettingsId];
-					if (_settings == provider.CacheSettings)
+					provider = _store[_settings.ServiceSettings.CacheProviderSettingsId.ToString()];
+					if (_settings.ServiceSettings.CacheProviderSettingsId.ToString()
+						== provider.CacheSettings.ServiceSettings.CacheProviderSettingsId.ToString())
 					{
 						return provider;
 					}
@@ -81,7 +82,7 @@ namespace StandardDot.Caching.Redis
 				provider = new RedisService(_settings, LoggingService, (s, l) => new RedisCacheProvider(s, l));
 				if (UseStaticProvider)
 				{
-					_store[_settings.ServiceSettings.CacheProviderSettingsId] = provider;
+					_store[_settings.ServiceSettings.CacheProviderSettingsId.ToString()] = provider;
 				}
 				return provider;
 			}

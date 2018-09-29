@@ -112,29 +112,46 @@ namespace StandardDot.Caching.Redis.UnitTests
 			}
 		}
 
-		internal static ICacheProviderSettings GetCacheProviderSettings(bool? compressValues = null)
+		internal static ICacheProviderSettings GetCacheProviderSettings(bool? compressValues = null, bool? useBasic = null)
 		{
 			RedisServiceSettings settings = null;
 			if (compressValues ?? false)
 			{
-				TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
-				settings = config.RedisSettings;
+				if (useBasic ?? false)
+				{
+					TestRedisConfigurationBasic config = ConfigurationService.GetConfiguration<TestRedisConfigurationBasic, TestRedisConfigurationMetadataBasic>();
+					settings = config.RedisSettings;
+				}
+				else
+				{
+					TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
+					settings = config.RedisSettings;
+				}
 			}
 			else
 			{
-				TestRedisConfigurationNoCompress config = ConfigurationService.GetConfiguration<TestRedisConfigurationNoCompress, TestRedisConfigurationMetadataNoCompress>();
-				settings = config.RedisSettings;
+				if (useBasic ?? false)
+				{
+					TestRedisConfigurationNoCompressBasic config = ConfigurationService.GetConfiguration<TestRedisConfigurationNoCompressBasic, TestRedisConfigurationMetadataNoCompressBasic>();
+					settings = config.RedisSettings;
+				}
+				else
+				{
+					TestRedisConfigurationNoCompress config = ConfigurationService.GetConfiguration<TestRedisConfigurationNoCompress, TestRedisConfigurationMetadataNoCompress>();
+					settings = config.RedisSettings;
+				}
 			}
 			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, settings, SerializationSettings);
 			return configuration;
 		}
 
-		internal static RedisCachingService GetRedis(bool? compressValues = null)
+		internal static RedisCachingService GetRedis(bool? compressValues = null, bool? useBasic = null)
 		{
-			return new RedisCachingService(GetCacheProviderSettings(compressValues), GenerateLoggingService().Object);
+			return new RedisCachingService(GetCacheProviderSettings(compressValues, useBasic), GenerateLoggingService().Object);
 		}
 
 		internal static RedisCachingService GetCustomRedis(
+			bool? useBasic = null,
 			string configurationOptions = null,
 			int? defaultScanPageSize = null,
 			bool? compressValues = null,

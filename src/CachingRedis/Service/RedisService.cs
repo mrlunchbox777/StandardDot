@@ -31,19 +31,20 @@ namespace StandardDot.Caching.Redis.Service
 
 		public ILoggingService LoggingService => _loggingService;
 
-		private static ICacheProvider _cacheProvider;
+		private static ConcurrentDictionary<Guid, ICacheProvider> _cacheProvider
+			= new ConcurrentDictionary<Guid, ICacheProvider>();
 
 		internal ICacheProvider CacheProvider
 		{
 			get
 			{
-				if (_cacheProvider == null)
+				if (!_cacheProvider.ContainsKey(CacheSettings.ServiceSettings.CacheProviderSettingsId))
 				{
 					ResetCache();
 				}
-				return _cacheProvider;
+				return _cacheProvider[CacheSettings.ServiceSettings.CacheProviderSettingsId];
 			}
-			private set { _cacheProvider = value; }
+			private set { _cacheProvider[CacheSettings.ServiceSettings.CacheProviderSettingsId] = value; }
 		}
 
 		protected virtual Func<ICacheProviderSettings, ILoggingService, ICacheProvider> ResetProvider { get; }
@@ -84,8 +85,8 @@ namespace StandardDot.Caching.Redis.Service
 			return _server;
 		}
 
-		protected static readonly ConcurrentDictionary<RedisServiceType, IRedisService> _redisServiceImplementation =
-			new ConcurrentDictionary<RedisServiceType, IRedisService>();
+		protected static readonly ConcurrentDictionary<Guid, IRedisService> _redisServiceImplementation =
+			new ConcurrentDictionary<Guid, IRedisService>();
 
 		/// <summary>
 		/// If you are going to set this, make sure that you change the redisserviceimplementationtype first
@@ -99,21 +100,21 @@ namespace StandardDot.Caching.Redis.Service
 			set
 			{
 
-				if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.RedisServiceImplementationType))
+				if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.CacheProviderSettingsId))
 				{
-					_redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType] = value;
+					_redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId] = value;
 				}
-				_redisServiceImplementation.TryAdd(CacheSettings.ServiceSettings.RedisServiceImplementationType, value);
+				_redisServiceImplementation.TryAdd(CacheSettings.ServiceSettings.CacheProviderSettingsId, value);
 			}
 		}
 
 		protected virtual IRedisService EnsureValidRedisServiceImplementation(
 			RedisServiceType redisServiceImplementationType)
 		{
-			if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.RedisServiceImplementationType)
-				&& (_redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType] != null))
+			if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.CacheProviderSettingsId)
+				&& (_redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId] != null))
 			{
-				return _redisServiceImplementation[CacheSettings.ServiceSettings.RedisServiceImplementationType];
+				return _redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId];
 			}
 
 			IRedisService helper;
@@ -129,15 +130,15 @@ namespace StandardDot.Caching.Redis.Service
 					throw new ArgumentOutOfRangeException(nameof(redisServiceImplementationType));
 			}
 
-			if (_redisServiceImplementation.ContainsKey(redisServiceImplementationType))
+			if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.CacheProviderSettingsId))
 			{
-				_redisServiceImplementation[redisServiceImplementationType] = helper;
+				_redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId] = helper;
 			}
 			else
 			{
-				_redisServiceImplementation.TryAdd(redisServiceImplementationType, helper);
+				_redisServiceImplementation.TryAdd(CacheSettings.ServiceSettings.CacheProviderSettingsId, helper);
 			}
-			return _redisServiceImplementation[redisServiceImplementationType];
+			return _redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId];
 		}
 
 		protected virtual IRedisService GetRedisServiceImplementation(RedisServiceType? type = null)
@@ -155,7 +156,7 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			if (provider == null || forceReset)
 			{
-				CacheProvider = ResetProvider(this.CacheSettings, this.LoggingService);
+				CacheProvider = ResetProvider(CacheSettings, LoggingService);
 			}
 			else
 			{

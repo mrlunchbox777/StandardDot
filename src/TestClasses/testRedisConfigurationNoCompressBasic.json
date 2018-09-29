@@ -2,14 +2,14 @@
 	"redisSettings": {
 		"configurationOptions" : "127.0.0.1:6379,connectTimeout=3000",
 		"defaultScanPageSize" : 1000,
-		"redisServiceImplementationType" : "HashSet",
+		"redisServiceImplementationType" : "KeyValue",
 		"compressValues" : false,
 		"providerInfo" : {
 			"cacheGroup" : "StandardDot.Testing",
 			"cacheDomain" : "Test",
 			"objectPrefix" : ""
 		},
-		"cacheProviderSettingsId" : "4b70bb05-69f9-455f-9566-0aa58fcb7ca7",
+		"cacheProviderSettingsId" : "fd5b014c-5daf-4009-bf67-6477384d78c8",
 		"defaultExpireTimeSpan" : 300
 	}
 }
