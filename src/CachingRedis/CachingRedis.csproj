@@ -38,11 +38,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StackExchange.Redis" Version="2.0.505" />
+		<PackageReference Include="StackExchange.Redis" Version="2.0.513" />
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.0.21" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.27" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.34" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.29" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.36" />
 	</ItemGroup>
 
 </Project>

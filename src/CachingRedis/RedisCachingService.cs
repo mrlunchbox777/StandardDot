@@ -12,7 +12,7 @@ using StandardDot.Caching.Redis.DataStructures;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Providers;
 using StandardDot.Caching.Redis.Service;
-using StandardDot.CoreServices.Extensions;
+using StandardDot.CoreExtensions;
 
 namespace StandardDot.Caching.Redis
 {
@@ -147,7 +147,7 @@ namespace StandardDot.Caching.Redis
 		public ICachedObjectBasic this[string key]
 		{
 			get => Retrieve<object>(GetRedisId(key));
-			set => Cache<object>(GetRedisId(key), value);
+			set => Cache<object>(GetRedisId(key), value?.UntypedValue, value?.CachedTime, value?.ExpireTime);
 		}
 
 		/// <summary>
@@ -317,16 +317,16 @@ namespace StandardDot.Caching.Redis
 				Invalidate(id);
 				return false;
 			}
-			if (value.CachedTime != item.Value.CachedTime)
+			if (!value.CachedTime.Compare(item.Value.CachedTime))
 			{
 				return false;
 			}
-			if (value.ExpireTime != item.Value.ExpireTime)
+			if (!value.ExpireTime.Compare(item.Value.ExpireTime))
 			{
 				return false;
 			}
 			ISerializationService service = Store.GetSerializationService<object>();
-			return service.SerializeObject(value.Value) != service.SerializeObject(item.Value.UntypedValue, _settings.SerializationSettings);
+			return (string)value.Value == service.SerializeObject(item.Value.UntypedValue, _settings.SerializationSettings);
 		}
 
 		/// <summary>
@@ -336,9 +336,9 @@ namespace StandardDot.Caching.Redis
 		/// <param name="arrayIndex">Where to start the copy at in the destination</param>
 		public void CopyTo(KeyValuePair<string, ICachedObjectBasic>[] array, int arrayIndex)
 		{
-			KeyValuePair<string, ICachedObject<object>>[] localStore =
+			KeyValuePair<string, ICachedObjectBasic>[] localStore =
 				Store.GetValue<object>(GetRedisId("*", false))
-				.Select(x => new KeyValuePair<string, ICachedObject<object>>(x.Id, x))
+				.Select(x => new KeyValuePair<string, ICachedObjectBasic>(x.Id, x))
 				.ToArray();
 			localStore.CopyTo(array, arrayIndex);
 		}
