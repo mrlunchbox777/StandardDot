@@ -46,6 +46,10 @@ namespace StandardDot.CoreExtensions
 				return false;
 			}
 
+			if (other > source)
+			{
+				return (other - source) <= (tolerance ?? new TimeSpan(0, 0, 1));
+			}
 			return (source - other) <= (tolerance ?? new TimeSpan(0, 0, 1));
 		}
 	}

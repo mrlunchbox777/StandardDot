@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -44,10 +45,10 @@ namespace StandardDot.CoreExtensions
 		/// <typeparam name="T">Enum Type</typeparam>
 		/// <param name="source">A member of the Enum</param>
 		/// <returns>All members of <c>T</c></returns>
-		public static IEnumerable<T> GetValues<T>(this T source)
+		public static IEnumerable<T> GetEnumMembers<T>(this T source)
 			where T : struct, IConvertible
 		{
-			return GetValuesOfEnum<T>();
+			return GetEnumMembersPrivate<T>();
 		}
 
 		/// <summary>
@@ -55,7 +56,7 @@ namespace StandardDot.CoreExtensions
 		/// </summary>
 		/// <typeparam name="T">Enum Type</typeparam>
 		/// <returns>All members of <c>T</c></returns>
-		private static IEnumerable<T> GetValuesOfEnum<T>()
+		private static IEnumerable<T> GetEnumMembersPrivate<T>()
 			where T : struct, IConvertible
 		{
 			if (!typeof(T).IsEnum)
@@ -71,7 +72,7 @@ namespace StandardDot.CoreExtensions
 		/// </summary>
 		/// <param name="source">Enum Type</param>
 		/// <returns>All members of <c>T</c></returns>
-		public static IEnumerable<Enum> GetValues(this Type enumType)
+		public static IEnumerable GetEnumMembers(this Type enumType)
 		{
 			if (!enumType.IsEnum)
 			{
@@ -80,12 +81,12 @@ namespace StandardDot.CoreExtensions
 
 			var flags = BindingFlags.Static | BindingFlags.NonPublic;
 			var getValuesOverloads = typeof(EnumExtensions)
-							.GetMember("GetValuesOfEnum", MemberTypes.Method, flags)
+							.GetMember("GetEnumMembersPrivate", MemberTypes.Method, flags)
 							.Cast<MethodInfo>();
 			MethodInfo method = getValuesOverloads.Single(x => x.ContainsGenericParameters);
 			MethodInfo genericMethod = method.MakeGenericMethod(enumType);
 
-			return genericMethod.Invoke(null, null) as IEnumerable<Enum>;
+			return genericMethod.Invoke(null, null) as IEnumerable;
 		}
 	}
 }
