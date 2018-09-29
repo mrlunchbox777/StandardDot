@@ -346,21 +346,21 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			service.Add(item);
 			ICachedObject<Foobar> result = service.Retrieve<Foobar>(cachableKey);
-			Assert.Equal(cachable, result.Value);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, result.Value));
 		}
 
 		[Fact]
 		public void Clear()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			service.Cache<Foobar>(cachableKey, cachable);
-      Assert.Single(service);
-      ICachedObject<Foobar> cached = service.Retrieve<Foobar>(cachableKey);
-      Assert.Equal(cachable, cached.Value);
+			Assert.Single(service);
+			ICachedObject<Foobar> cached = service.Retrieve<Foobar>(cachableKey);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, cached.Value));
 
 			service.Clear();
 			Assert.Empty(service);
@@ -371,6 +371,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 			string cachableKey = RedisHelpers.CachableKey;
 			KeyValuePair<string, ICachedObjectBasic> item = RedisHelpers.GetCachableKvp(DateTime.UtcNow, cacheLifeTime, cachable, cachableKey);

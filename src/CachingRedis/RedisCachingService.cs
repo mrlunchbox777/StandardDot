@@ -278,7 +278,7 @@ namespace StandardDot.Caching.Redis
 		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
 			RedisId id = GetRedisId(item.Key);
-			Cache(id, item.Value);
+			Cache(id, item.Value.UntypedValue, item.Value.CachedTime, item.Value.ExpireTime);
 		}
 
 		/// <summary>
@@ -326,11 +326,7 @@ namespace StandardDot.Caching.Redis
 				return false;
 			}
 			ISerializationService service = Store.GetSerializationService<object>();
-			if (service.SerializeObject(value.Value) != service.SerializeObject(item.Value.UntypedValue, _settings.SerializationSettings))
-			{
-				return false;
-			}
-			return true;
+			return service.SerializeObject(value.Value) != service.SerializeObject(item.Value.UntypedValue, _settings.SerializationSettings);
 		}
 
 		/// <summary>
