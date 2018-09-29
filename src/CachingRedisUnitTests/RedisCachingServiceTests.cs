@@ -5,11 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using StandardDot.Abstract.Caching;
-using StandardDot.Abstract.Configuration;
-using StandardDot.Abstract.CoreServices;
-using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
-using StandardDot.CoreServices.Serialization;
 using StandardDot.TestClasses;
 using Xunit;
 
@@ -54,9 +50,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
 			Assert.NotNull(returned);
 			Assert.NotEqual(cachable, returned);
-			Assert.Equal(cachable.Foo, returned.Foo);
-			Assert.NotEqual(cachable.Bar, returned.Bar);
-			Assert.Equal(default(int), returned.Bar);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
 		[Fact]
@@ -73,9 +67,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(retrievedWrapper);
-			Assert.Equal(cachable.Foo, retrievedWrapper.Value.Foo);
-			Assert.NotEqual(cachable.Bar, retrievedWrapper.Value.Bar);
-			Assert.Equal(default(int), retrievedWrapper.Value.Bar);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, retrievedWrapper.Value));
 			Assert.True(retrievedWrapper.CachedTime > startedCaching && retrievedWrapper.CachedTime < endedCaching);
 			Assert.True(retrievedWrapper.ExpireTime > startedCaching.Add(cacheLifeTime)
 				&& retrievedWrapper.ExpireTime < endedCaching.Add(cacheLifeTime));
@@ -123,8 +115,8 @@ namespace StandardDot.Caching.Redis.UnitTests
 		[Fact]
 		public void StaticUsage()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMilliseconds(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			TimeSpan cacheLifeTime = TimeSpan.FromSeconds(1);
+			RedisCachingService service = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -133,11 +125,13 @@ namespace StandardDot.Caching.Redis.UnitTests
 			DateTime endedCaching = DateTime.UtcNow;
 			ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 
-			RedisCachingService service2 = RedisHelpers.GetRedis();
+			RedisCachingService service2 = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
 			ICachedObject<Foobar> existsRetrievedWrapper2 = service2.Retrieve<Foobar>(cachableKey);
 
-			Assert.Equal(cachable, existsRetrievedWrapper.Value);
-			Assert.Equal(existsRetrievedWrapper.Value, existsRetrievedWrapper2.Value);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, existsRetrievedWrapper.Value));
+			Assert.True(RedisHelpers.CheckFooBarEquality(existsRetrievedWrapper.Value, existsRetrievedWrapper2.Value));
+			// they aren't reference equal
+			Assert.NotEqual(existsRetrievedWrapper.Value, existsRetrievedWrapper2.Value);
 			service2.Clear();
 			Assert.Null(service.Retrieve<Foobar>(cachableKey));
 		}
@@ -145,7 +139,6 @@ namespace StandardDot.Caching.Redis.UnitTests
 		[Fact]
 		public void DoubleCache()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -157,15 +150,16 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(retrievedWrapper);
-			Assert.Equal(cachable2, retrievedWrapper.Value);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, existsRetrievedWrapper.Value));
 			Assert.NotEqual(existsRetrievedWrapper.Value, retrievedWrapper.Value);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable2, retrievedWrapper.Value));
+			Assert.True(RedisHelpers.CheckFooBarEquality(retrievedWrapper.Value, existsRetrievedWrapper.Value, false));
 			Assert.Single(service);
 		}
 
 		[Fact]
 		public void DoubleRetrieve()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -175,25 +169,25 @@ namespace StandardDot.Caching.Redis.UnitTests
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(existsRetrievedWrapper);
 			Assert.NotNull(retrievedWrapper);
-			Assert.Equal(cachable, existsRetrievedWrapper.Value);
-			Assert.Equal(retrievedWrapper.Value, existsRetrievedWrapper.Value);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, existsRetrievedWrapper.Value));
+			Assert.True(RedisHelpers.CheckFooBarEquality(existsRetrievedWrapper.Value, retrievedWrapper.Value));
 			Assert.Single(service);
 		}
 
 		[Fact]
 		public void AutomatedCustomExpiration()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
 			DateTime startedCaching = DateTime.UtcNow;
-			service.Cache(cachableKey, cachable, DateTime.UtcNow, DateTime.UtcNow.AddMilliseconds(5)); ;
+			// just setting it long enough that even slow machines can pass it
+			service.Cache(cachableKey, cachable, DateTime.UtcNow, DateTime.UtcNow.AddMilliseconds(550)); ;
 			DateTime endedCaching = DateTime.UtcNow;
 			ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 
-			Thread.Sleep(6);
+			Thread.Sleep(560);
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(existsRetrievedWrapper);
 			Assert.Null(retrievedWrapper);
@@ -204,22 +198,22 @@ namespace StandardDot.Caching.Redis.UnitTests
 		[Fact]
 		public void Keys()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			Assert.Empty(service.Keys);
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
 			service.Cache(cachableKey, cachable);
 			Assert.Single(service.Keys);
-			Assert.Equal(cachableKey, service.Keys.Single());
+			Assert.Equal(cachableKey, ((RedisId)(service.Keys.Single())).ObjectIdentifier);
 		}
 
 		[Fact]
 		public void Values()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			Assert.Empty(service.Values);
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -227,14 +221,17 @@ namespace StandardDot.Caching.Redis.UnitTests
 			service.Cache(cachableKey, cachable);
 			Assert.Single(service.Values);
 			Assert.NotNull(service.Values.Single());
-			Assert.Equal(cachable, service.Values.Single().UntypedValue);
+			string returnedString = service.Values.Single().UntypedValue as string;
+			Assert.False(string.IsNullOrWhiteSpace(returnedString));
+			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
 		[Fact]
 		public void Count()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			Assert.Empty(service);
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -280,8 +277,11 @@ namespace StandardDot.Caching.Redis.UnitTests
 			};
 
 			service.Add(cachableKey, dto);
-			Assert.Single(service); ;
-			Assert.Equal(dto.Value, service.Retrieve<Foobar>(cachableKey).Value);
+			Assert.Single(service);
+			string returnedString = service.Values.Single().UntypedValue as string;
+			Assert.False(string.IsNullOrWhiteSpace(returnedString));
+			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
 		[Fact]
@@ -293,14 +293,13 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			service.Cache<Foobar>(cachableKey, cachable);
-			Assert.Single(service); ;
+			Assert.Single(service);
 			Assert.True(service.ContainsKey(cachableKey));
 		}
 
 		[Fact]
 		public void Remove()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
@@ -320,8 +319,8 @@ namespace StandardDot.Caching.Redis.UnitTests
 		[Fact]
 		public void TryGetValue()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
 			RedisCachingService service = RedisHelpers.GetRedis();
+			service.Clear();
 			string cachableKey = RedisHelpers.CachableKey;
 			ICachedObjectBasic result;
 			Assert.False(service.TryGetValue(cachableKey, out result));
@@ -330,7 +329,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 			service.Cache(cachableKey, cachable);
 			bool success = service.TryGetValue(cachableKey, out result);
 			Assert.True(success);
-			Assert.Equal(cachable, result.UntypedValue);
+			string returnedString = service.Values.Single().UntypedValue as string;
+			Assert.False(string.IsNullOrWhiteSpace(returnedString));
+			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
+			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
 		}
 
 		[Fact]

@@ -10,6 +10,7 @@ using StandardDot.Caching.Redis.UnitTests.Configuration;
 using StandardDot.CoreServices.Serialization;
 using StandardDot.Dto.CoreServices;
 using StandardDot.TestClasses;
+using Xunit;
 
 namespace StandardDot.Caching.Redis.UnitTests
 {
@@ -156,6 +157,37 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, settings, SerializationSettings);
 			return new RedisCachingService(configuration, GenerateLoggingService().Object);
+		}
+
+		internal static bool CheckFooBarEquality(Foobar source, Foobar retrieved, bool shouldBeEqual = true)
+		{
+			if (shouldBeEqual)
+			{
+				Assert.Equal(source.Foo, retrieved.Foo);
+				if (source.Bar == 0 && retrieved.Bar == 0)
+				{
+					Assert.Equal(source.Bar, retrieved.Bar);
+				}
+				else
+				{
+					Assert.NotEqual(source.Bar, retrieved.Bar);
+				}
+				Assert.Equal(default(int), retrieved.Bar);
+			}
+			else
+			{
+				Assert.NotEqual(source.Foo, retrieved.Foo);
+				if (source.Bar == 0 && retrieved.Bar == 0)
+				{
+					Assert.Equal(source.Bar, retrieved.Bar);
+				}
+				else
+				{
+					Assert.NotEqual(source.Bar, retrieved.Bar);
+				}
+				Assert.Equal(default(int), retrieved.Bar);
+			}
+			return true;
 		}
 	}
 }
