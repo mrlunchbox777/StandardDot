@@ -73,7 +73,9 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(retrievedWrapper);
-			Assert.Equal(cachable, retrievedWrapper.Value);
+			Assert.Equal(cachable.Foo, retrievedWrapper.Value.Foo);
+			Assert.NotEqual(cachable.Bar, retrievedWrapper.Value.Bar);
+			Assert.Equal(default(int), retrievedWrapper.Value.Bar);
 			Assert.True(retrievedWrapper.CachedTime > startedCaching && retrievedWrapper.CachedTime < endedCaching);
 			Assert.True(retrievedWrapper.ExpireTime > startedCaching.Add(cacheLifeTime)
 				&& retrievedWrapper.ExpireTime < endedCaching.Add(cacheLifeTime));
@@ -102,8 +104,8 @@ namespace StandardDot.Caching.Redis.UnitTests
 		[Fact]
 		public void AutomatedExpiration()
 		{
-			TimeSpan cacheLifeTime = TimeSpan.FromMilliseconds(5);
-			RedisCachingService service = RedisHelpers.GetRedis();
+			TimeSpan cacheLifeTime = TimeSpan.FromSeconds(1);
+			RedisCachingService service = RedisHelpers.GetCustomRedis(defaultExpireTimeSpanSeconds: (int)cacheLifeTime.TotalSeconds);
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			string cachableKey = RedisHelpers.CachableKey;
@@ -112,7 +114,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 			DateTime endedCaching = DateTime.UtcNow;
 			ICachedObject<Foobar> existsRetrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 
-			Thread.Sleep(6);
+			Thread.Sleep(1000);
 			ICachedObject<Foobar> retrievedWrapper = service.Retrieve<Foobar>(cachableKey);
 			Assert.NotNull(existsRetrievedWrapper);
 			Assert.Null(retrievedWrapper);
@@ -354,8 +356,9 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Foobar cachable = RedisHelpers.GetCachableObject();
 
 			service.Cache<Foobar>(cachableKey, cachable);
-			Assert.Single(service); ;
-			Assert.Equal(cachable, service.Retrieve<Foobar>(cachableKey).Value);
+      Assert.Single(service);
+      ICachedObject<Foobar> cached = service.Retrieve<Foobar>(cachableKey);
+      Assert.Equal(cachable, cached.Value);
 
 			service.Clear();
 			Assert.Empty(service);

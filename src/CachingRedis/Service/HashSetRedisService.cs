@@ -111,7 +111,11 @@ namespace StandardDot.Caching.Redis.Service
 			{
 				RedisCachedObject<T> current;
 				RedisCachedObject<string> stringValue = RedisService.CacheProvider.GetCachedValue<string>(result, this);
-				if (typeof(T) == typeof(object))
+				if (typeof(T) == typeof(object) || typeof(T) == typeof(string))
+				{
+					current = RedisService.CacheProvider.ChangeType<T, string>(stringValue);
+				}
+				else if (typeof(T).IsPrimitive)
 				{
 					current = RedisService.CacheProvider.ChangeType<T, string>(stringValue);
 				}
@@ -142,7 +146,7 @@ namespace StandardDot.Caching.Redis.Service
 			if (itemsToDelete.Any())
 			{
 				DeleteValues(itemsToDelete);
-				string[] fullKeysDeleted = itemsToDelete.Select(x => x.FullKey.Replace("*", "")).ToArray();
+				string[] fullKeysDeleted = itemsToDelete.Where(x => x != null).Select(x => x.FullKey.Replace("*", "")).ToArray();
 				// if it doesn't have a full key we assume it is deleted
 				values = values.Where(x => !fullKeysDeleted.Any(y => x?.Id?.FullKey?.StartsWith(y) ?? true)).ToList();
 			}
@@ -275,8 +279,9 @@ namespace StandardDot.Caching.Redis.Service
 
 		public bool ContainsKey(RedisId key)
 		{
-			return string.IsNullOrWhiteSpace((RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier
-				, this.RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).FirstOrDefault()).Name);
+			HashEntry value = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier
+				, RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).FirstOrDefault();
+			return !string.IsNullOrWhiteSpace(value.Name);
 		}
 	}
 }

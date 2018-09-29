@@ -111,10 +111,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 			}
 		}
 
-		internal static ICacheProviderSettings GetCacheProviderSettings(bool compressValues = false)
+		internal static ICacheProviderSettings GetCacheProviderSettings(bool? compressValues = null)
 		{
 			RedisServiceSettings settings = null;
-			if (compressValues)
+			if (compressValues ?? false)
 			{
 				TestRedisConfiguration config = ConfigurationService.GetConfiguration<TestRedisConfiguration, TestRedisConfigurationMetadata>();
 				settings = config.RedisSettings;
@@ -128,9 +128,34 @@ namespace StandardDot.Caching.Redis.UnitTests
 			return configuration;
 		}
 
-		internal static RedisCachingService GetRedis(bool compressValues = false)
+		internal static RedisCachingService GetRedis(bool? compressValues = null)
 		{
 			return new RedisCachingService(GetCacheProviderSettings(compressValues), GenerateLoggingService().Object);
+		}
+
+		internal static RedisCachingService GetCustomRedis(
+			string configurationOptions = null,
+			int? defaultScanPageSize = null,
+			bool? compressValues = null,
+			CacheInfo cacheInfo = null,
+			Guid? cacheProviderSettingsId = null,
+			int? defaultExpireTimeSpanSeconds = null,
+			string redisServiceImplementationTypeString = null)
+		{
+			ICacheProviderSettings defaultSettings = GetCacheProviderSettings(compressValues);
+			RedisServiceSettings settings = new RedisServiceSettings
+			{
+				ConfigurationOptions = configurationOptions ?? defaultSettings.ServiceSettings.ConfigurationOptions,
+				DefaultScanPageSize = defaultScanPageSize ?? defaultSettings.ServiceSettings.DefaultScanPageSize,
+				CompressValues = compressValues ?? defaultSettings.ServiceSettings.CompressValues,
+				ProviderInfo = cacheInfo ?? defaultSettings.ServiceSettings.ProviderInfo,
+				CacheProviderSettingsIdString = (cacheProviderSettingsId ?? defaultSettings.ServiceSettings.CacheProviderSettingsId).ToString(),
+				DefaultExpireTimeSpanSeconds = defaultExpireTimeSpanSeconds ?? (int?)defaultSettings.ServiceSettings.DefaultExpireTimeSpan?.TotalSeconds ?? 3600,
+				RedisServiceImplementationTypeString = redisServiceImplementationTypeString ?? defaultSettings.ServiceSettings.RedisServiceImplementationType.ToString()
+			};
+
+			RedisProviderSettings configuration = new RedisProviderSettings(SerializationService, settings, SerializationSettings);
+			return new RedisCachingService(configuration, GenerateLoggingService().Object);
 		}
 	}
 }

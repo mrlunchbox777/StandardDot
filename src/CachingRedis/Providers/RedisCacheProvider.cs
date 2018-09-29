@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using StackExchange.Redis;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.Caching.Redis.Abstract;
@@ -50,12 +51,12 @@ namespace StandardDot.Caching.Redis.Providers
 			return redisValue;
 		}
 
-		public virtual RedisCachedObject<T> GetCachedValue<T>(RedisValue redisValue, IRedisService service)
+		protected virtual RedisCachedObject<T> GetCachedValue<T>(RedisValue redisValue, IRedisService service, bool first)
 		{
 			string decompressed = null;
 			if (default(RedisValue) == redisValue)
 			{
-				return null;
+				return CreateCachedValue<T>();
 			}
 			if (CacheSettings.ServiceSettings.CompressValues)
 			{
@@ -63,19 +64,36 @@ namespace StandardDot.Caching.Redis.Providers
 			}
 			if (default(RedisValue) == redisValue)
 			{
-				return null;
+				return CreateCachedValue<T>();
 			}
 			decompressed = decompressed ?? redisValue;
 			RedisCachedObject<T> value;
-			RedisCachedObject<string> stringValue = GetCachedValue<string>(redisValue, service);
-			if (typeof(T) == typeof(object))
+			if (!first)
+			{
+				ISerializationService sz = CacheSettings.SerializationService;
+				try
+				{
+					return sz.DeserializeObject<RedisCachedObject<T>>(redisValue, CacheSettings.SerializationSettings);
+				}
+				catch (SerializationException)
+				{
+					return CreateCachedValue<T>();
+				}
+			}
+
+			RedisCachedObject<string> stringValue = GetCachedValue<string>(redisValue, service, false);
+			if (typeof(T) == typeof(object) || typeof(T) == typeof(string))
+			{
+				value = ChangeType<T, string>(stringValue);
+			}
+			else if (typeof(T).IsPrimitive)
 			{
 				value = ChangeType<T, string>(stringValue);
 			}
 			else
 			{
 				ISerializationService sz = CacheSettings.SerializationService;
-				value =  new RedisCachedObject<T>
+				value = new RedisCachedObject<T>
 				{
 					RetrievedSuccesfully = stringValue.RetrievedSuccesfully,
 					Value = sz.DeserializeObject<T>(stringValue.Value, CacheSettings.SerializationSettings),
@@ -93,10 +111,15 @@ namespace StandardDot.Caching.Redis.Providers
 				{
 					service.DeleteValue(value.Id);
 				}
-				value = null;
+				return CreateCachedValue<T>();
 			}
 
 			return value;
+		}
+
+		public virtual RedisCachedObject<T> GetCachedValue<T>(RedisValue redisValue, IRedisService service)
+		{
+			return GetCachedValue<T>(redisValue, service, true);
 		}
 
 		public virtual RedisCachedObject<T> CreateCachedValue<T>(RedisId redisKey = null)
@@ -159,6 +182,10 @@ namespace StandardDot.Caching.Redis.Providers
 
 		public virtual RedisCachedObject<T> ChangeType<T, TK>(RedisCachedObject<TK> source)
 		{
+			if (source == null)
+			{
+				return CreateCachedValue<T>();
+			}
 			RedisCachedObject<T> wrapper = new RedisCachedObject<T>
 			{
 				RetrievedSuccesfully = source.RetrievedSuccesfully,
