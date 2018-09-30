@@ -52,7 +52,15 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
-			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey) && RedisService.Database.KeyExists(key.FullKey));
+			var temp1 = keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey))
+				.ToList();
+			var temp2 = temp1
+				.SelectMany(x => RedisService.Server(x).Keys(RedisService.Database.Database, x.FullKey))
+				.ToList();
+			var temp3 = temp2
+						.Select(x => RedisService.CacheProvider.GetRedisId(x))
+				.ToList();
+			return temp3;
 		}
 
 		public IEnumerable<RedisId> GetKey<T>(RedisId key)
@@ -70,20 +78,25 @@ namespace StandardDot.Caching.Redis.Service
 			RedisId[] keysToUse = keys.ToArray();
 			for (int i = 0; i < keysToUse.Count(); i++)
 			{
+				if (keysToUse[i].ObjectIdentifier.EndsWith("*"))
+				{
+					continue;
+				}
 				keysToUse[i].ObjectIdentifier = keysToUse[i].ObjectIdentifier + "*";
 			}
 
 			// get the keys, in a non-blocking way
 			List<RedisKey> redisKeys = new List<RedisKey>();
-			redisKeys.AddRange(GetKeys<T>(keysToUse).Select(x => (RedisKey)x.FullKey));
+			// redisKeys.AddRange(keysToUse.Select(x => GetKeys((RedisKey)x.FullKey)));
+			var tempallKeys = GetKeys<T>(keysToUse).ToList();
+			redisKeys.AddRange(tempallKeys.Select(x => (RedisKey)x.FullKey));
 
 			if (!redisKeys.Any())
 			{
 				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
 			}
-
-			RedisValue[] results = RedisService.Database.StringGet(redisKeys.ToArray());
-			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
+			IEnumerable<RedisValue> results = RedisService.Database.StringGet(redisKeys.ToArray()).Where(x => x.HasValue);
+			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(redisKeys.Count);
 			foreach (RedisValue result in results)
 			{
 				RedisCachedObject<T> current = RedisService.CacheProvider.GetCachedValue<T>(result, this);
@@ -113,23 +126,31 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
 		{
-			if ((value?.Id?.HasFullKey ?? false) || value.Value.Equals(default(T)))
+			if ((!(value?.Id?.HasFullKey ?? false)) || value.Value.Equals(default(T)))
 			{
 				return null;
 			}
 
-			string compressedVal;
-			if (value.Value is string)
-			{
-				compressedVal = value.Value as string;
-			}
-			else
-			{
-				ISerializationService sz = RedisService.GetSerializationService<T>();
-				compressedVal = sz.SerializeObject<RedisCachedObject<T>>(value, RedisService.CacheSettings.SerializationSettings);
-			}
 
-			HardAddToCache(value.Id, compressedVal, value.ExpireTime);
+			string serializedWrapper;
+			string serializedObject;
+			ISerializationService sz =
+				RedisService.GetSerializationService<T>();
+			serializedObject = sz.SerializeObject<T>(value.Value, RedisService.CacheSettings.SerializationSettings);
+
+			RedisCachedObject<string> wrapper = new RedisCachedObject<string>
+			{
+				RetrievedSuccesfully = value.RetrievedSuccesfully,
+				Value = serializedObject,
+				CachedTime = value.CachedTime,
+				Status = value.Status,
+				Metadata = value.Metadata,
+				Id = value.Id,
+				ExpireTime = value.ExpireTime,
+			};
+			sz = RedisService.GetSerializationService<RedisCachedObject<string>>();
+			serializedWrapper = sz.SerializeObject<RedisCachedObject<string>>(wrapper, RedisService.CacheSettings.SerializationSettings);
+			HardAddToCache(value.Id, serializedWrapper, value.ExpireTime);
 			return new[] { value };
 		}
 

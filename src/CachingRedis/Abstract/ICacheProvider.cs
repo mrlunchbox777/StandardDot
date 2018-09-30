@@ -11,6 +11,10 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		RedisCachedObject<T> CreateCachedValue<T>(RedisId redisKey = null);
 
+		RedisId GetRedisId(RedisId key);
+
+		RedisId GetRedisId(string key, bool tryJson = true);
+
 		ConnectionMultiplexer GetRedis();
 
 		IDatabase GetDatabase();

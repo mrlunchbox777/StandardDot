@@ -136,6 +136,30 @@ namespace StandardDot.Caching.Redis.Providers
 			};
 		}
 
+		public virtual RedisId GetRedisId(RedisId key)
+		{
+			return key;
+		}
+
+		public virtual RedisId GetRedisId(string key, bool tryJson = true)
+		{
+			if (string.IsNullOrWhiteSpace(key))
+			{
+				return null;
+			}
+			if (tryJson && key.StartsWith("{") && key.EndsWith("}")
+				&& RedisId.DataMemberNames.All(x => key.Contains(x)))
+			{
+				return key;
+			}
+			return new RedisId
+			{
+				ServiceType = CacheSettings.ServiceSettings.RedisServiceImplementationType,
+				ObjectIdentifier = CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix + key,
+				HashSetIdentifier = CacheSettings.ServiceSettings.PrefixIdentifier
+			};
+		}
+
 		public ConnectionMultiplexer GetRedis()
 		{
 			if (Redis == null)

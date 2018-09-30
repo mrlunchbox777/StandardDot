@@ -350,7 +350,9 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			service.Add(cachableKey, dto);
 			Assert.Single(service);
-			string returnedString = service.Values.Single().UntypedValue as string;
+      var theSingle = service.Values.Single();
+      var theValue = theSingle.UntypedValue;
+			string returnedString = theValue as string;
 			Assert.False(string.IsNullOrWhiteSpace(returnedString));
 			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
 			Assert.True(RedisHelpers.CheckFooBarEquality(cachable, returned));
