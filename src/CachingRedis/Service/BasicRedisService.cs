@@ -52,15 +52,9 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
-			var temp1 = keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey))
-				.ToList();
-			var temp2 = temp1
+			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey))
 				.SelectMany(x => RedisService.Server(x).Keys(RedisService.Database.Database, x.FullKey))
-				.ToList();
-			var temp3 = temp2
-						.Select(x => RedisService.CacheProvider.GetRedisId(x))
-				.ToList();
-			return temp3;
+				.Select(x => RedisService.CacheProvider.GetRedisId(x));
 		}
 
 		public IEnumerable<RedisId> GetKey<T>(RedisId key)
