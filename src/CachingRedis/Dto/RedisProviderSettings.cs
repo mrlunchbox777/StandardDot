@@ -22,11 +22,6 @@ namespace StandardDot.Caching.Redis.Dto
 			ConfigurationOptions = configurationOptions == null
 				? ConfigurationOptions.Parse(ServiceSettings.ConfigurationOptions, true)
 				: configurationOptions;
-			
-			if (SerializationSettings?.KnownTypes != null)
-			{
-				// SerializationSettings.KnownTypes.Add(typeof());
-			}
 		}
 
 		public RedisProviderSettings(ISerializationService serializationService, string configurationOptionsString
@@ -35,12 +30,12 @@ namespace StandardDot.Caching.Redis.Dto
 				, serializationSettings)
 		{ }
 
-		public ConfigurationOptions ConfigurationOptions { get; set; }
+		public virtual ConfigurationOptions ConfigurationOptions { get; set; }
 
-		public ISerializationService SerializationService { get; set; }
+		public virtual ISerializationService SerializationService { get; set; }
 
-		public ISerializationSettings SerializationSettings { get; set; }
+		public virtual ISerializationSettings SerializationSettings { get; set; }
 
-		public ICacheServiceSettings ServiceSettings { get; set; }
+		public virtual ICacheServiceSettings ServiceSettings { get; set; }
 	}
 }
