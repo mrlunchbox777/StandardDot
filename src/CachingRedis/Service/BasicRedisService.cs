@@ -48,24 +48,12 @@ namespace StandardDot.Caching.Redis.Service
 			return value;
 		}
 
-    // Abstract Implementation
-
-    private static RedisType[] _unacceptableTypes = new[]
-    {
-      RedisType.Hash,
-      RedisType.List,
-      RedisType.None,
-      RedisType.Set,
-      RedisType.SortedSet,
-      RedisType.Stream,
-      RedisType.Unknown
-    };
+		// Abstract Implementation
 
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
 			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey))
 				.SelectMany(x => RedisService.Server(x).Keys(RedisService.Database.Database, x.FullKey))
-        //.Where(x => !_unacceptableTypes.Contains(RedisService.Database.KeyType(x)))
 				.Select(x => RedisService.CacheProvider.GetRedisId(x));
 		}
 
