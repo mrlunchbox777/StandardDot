@@ -48,12 +48,24 @@ namespace StandardDot.Caching.Redis.Service
 			return value;
 		}
 
-		// Abstract Implementation
+    // Abstract Implementation
+
+    private static RedisType[] _unacceptableTypes = new[]
+    {
+      RedisType.Hash,
+      RedisType.List,
+      RedisType.None,
+      RedisType.Set,
+      RedisType.SortedSet,
+      RedisType.Stream,
+      RedisType.Unknown
+    };
 
 		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
 		{
 			return keys.Where(key => !string.IsNullOrWhiteSpace(key?.FullKey))
 				.SelectMany(x => RedisService.Server(x).Keys(RedisService.Database.Database, x.FullKey))
+        //.Where(x => !_unacceptableTypes.Contains(RedisService.Database.KeyType(x)))
 				.Select(x => RedisService.CacheProvider.GetRedisId(x));
 		}
 
@@ -66,7 +78,7 @@ namespace StandardDot.Caching.Redis.Service
 		{
 			if (!(keys?.Any() ?? false))
 			{
-				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
+				return new RedisCachedObject<T>[0];
 			}
 
 			RedisId[] keysToUse = keys.ToArray();
@@ -87,7 +99,7 @@ namespace StandardDot.Caching.Redis.Service
 
 			if (!redisKeys.Any())
 			{
-				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
+				return new RedisCachedObject<T>[0];
 			}
 			IEnumerable<RedisValue> results = RedisService.Database.StringGet(redisKeys.ToArray()).Where(x => x.HasValue);
 			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(redisKeys.Count);
@@ -150,15 +162,12 @@ namespace StandardDot.Caching.Redis.Service
 
 		public long DeleteValues(IEnumerable<RedisId> keys)
 		{
-			long deleteCount = 0;
-			foreach (RedisId key in keys)
+			if (!(keys?.Any() ?? false))
 			{
-				if (DeleteValue(key))
-				{
-					deleteCount++;
-				}
+				return 0;
 			}
-			return deleteCount;
+			IEnumerable<RedisKey> redisKeys = GetKeys<object>(keys).Select(x => (RedisKey)x.FullKey);
+			return RedisService.Database.KeyDelete(redisKeys.ToArray());
 		}
 
 		public bool DeleteValue(RedisId key)
@@ -167,7 +176,8 @@ namespace StandardDot.Caching.Redis.Service
 			{
 				return false;
 			}
-			return RedisService.Database.KeyDelete(key.FullKey);
+			IEnumerable<RedisKey> keys = GetKey<object>(key).Select(x => (RedisKey)x.FullKey);
+			return RedisService.Database.KeyDelete(keys.ToArray()) > 0;
 		}
 
 		// slow and bad

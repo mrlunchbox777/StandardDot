@@ -443,10 +443,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-		[InlineData(false, false)]
-		[InlineData(true, false)]
-		[InlineData(true, true)]
-		[InlineData(false, true)]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
 		public void Clear(bool compressValues, bool useBasic)
 		{
 			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
