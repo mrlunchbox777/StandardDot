@@ -41,7 +41,8 @@ namespace StandardDot.Caching.Redis.Dto
 						return (HashSetIdentifier ?? "") + ":" + (ObjectIdentifier ?? "");
 					case RedisServiceType.KeyValue:
 					default:
-						return ObjectIdentifier ?? "";
+						return (string.IsNullOrWhiteSpace(HashSetIdentifier) ? "" : HashSetIdentifier + ":")
+							+ (ObjectIdentifier ?? "");
 				}
 			}
 		}

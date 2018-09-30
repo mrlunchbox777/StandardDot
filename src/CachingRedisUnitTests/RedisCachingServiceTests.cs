@@ -330,10 +330,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-		[InlineData(false, false)]
-		[InlineData(true, false)]
-		[InlineData(true, true)]
-		[InlineData(false, true)]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
 		public void Add(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);

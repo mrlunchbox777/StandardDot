@@ -152,10 +152,29 @@ namespace StandardDot.Caching.Redis.Providers
 			{
 				return key;
 			}
+			string adjustedKey = key;
+			if (!string.IsNullOrWhiteSpace(CacheSettings.ServiceSettings.PrefixIdentifier)
+				&& key.StartsWith(CacheSettings.ServiceSettings.PrefixIdentifier))
+			{
+				adjustedKey = key.Replace(CacheSettings.ServiceSettings.PrefixIdentifier, "");
+			}
+			while (adjustedKey.StartsWith(":"))
+			{
+				adjustedKey = adjustedKey.Remove(0, 1);
+			}
+			if (!string.IsNullOrWhiteSpace(CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix)
+				&& key.StartsWith(CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix))
+			{
+				adjustedKey = adjustedKey.Replace(CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix, "");
+			}
+			while (adjustedKey.StartsWith(":"))
+			{
+				adjustedKey = adjustedKey.Remove(0, 1);
+			}
 			return new RedisId
 			{
 				ServiceType = CacheSettings.ServiceSettings.RedisServiceImplementationType,
-				ObjectIdentifier = CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix + key,
+				ObjectIdentifier = CacheSettings.ServiceSettings.ProviderInfo.ObjectPrefix + adjustedKey,
 				HashSetIdentifier = CacheSettings.ServiceSettings.PrefixIdentifier
 			};
 		}

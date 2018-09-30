@@ -5,7 +5,7 @@
 		"redisServiceImplementationType" : "KeyValue",
 		"compressValues" : true,
 		"providerInfo" : {
-			"cacheGroup" : "StandardDot.Testing",
+			"cacheGroup" : "StandardDot:Testing",
 			"cacheDomain" : "Test",
 			"objectPrefix" : ""
 		},
