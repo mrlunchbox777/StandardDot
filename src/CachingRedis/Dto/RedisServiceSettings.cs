@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Runtime.Serialization;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
@@ -40,9 +41,31 @@ namespace StandardDot.Caching.Redis.Dto
 
 		[IgnoreDataMember]
 		public RedisServiceType RedisServiceImplementationType => (RedisServiceType)Enum.Parse(typeof(RedisServiceType), RedisServiceImplementationTypeString);
+		
+		[IgnoreDataMember]
+		private static ConcurrentDictionary<string, Guid> _idTracker
+			= new ConcurrentDictionary<string, Guid>();
 
 		[IgnoreDataMember]
-		public Guid CacheProviderSettingsId => Guid.Parse(CacheProviderSettingsIdString);
+		public Guid CacheProviderSettingsId
+		{
+			get
+			{
+				if (_idTracker.ContainsKey(CacheProviderSettingsIdString))
+				{
+					return _idTracker[CacheProviderSettingsIdString];
+				}
+				bool gotAValue = Guid.TryParse(CacheProviderSettingsIdString, out Guid guidValue);
+				if (gotAValue)
+				{
+					_idTracker[CacheProviderSettingsIdString] = guidValue;
+					return guidValue;
+				}
+				guidValue = Guid.NewGuid();
+				_idTracker[CacheProviderSettingsIdString] = guidValue;
+				return guidValue;
+			}
+		}
 		
 		[IgnoreDataMember]
 		public TimeSpan? DefaultExpireTimeSpan => TimeSpan.FromSeconds(DefaultExpireTimeSpanSeconds);
