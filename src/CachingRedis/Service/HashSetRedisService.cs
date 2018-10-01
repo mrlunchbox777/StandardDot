@@ -25,7 +25,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		protected override void ServiceAdd(RedisId key, RedisValue value, DateTime expiration)
 		{
-			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, RedisService.CacheProvider.CompressValue(value));
+			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
 		}
 
 		protected override RedisValue ServiceGet(RedisId key)
@@ -133,16 +133,16 @@ namespace StandardDot.Caching.Redis.Service
 
 		protected override IEnumerable<RedisValue> ServiceGetValues<T>(IEnumerable<RedisId> keys)
 		{
-			var expandedKeys = keys.Select(x => new 
-				{
-					HashSetIdentifier = x.HashSetIdentifier,
-					Keys = GetKey<T>(x)
-				}).ToArray();
+			var expandedKeys = keys.Select(x => new
+			{
+				HashSetIdentifier = x.HashSetIdentifier,
+				Keys = GetKey<T>(x)
+			}).ToArray();
 			RedisValue[] results = expandedKeys.SelectMany(x =>
 				x.Keys.Select(y =>
 					RedisService.Database.HashGet(x.HashSetIdentifier, y.ObjectIdentifier)
 				)).Where(x => x.HasValue).ToArray();
-			
+
 			return results;
 		}
 

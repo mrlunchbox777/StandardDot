@@ -141,7 +141,7 @@ namespace StandardDot.Caching.Redis.Service
 			return _redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId];
 		}
 
-		protected virtual IRedisService GetRedisServiceImplementation(RedisServiceType? type = null)
+		protected virtual ARedisService GetRedisServiceImplementation(RedisServiceType? type = null)
 		{
 			if (type == null)
 			{

@@ -19,7 +19,7 @@ namespace StandardDot.Caching.Redis.Service
 			RedisService = redisService;
 		}
 
-		public  override RedisService RedisService { get; }
+		public override RedisService RedisService { get; }
 
 		public override RedisServiceType ServiceType => RedisServiceType.KeyValue;
 

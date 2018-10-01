@@ -330,10 +330,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(true, true)]
-    [InlineData(false, true)]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
 		public void Add(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
@@ -350,8 +350,8 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			service.Add(cachableKey, dto);
 			Assert.Single(service);
-      var theSingle = service.Values.Single();
-      var theValue = theSingle.UntypedValue;
+			var theSingle = service.Values.Single();
+			var theValue = theSingle.UntypedValue;
 			string returnedString = theValue as string;
 			Assert.False(string.IsNullOrWhiteSpace(returnedString));
 			Foobar returned = RedisHelpers.SerializationService.DeserializeObject<Foobar>(returnedString, RedisHelpers.SerializationSettings);
@@ -443,10 +443,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(true, true)]
-    [InlineData(false, true)]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
 		public void Clear(bool compressValues, bool useBasic)
 		{
 			RedisCachingService service = RedisHelpers.GetRedis(compressValues: compressValues, useBasic: useBasic);
@@ -483,10 +483,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-    [InlineData(false, false)]
-    [InlineData(true, false)]
-    [InlineData(true, true)]
-    [InlineData(false, true)]
+		[InlineData(false, false)]
+		[InlineData(true, false)]
+		[InlineData(true, true)]
+		[InlineData(false, true)]
 		public void ContainsBranching(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
@@ -510,8 +510,8 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Empty(service);
 			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMilliseconds(10), cachable, cachableKey);
 			service.Add(item);
-      Thread.Sleep(10);
-      Assert.DoesNotContain(originalItem, service);
+			Thread.Sleep(10);
+			Assert.DoesNotContain(originalItem, service);
 			Assert.Empty(service);
 
 			service.Clear();
@@ -611,7 +611,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 			Assert.Empty(service);
 			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMilliseconds(10), cachable, cachableKey);
 			service.Add(item);
-      Thread.Sleep(10);
+			Thread.Sleep(10);
 			Assert.False(service.Remove(originalItem));
 			Assert.Empty(service);
 
