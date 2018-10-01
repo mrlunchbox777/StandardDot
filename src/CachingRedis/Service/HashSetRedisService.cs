@@ -1,219 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.IO;
-using System.Runtime.Serialization;
 using StackExchange.Redis;
 using StandardDot.Caching.Redis.Abstract;
 using StandardDot.Caching.Redis.Dto;
 using StandardDot.Caching.Redis.Enums;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Abstract.DataStructures;
 
 namespace StandardDot.Caching.Redis.Service
 {
 	/// <summary>
 	/// Check redis service for summaries
 	/// </summary>
-	internal class HashSetRedisService : IRedisService
+	internal class HashSetRedisService : ARedisService
 	{
 		public HashSetRedisService(RedisService redisService)
 		{
 			RedisService = redisService;
 		}
 
-		public RedisService RedisService { get; }
+		public override RedisService RedisService { get; }
 
-		public RedisServiceType ServiceType => RedisServiceType.HashSet;
+		public override RedisServiceType ServiceType => RedisServiceType.HashSet;
 
-		protected virtual void HardAddToCache(RedisId key, string value)
+		protected override void ServiceAdd(RedisId key, RedisValue value, DateTime expiration)
 		{
-			if (RedisService.CacheSettings.ServiceSettings.CompressValues)
-			{
-				RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, RedisService.CacheProvider.CompressValue(value));
-			}
-			else
-			{
-				RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, value);
-			}
+			RedisService.Database.HashSet(key.HashSetIdentifier, key.ObjectIdentifier, RedisService.CacheProvider.CompressValue(value));
 		}
 
-		protected virtual string HardGetFromCache(RedisId key)
+		protected override RedisValue ServiceGet(RedisId key)
 		{
-			RedisValue rawValue = RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
-			RedisValue value = (default(RedisValue) != rawValue) && RedisService.CacheSettings.ServiceSettings.CompressValues
-				? RedisService.CacheProvider.DecompressValue(rawValue)
-				: (string)rawValue;
-			return value;
+			return RedisService.Database.HashGet(key.HashSetIdentifier, key.ObjectIdentifier);
 		}
 
-		// Implementation of Abstract
-
-		public IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
+		public override bool ContainsKey(RedisId key)
 		{
-			List<RedisId> values = new List<RedisId>();
-			foreach (RedisId key in keys)
-			{
-				values.AddRange(GetKey<T>(key));
-			}
-			return values;
+			HashEntry value = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier
+				, RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).FirstOrDefault();
+			return !string.IsNullOrWhiteSpace(value.Name);
 		}
 
-		public IEnumerable<RedisId> GetKey<T>(RedisId key)
+		public override long ContainsKeys(IEnumerable<RedisId> keys)
 		{
-			if (!(key?.HasFullKey ?? false))
-			{
-				return new List<RedisId>();
-			}
-
-			IEnumerable<HashEntry> fieldIdentifiers = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
-				RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize);
-
-			IEnumerable<RedisId> resultingKeys =
-				// get the name, and add it to the hash name
-				fieldIdentifiers.Select(fi => new RedisId { HashSetIdentifier = key.HashSetIdentifier, ObjectIdentifier = fi.Name.ToString(), ServiceType = this.ServiceType });
-			return resultingKeys;
+			return keys.Select(ContainsKey).LongCount(x => x);
 		}
 
-		public IEnumerable<RedisCachedObject<T>> GetValues<T>(IEnumerable<RedisId> keys)
-		{
-			if (!(keys?.Any() ?? false))
-			{
-				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
-			}
-
-			RedisId[] keysToUse = keys.ToArray();
-			for (int i = 0; i < keysToUse.Count(); i++)
-			{
-				keysToUse[i].ObjectIdentifier = keysToUse[i].ObjectIdentifier + "*";
-			}
-
-			// get the keys, in a non-blocking way
-			var redisKeys = keysToUse.Select(x => new
-			{
-				HashSetIdentifier = (RedisKey)x.HashSetIdentifier,
-				Keys = GetKey<T>(x)
-			});
-
-			if (!redisKeys.Any())
-			{
-				return new[] { RedisService.CacheProvider.CreateCachedValue<T>() };
-			}
-
-			string[] results = redisKeys.SelectMany(x =>
-				x.Keys.Select(y =>
-					RedisService.Database.HashGet(x.HashSetIdentifier, y.ObjectIdentifier)
-					.ToString()
-				)).ToArray();
-			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
-			foreach (RedisValue result in results)
-			{
-				RedisCachedObject<T> current;
-				RedisCachedObject<string> stringValue = RedisService.CacheProvider.GetCachedValue<string>(result, this);
-				if (typeof(T) == typeof(object) || typeof(T) == typeof(string))
-				{
-					current = RedisService.CacheProvider.ChangeType<T, string>(stringValue);
-				}
-				else if (typeof(T).IsPrimitive)
-				{
-					current = RedisService.CacheProvider.ChangeType<T, string>(stringValue);
-				}
-				else
-				{
-					ISerializationService sz =
-						RedisService.GetSerializationService<T>();
-					current =  new RedisCachedObject<T>
-					{
-						RetrievedSuccesfully = stringValue.RetrievedSuccesfully,
-						Value = sz.DeserializeObject<T>(stringValue.Value, RedisService.CacheSettings.SerializationSettings),
-						CachedTime = stringValue.CachedTime,
-						Status = stringValue.Status,
-						Metadata = stringValue.Metadata,
-						Id = stringValue.Id,
-						ExpireTime = stringValue.ExpireTime,
-					};
-				}
-				if (current != null)
-				{
-					values.Add(current);
-				}
-			}
-
-			// do some cache cleaning
-			IEnumerable<RedisId> itemsToDelete = values.Where(x => (x?.ExpireTime ?? DateTime.MinValue) < DateTime.UtcNow)
-				.Select(x => x.Id);
-			if (itemsToDelete.Any())
-			{
-				DeleteValues(itemsToDelete);
-				string[] fullKeysDeleted = itemsToDelete.Where(x => x != null).Select(x => x.FullKey.Replace("*", "")).ToArray();
-				// if it doesn't have a full key we assume it is deleted
-				values = values.Where(x => !fullKeysDeleted.Any(y => x?.Id?.FullKey?.StartsWith(y) ?? true)).ToList();
-			}
-
-			return values;
-		}
-
-		public IEnumerable<RedisCachedObject<T>> GetValue<T>(RedisId key)
-		{
-			return GetValues<T>(new[] { key });
-		}
-
-		public IEnumerable<RedisCachedObject<T>> SetValues<T>(IEnumerable<RedisCachedObject<T>> values)
-		{
-			RedisCachedObject<T>[] valuesEnumerated = values.ToArray();
-			for (int i = 0; i < valuesEnumerated.Length; i++)
-			{
-				valuesEnumerated[i] = SetValue(valuesEnumerated[i]).SingleOrDefault();
-			}
-			return valuesEnumerated;
-		}
-
-		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
-		{
-			if (!(value?.Id?.HasFullKey ?? false) || (value?.Value?.Equals(default(T)) ?? true))
-			{
-				return null;
-			}
-
-			string serializedWrapper;
-			string serializedObject;
-			ISerializationService sz =
-				RedisService.GetSerializationService<T>();
-			serializedObject = sz.SerializeObject<T>(value.Value, RedisService.CacheSettings.SerializationSettings);
-
-			RedisCachedObject<string> wrapper = new RedisCachedObject<string>
-			{
-				RetrievedSuccesfully = value.RetrievedSuccesfully,
-				Value = serializedObject,
-				CachedTime = value.CachedTime,
-				Status = value.Status,
-				Metadata = value.Metadata,
-				Id = value.Id,
-				ExpireTime = value.ExpireTime,
-			};
-			sz = RedisService.GetSerializationService<RedisCachedObject<string>>();
-			serializedWrapper = sz.SerializeObject<RedisCachedObject<string>>(wrapper, RedisService.CacheSettings.SerializationSettings);
-
-			HardAddToCache(value.Id, serializedWrapper);
-
-			return new[] { value };
-		}
-
-		public long DeleteValues(IEnumerable<RedisId> keys)
-		{
-			long deleteCount = 0;
-			foreach (RedisId key in keys)
-			{
-				if (DeleteValue(key))
-				{
-					deleteCount++;
-				}
-			}
-			return deleteCount;
-		}
-
-		public bool DeleteValue(RedisId key)
+		public override bool DeleteValue(RedisId key)
 		{
 			// get all the keys to be deleted
 			IEnumerable<RedisId> keys = GetKey<object>(key);
@@ -240,19 +72,46 @@ namespace StandardDot.Caching.Redis.Service
 			return deleteCount > 0;
 		}
 
-		// might be slow
-		public long KeyCount()
+		public override long DeleteValues(IEnumerable<RedisId> keys)
 		{
-			return RedisService.Database.HashScan(RedisService.CacheSettings.ServiceSettings.PrefixIdentifier
-				, "*", this.RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).LongCount();
+			long deleteCount = 0;
+			foreach (RedisId key in keys)
+			{
+				if (DeleteValue(key))
+				{
+					deleteCount++;
+				}
+			}
+			return deleteCount;
 		}
 
-		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(RedisId key)
+		public override IEnumerable<RedisId> GetKey<T>(RedisId key)
 		{
-			return GetTimeToLive<T>(new[] { key });
+			if (!(key?.HasFullKey ?? false))
+			{
+				return new List<RedisId>();
+			}
+
+			IEnumerable<HashEntry> fieldIdentifiers = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier,
+				RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize);
+
+			IEnumerable<RedisId> resultingKeys =
+				// get the name, and add it to the hash name
+				fieldIdentifiers.Select(fi => new RedisId { HashSetIdentifier = key.HashSetIdentifier, ObjectIdentifier = fi.Name.ToString(), ServiceType = this.ServiceType });
+			return resultingKeys;
 		}
 
-		public Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys)
+		public override IEnumerable<RedisId> GetKeys<T>(IEnumerable<RedisId> keys)
+		{
+			List<RedisId> values = new List<RedisId>();
+			foreach (RedisId key in keys)
+			{
+				values.AddRange(GetKey<T>(key));
+			}
+			return values;
+		}
+
+		public override Dictionary<RedisId, TimeSpan?> GetTimeToLive<T>(IEnumerable<RedisId> keys)
 		{
 			IEnumerable<RedisCachedObject<T>> values = GetValues<T>(keys);
 
@@ -272,16 +131,42 @@ namespace StandardDot.Caching.Redis.Service
 			return ttls;
 		}
 
-		public long ContainsKeys(IEnumerable<RedisId> keys)
+		protected override IEnumerable<RedisValue> ServiceGetValues<T>(IEnumerable<RedisId> keys)
 		{
-			return keys.Select(ContainsKey).LongCount(x => x);
+			var expandedKeys = keys.Select(x => new 
+				{
+					HashSetIdentifier = x.HashSetIdentifier,
+					Keys = GetKey<T>(x)
+				}).ToArray();
+			RedisValue[] results = expandedKeys.SelectMany(x =>
+				x.Keys.Select(y =>
+					RedisService.Database.HashGet(x.HashSetIdentifier, y.ObjectIdentifier)
+				)).Where(x => x.HasValue).ToArray();
+			
+			return results;
 		}
 
-		public bool ContainsKey(RedisId key)
+		protected override IEnumerable<RedisCachedObject<T>> ServiceValuePostProcess<T>(IEnumerable<RedisCachedObject<T>> results)
 		{
-			HashEntry value = RedisService.Database.HashScan(key.HashSetIdentifier, key.ObjectIdentifier
-				, RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).FirstOrDefault();
-			return !string.IsNullOrWhiteSpace(value.Name);
+			// do some cache cleaning
+			IEnumerable<RedisId> itemsToDelete = results.Where(x => (x?.ExpireTime ?? DateTime.MinValue) < DateTime.UtcNow)
+				.Select(x => x.Id);
+			if (itemsToDelete.Any())
+			{
+				DeleteValues(itemsToDelete);
+				string[] fullKeysDeleted = itemsToDelete.Where(x => x != null).Select(x => x.FullKey.Replace("*", "")).ToArray();
+				// if it doesn't have a full key we assume it is deleted
+				results = results.Where(x => !fullKeysDeleted.Any(y => x?.Id?.FullKey?.StartsWith(y) ?? true)).ToList();
+			}
+
+			return results;
+		}
+
+		// might be slow
+		public override long KeyCount()
+		{
+			return RedisService.Database.HashScan(RedisService.CacheSettings.ServiceSettings.PrefixIdentifier
+				, "*", this.RedisService.CacheSettings.ServiceSettings.DefaultScanPageSize).LongCount();
 		}
 	}
 }

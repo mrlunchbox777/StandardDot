@@ -203,24 +203,24 @@ namespace StandardDot.Caching.Redis.Providers
 			ConnectLog.Dispose();
 		}
 
-		public virtual byte[] CompressValue(string redisValue)
+		public virtual byte[] CompressValue(RedisValue redisValue)
 		{
-			if (redisValue == null)
+			if (redisValue == default(RedisValue))
 			{
 				return default(RedisValue);
 			}
 
-			return redisValue.Zip();
+			return ((string)redisValue).Zip();
 		}
 
-		public virtual string DecompressValue(byte[] redisValue)
+		public virtual RedisValue DecompressValue(byte[] redisValue)
 		{
-			if (redisValue == default(RedisValue))
+			if (redisValue == default(byte[]))
 			{
-				return null;
+				return default(RedisValue);
 			}
 
-			return ((byte[])redisValue).Unzip();
+			return redisValue.Unzip();
 		}
 
 		public virtual RedisCachedObject<T> ChangeType<T, TK>(RedisCachedObject<TK> source)

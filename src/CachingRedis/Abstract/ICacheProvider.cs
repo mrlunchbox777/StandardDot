@@ -19,9 +19,9 @@ namespace StandardDot.Caching.Redis.Abstract
 
 		IDatabase GetDatabase();
 
-		byte[] CompressValue(string redisValue);
+		byte[] CompressValue(RedisValue redisValue);
 
-		string DecompressValue(byte[] redisValue);
+		RedisValue DecompressValue(byte[] redisValue);
 
 		RedisCachedObject<T> ChangeType<T, TK>(RedisCachedObject<TK> source);
 	}
