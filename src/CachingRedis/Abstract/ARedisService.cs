@@ -21,7 +21,7 @@ namespace StandardDot.Caching.Redis.Abstract
 				? (RedisValue)RedisService.CacheProvider.CompressValue(value)
 				: value;
 
-			ServiceAdd(key.HashSetIdentifier, key.ObjectIdentifier, realValue);
+			ServiceAdd(key, realValue, expiration);
 		}
 
 		protected RedisValue HardGetFromCache(RedisId key)
@@ -85,7 +85,7 @@ namespace StandardDot.Caching.Redis.Abstract
 				return new RedisCachedObject<T>[0];
 			}
 
-			IEnumerable<RedisValue> results = ServiceGetValues<T>(redisKeys);
+			RedisValue[] results = ServiceGetValues<T>(redisKeys).ToArray();
 			List<RedisCachedObject<T>> values = new List<RedisCachedObject<T>>(results.Length);
 
 			foreach (RedisValue result in results)

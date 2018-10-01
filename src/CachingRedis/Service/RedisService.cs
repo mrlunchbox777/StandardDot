@@ -85,13 +85,13 @@ namespace StandardDot.Caching.Redis.Service
 			return _server;
 		}
 
-		protected static readonly ConcurrentDictionary<Guid, IRedisService> _redisServiceImplementation =
-			new ConcurrentDictionary<Guid, IRedisService>();
+		protected static readonly ConcurrentDictionary<Guid, ARedisService> _redisServiceImplementation =
+			new ConcurrentDictionary<Guid, ARedisService>();
 
 		/// <summary>
 		/// If you are going to set this, make sure that you change the redisserviceimplementationtype first
 		/// </summary>
-		public virtual IRedisService RedisServiceImplementation
+		public virtual ARedisService RedisServiceImplementation
 		{
 			get
 			{
@@ -108,7 +108,7 @@ namespace StandardDot.Caching.Redis.Service
 			}
 		}
 
-		protected virtual IRedisService EnsureValidRedisServiceImplementation(
+		protected virtual ARedisService EnsureValidRedisServiceImplementation(
 			RedisServiceType redisServiceImplementationType)
 		{
 			if (_redisServiceImplementation.ContainsKey(CacheSettings.ServiceSettings.CacheProviderSettingsId)
@@ -117,7 +117,7 @@ namespace StandardDot.Caching.Redis.Service
 				return _redisServiceImplementation[CacheSettings.ServiceSettings.CacheProviderSettingsId];
 			}
 
-			IRedisService helper;
+			ARedisService helper;
 			switch (redisServiceImplementationType)
 			{
 				case RedisServiceType.HashSet:
