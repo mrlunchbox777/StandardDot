@@ -71,6 +71,6 @@ namespace StandardDot.Caching.Redis.Dto
 		public TimeSpan? DefaultExpireTimeSpan => TimeSpan.FromSeconds(DefaultExpireTimeSpanSeconds);
 
 		[IgnoreDataMember]
-		public string PrefixIdentifier => (ProviderInfo?.CacheDomain ?? "") + (ProviderInfo?.CacheGroup ?? "");
+		public string PrefixIdentifier => (ProviderInfo?.CacheDomain + ":" ?? "") + (ProviderInfo?.CacheGroup ?? "");
 	}
 }
