@@ -27,9 +27,37 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObjectBasic>();
 		}
 
-		private static IDictionary<string, ICachedObjectBasic> _store = new ConcurrentDictionary<string, ICachedObjectBasic>();
+		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
+		/// <param name="whereClause">The clause that defines the subset</param>
+		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
+		protected TestMemoryCachingService(TimeSpan defaultCacheLifespan, Func<KeyValuePair<string, ICachedObjectBasic>, bool> whereClause
+			, IDictionary<string, ICachedObjectBasic> cache)
+			: this(defaultCacheLifespan, cache)
+		{
+			WhereClause = whereClause;
+		}
 
-		protected virtual IDictionary<string, ICachedObjectBasic> Store { get; }
+		private static IDictionary<string, ICachedObjectBasic> _staticStore = new ConcurrentDictionary<string, ICachedObjectBasic>();
+
+		protected virtual Func<KeyValuePair<string, ICachedObjectBasic>, bool> WhereClause { get; }
+
+		protected IDictionary<string, ICachedObjectBasic> _store;
+
+		protected virtual IDictionary<string, ICachedObjectBasic> Store
+		{
+			get
+			{
+				if (WhereClause == null)
+				{
+					return _store;
+				}
+				return _store.Where(WhereClause).ToDictionary(x => x.Key, x => x.Value);
+			}
+			set
+			{
+				_store = value;
+			}
+		}
 
 		/// <summary>
 		/// Wraps an object for caching
@@ -51,17 +79,17 @@ namespace StandardDot.TestClasses.AbstractImplementations
 
 		public virtual TimeSpan DefaultCacheLifespan { get; }
 
-		public virtual ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
+		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys;
 
-		public virtual ILazyCollection<ICachedObjectBasic> Values => new LazyCollectionWrapper<ICachedObjectBasic>(Store.Values);
+		ICollection<ICachedObjectBasic> IDictionary<string, ICachedObjectBasic>.Values => Values;
 
 		public int Count => Store.Count;
 
 		public bool IsReadOnly => Store.IsReadOnly;
 
-		ICollection<string> IDictionary<string, ICachedObjectBasic>.Keys => Keys;
+		public ILazyCollection<string> Keys => new LazyCollectionWrapper<string>(Store.Keys);
 
-		ICollection<ICachedObjectBasic> IDictionary<string, ICachedObjectBasic>.Values => Values;
+		public ILazyCollection<ICachedObjectBasic> Values => new LazyCollectionWrapper<ICachedObjectBasic>(Store.Values);
 
 		/// <summary>
 		/// Gets an object from cache, null if not found
@@ -70,7 +98,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// <returns>The cached wrapped object, default null</returns>
 		public ICachedObjectBasic this[string key]
 		{
-			get => ((ICachedObjectBasic)Retrieve<object>(key));
+			get => Retrieve<object>(key);
 			set => Cache<object>(key, value);
 		}
 
@@ -89,7 +117,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 			{
 				Invalidate(key);
 			}
-			Store.Add(key, value);
+			Store.Add(key, CreateCachedObject((object)value.Value, value.CachedTime, value.ExpireTime));
 		}
 
 		/// <summary>
@@ -101,7 +129,7 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		/// <param name="expireTime">When the object should expire, default UTC now + DefaultCacheLifespan</param>
 		public void Cache<T>(string key, T value, DateTime? cachedTime = null, DateTime? expireTime = null)
 		{
-			Cache<T>(key, CreateCachedObject<T>(value, cachedTime, expireTime));
+			Cache<T>(key, CreateCachedObject(value, cachedTime, expireTime));
 		}
 
 		/// <summary>
@@ -311,12 +339,12 @@ namespace StandardDot.TestClasses.AbstractImplementations
 		{
 			return this;
 		}
-
+		
 		public ICachingService Query<T>(string key)
 		{
-			return new TestMemoryCachingService(DefaultCacheLifespan, Store
-				.Where(x => (key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false))
-				.ToDictionary(x => x.Key, x => x.Value)
+			return new TestMemoryCachingService(DefaultCacheLifespan,
+				(x => (WhereClause == null || WhereClause(x)) && ((key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false)))
+				, _store
 			);
 		}
 	}
