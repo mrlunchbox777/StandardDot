@@ -75,7 +75,7 @@ namespace StandardDot.Caching.Redis.Providers
 				{
 					return sz.DeserializeObject<RedisCachedObject<T>>(decompressed, CacheSettings.SerializationSettings);
 				}
-				catch (SerializationException ex)
+				catch (SerializationException)
 				{
 					return CreateCachedValue<T>();
 				}
