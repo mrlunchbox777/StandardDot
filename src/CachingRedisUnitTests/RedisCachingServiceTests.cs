@@ -483,10 +483,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 		}
 
 		[Theory]
-		[InlineData(false, false)]
-		[InlineData(true, false)]
-		[InlineData(true, true)]
-		[InlineData(false, true)]
+    [InlineData(false, false)]
+    [InlineData(true, false)]
+    [InlineData(true, true)]
+    [InlineData(false, true)]
 		public void ContainsBranching(bool compressValues, bool useBasic)
 		{
 			TimeSpan cacheLifeTime = TimeSpan.FromMinutes(5);
@@ -508,9 +508,10 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			service.Clear();
 			Assert.Empty(service);
-			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMinutes(-5), cachable, cachableKey);
+			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMilliseconds(10), cachable, cachableKey);
 			service.Add(item);
-			Assert.DoesNotContain(originalItem, service);
+      Thread.Sleep(10);
+      Assert.DoesNotContain(originalItem, service);
 			Assert.Empty(service);
 
 			service.Clear();
@@ -598,7 +599,7 @@ namespace StandardDot.Caching.Redis.UnitTests
 			KeyValuePair<string, ICachedObjectBasic> item;
 			DateTime originalTime = originalItem.Value.CachedTime;
 
-			Assert.False(service.Remove(originalItem)); ;
+			Assert.False(service.Remove(originalItem));
 
 			service.Clear();
 			Assert.Empty(service);
@@ -608,8 +609,9 @@ namespace StandardDot.Caching.Redis.UnitTests
 
 			service.Clear();
 			Assert.Empty(service);
-			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMinutes(-5), cachable, cachableKey);
+			item = RedisHelpers.GetCachableKvp(originalTime, TimeSpan.FromMilliseconds(10), cachable, cachableKey);
 			service.Add(item);
+      Thread.Sleep(10);
 			Assert.False(service.Remove(originalItem));
 			Assert.Empty(service);
 

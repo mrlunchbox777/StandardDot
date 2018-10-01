@@ -120,7 +120,7 @@ namespace StandardDot.Caching.Redis.Service
 
 		public IEnumerable<RedisCachedObject<T>> SetValue<T>(RedisCachedObject<T> value)
 		{
-			if ((!(value?.Id?.HasFullKey ?? false)) || value.Value.Equals(default(T)))
+			if ((!(value?.Id?.HasFullKey ?? false)) || value.Value == null || value.Value.Equals(default(T)))
 			{
 				return null;
 			}
