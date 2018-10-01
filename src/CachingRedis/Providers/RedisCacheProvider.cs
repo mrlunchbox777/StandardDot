@@ -73,9 +73,9 @@ namespace StandardDot.Caching.Redis.Providers
 				ISerializationService sz = CacheSettings.SerializationService;
 				try
 				{
-					return sz.DeserializeObject<RedisCachedObject<T>>(redisValue, CacheSettings.SerializationSettings);
+					return sz.DeserializeObject<RedisCachedObject<T>>(decompressed, CacheSettings.SerializationSettings);
 				}
-				catch (SerializationException)
+				catch (SerializationException ex)
 				{
 					return CreateCachedValue<T>();
 				}
