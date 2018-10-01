@@ -26,12 +26,40 @@ namespace StandardDot.Caching
 		public MemoryCachingService(TimeSpan defaultCacheLifespan, bool useStaticCache)
 		{
 			DefaultCacheLifespan = defaultCacheLifespan;
-			Store = useStaticCache ? _store : new ConcurrentDictionary<string, ICachedObjectBasic>();
+			Store = useStaticCache ? _staticStore : new ConcurrentDictionary<string, ICachedObjectBasic>();
 		}
 
-		private static IDictionary<string, ICachedObjectBasic> _store = new ConcurrentDictionary<string, ICachedObjectBasic>();
+		/// <param name="defaultCacheLifespan">How long items should be cached by default</param>
+		/// <param name="whereClause">The clause that defines the subset</param>
+		/// <param name="cache">The cache to use, default is a thread safe dictionary</param>
+		protected MemoryCachingService(TimeSpan defaultCacheLifespan, Func<KeyValuePair<string, ICachedObjectBasic>, bool> whereClause
+			, IDictionary<string, ICachedObjectBasic> cache)
+			: this(defaultCacheLifespan, cache)
+		{
+			WhereClause = whereClause;
+		}
 
-		protected virtual IDictionary<string, ICachedObjectBasic> Store { get; }
+		private static IDictionary<string, ICachedObjectBasic> _staticStore = new ConcurrentDictionary<string, ICachedObjectBasic>();
+
+		protected virtual Func<KeyValuePair<string, ICachedObjectBasic>, bool> WhereClause { get; }
+
+		protected IDictionary<string, ICachedObjectBasic> _store;
+
+		protected virtual IDictionary<string, ICachedObjectBasic> Store
+		{
+			get
+			{
+				if (WhereClause == null)
+				{
+					return _store;
+				}
+				return _store.Where(WhereClause).ToDictionary(x => x.Key, x => x.Value);
+			}
+			set
+			{
+				_store = value;
+			}
+		}
 
 		/// <summary>
 		/// Wraps an object for caching
@@ -73,7 +101,7 @@ namespace StandardDot.Caching
 		public ICachedObjectBasic this[string key]
 		{
 			get => Retrieve<object>(key);
-			set => Cache<object>(key, value);
+			set => Cache<object>(key, value?.UntypedValue, value?.CachedTime, value?.ExpireTime);
 		}
 
 		/// <summary>
@@ -153,7 +181,7 @@ namespace StandardDot.Caching
 		/// <param name="value">The wrapped object to cache</param>
 		public void Add(string key, ICachedObjectBasic value)
 		{
-			Cache<object>(key, value);
+			Cache<object>(key, value.UntypedValue, value.CachedTime, value.ExpireTime);
 		}
 
 		/// <summary>
@@ -194,7 +222,7 @@ namespace StandardDot.Caching
 		/// <param name="item">(The key that identifies the object, The wrapped object to cache)</param>
 		public void Add(KeyValuePair<string, ICachedObjectBasic> item)
 		{
-			Cache(item.Key, item.Value);
+			Cache(item.Key, item.Value.UntypedValue, item.Value.CachedTime, item.Value.ExpireTime);
 		}
 
 		/// <summary>
@@ -316,9 +344,9 @@ namespace StandardDot.Caching
 
 		public ICachingService Query<T>(string key)
 		{
-			return new MemoryCachingService(DefaultCacheLifespan, Store
-				.Where(x => (key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false))
-				.ToDictionary(x => x.Key, x => x.Value)
+			return new MemoryCachingService(DefaultCacheLifespan,
+				(x => (WhereClause == null || WhereClause(x)) && ((key == null && x.Key == null) || (x.Key?.StartsWith(key) ?? false)))
+				, _store
 			);
 		}
 	}

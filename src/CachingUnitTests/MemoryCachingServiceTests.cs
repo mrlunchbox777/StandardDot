@@ -524,10 +524,10 @@ namespace StandardDot.Caching.UnitTests
 			typedEnumerator.MoveNext();
 			enumerator.MoveNext();
 			Assert.Equal(cachable,
-				(Foobar)((ICachedObject<object>)(typedEnumerator.Current).Value).Value);
+				(Foobar)((ICachedObjectBasic)(typedEnumerator.Current).Value).UntypedValue);
 			Assert.Equal(cachable,
-				(Foobar)((ICachedObject<object>)((KeyValuePair<string, ICachedObject<object>>)
-					(enumerator.Current)).Value).Value);
+				(Foobar)((ICachedObjectBasic)((KeyValuePair<string, ICachedObjectBasic>)
+					(enumerator.Current)).Value).UntypedValue);
 		}
 
 		private Random _random = new Random();

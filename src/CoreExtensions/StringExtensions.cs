@@ -19,13 +19,13 @@ namespace StandardDot.CoreExtensions
 		/// <param name="jsonString">The json string representation of an object.</param>
 		/// <typeparam name="T">The type to deserialize to.</typeparam>
 		/// <returns>The object represented by the jsonString.</returns>
-		public static T DeserializeJson<T>(this string jsonString, ISerializationSettings dataContractResolver = null)
+		public static T DeserializeJson<T>(this string jsonString, ISerializationSettings serializationSettings = null)
 		{
 			if (string.IsNullOrWhiteSpace(jsonString))
 			{
 				return default(T);
 			}
-			DataContractJsonSerializer ser = DataContractJsonSerializerHelpers.GetSerializer<T>(dataContractResolver);
+			DataContractJsonSerializer ser = DataContractJsonSerializerHelpers.GetSerializer<T>(serializationSettings);
 			T obj;
 			using (Stream stream = jsonString.ToStream())
 			{
