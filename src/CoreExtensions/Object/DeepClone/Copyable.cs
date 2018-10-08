@@ -67,7 +67,7 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 					assumeCorrectBecauseGeneric = !parameterType.IsGenericTypeDefinition;
 					parameterType = parameterType.IsGenericTypeDefinition
 					  ? parameterType.GetGenericTypeDefinition()
-					  : parameterType;
+					  : parameterType.UnderlyingSystemType;
 				}
 
 				Type argType = args[i].GetType();
