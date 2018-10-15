@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- This gets defaulted into package version -->
-		<Version>0.0.0.40</Version>
+		<Version>0.0.0.41</Version>
 
 		<!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
 		<IsPackable>true</IsPackable>
