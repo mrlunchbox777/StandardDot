@@ -75,13 +75,13 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				{
 					argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
 				}
-				if (!argType.GetTypeInfo().IsAssignableFrom(parameters[i].ParameterType.GetTypeInfo())
-					&& (!(args[i] is Type && parameters[i].ParameterType == typeof(Type))))
+				if (!argType.GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo())
+					&& (!(args[i] is Type && parameterType == typeof(Type))))
 				{
 					throw new InvalidOperationException(string.Format("Copyable constructed with invalid type {0} for argument #{2} (should be {1})",
-						argType, parameters[i].ParameterType, i));
+						argType, parameterType, i));
 				}
-				constructorTypeArgs.Add(parameters[i].ParameterType);
+				constructorTypeArgs.Add(parameterType);
 			}
 			for (; i < parameters.Length; ++i)
 			{
