@@ -7,7 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.8.0" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
 		<PackageReference Include="Moq" Version="4.10.0" />
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.0.21" />
