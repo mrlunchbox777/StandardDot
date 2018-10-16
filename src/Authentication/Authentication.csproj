@@ -39,7 +39,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.18" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.34" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.35" />
 		<PackageReference Include="StandardDot.Enums" Version="0.0.0.7" />
 		<PackageReference Include="StandardDot.Constants" Version="0.0.0.7" />
 	</ItemGroup>
