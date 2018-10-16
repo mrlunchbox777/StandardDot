@@ -60,10 +60,25 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 
 			for (; i < args.Length; ++i)
 			{
+				bool assumeCorrectBecauseGeneric = false;
 				Type parameterType = parameters[i].ParameterType;
-				bool assumeCorrectBecauseGeneric = parameterType.IsGenericParameter;
+				if (parameterType.IsGenericParameter)
+				{
+					assumeCorrectBecauseGeneric = !parameterType.IsGenericTypeDefinition;
+					parameterType = parameterType.IsGenericTypeDefinition
+					  ? parameterType.GetGenericTypeDefinition()
+					  : parameterType.UnderlyingSystemType;
+					if (!assumeCorrectBecauseGeneric)
+					{
+						assumeCorrectBecauseGeneric = parameterType.IsGenericParameter;
+					}
+				}
 
 				Type argType = args[i].GetType();
+				if (argType.IsGenericParameter)
+				{
+					argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
+				}
 				if (!assumeCorrectBecauseGeneric && !argType.GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo())
 					&& (!(args[i] is Type && parameterType == typeof(Type))))
 				{
