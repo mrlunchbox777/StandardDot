@@ -48,6 +48,13 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				throw new InvalidOperationException("Copyable cannot be instantiated directly; use a subclass.");
 			}
 
+			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method);
+			constructorArgs = args;
+			if (constructor != null)
+			{
+				return;
+			}
+
 			ParameterInfo[] parameters = method.GetParameters();
 
 			if (args.Length > parameters.Length)
@@ -78,6 +85,7 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				{
 					if (assumeCorrectBecauseGeneric || Nullable.GetUnderlyingType(parameterType) != null)
 					{
+						constructorTypeArgs.Add(parameters[i].ParameterType);
 						continue;
 					}
 				}
@@ -109,7 +117,10 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 			}
 
 			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => c.GetParameters()
-				.Select(p => p.ParameterType).Except(constructorTypeArgs).Count() == 0);
+				.Select(p => p.ParameterType).Except(constructorTypeArgs).Count() == 0)
+				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method)
+				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => x.GetParameters().Length == constructorTypeArgs.Count)
+				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault();
 			constructorArgs = args;
 		}
 
