@@ -60,22 +60,11 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 
 			for (; i < args.Length; ++i)
 			{
-				bool assumeCorrectBecauseGeneric = false;
 				Type parameterType = parameters[i].ParameterType;
-				if (parameterType.IsGenericParameter)
-				{
-					assumeCorrectBecauseGeneric = !parameterType.IsGenericTypeDefinition;
-					parameterType = parameterType.IsGenericTypeDefinition
-					  ? parameterType.GetGenericTypeDefinition()
-					  : parameterType.UnderlyingSystemType;
-				}
+				bool assumeCorrectBecauseGeneric = parameterType.IsGenericParameter;
 
 				Type argType = args[i].GetType();
-				if (argType.IsGenericParameter)
-				{
-					argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
-				}
-				if (!argType.GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo())
+				if (!assumeCorrectBecauseGeneric && !argType.GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo())
 					&& (!(args[i] is Type && parameterType == typeof(Type))))
 				{
 					throw new InvalidOperationException(string.Format("Copyable constructed with invalid type {0} for argument #{2} (should be {1})",
