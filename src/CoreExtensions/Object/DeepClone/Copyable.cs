@@ -74,6 +74,14 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 					}
 				}
 
+				if (args[i] == null)
+				{
+					if (assumeCorrectBecauseGeneric || Nullable.GetUnderlyingType(parameterType) != null)
+					{
+						continue;
+					}
+				}
+
 				Type argType = args[i].GetType();
 				if (argType.IsGenericParameter)
 				{
