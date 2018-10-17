@@ -48,7 +48,9 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				throw new InvalidOperationException("Copyable cannot be instantiated directly; use a subclass.");
 			}
 
-			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method);
+			var allConstructors = GetType().GetTypeInfo().DeclaredConstructors;
+			constructor = allConstructors.FirstOrDefault(x => (x as MethodBase) == method)
+				?? allConstructors.FirstOrDefault(x => x.MetadataToken == method.MetadataToken);
 			constructorArgs = args;
 			if (constructor != null)
 			{
@@ -83,11 +85,8 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 
 				if (args[i] == null)
 				{
-					if (assumeCorrectBecauseGeneric || Nullable.GetUnderlyingType(parameterType) != null)
-					{
-						constructorTypeArgs.Add(parameters[i].ParameterType);
-						continue;
-					}
+					constructorTypeArgs.Add(parameters[i].ParameterType);
+					continue;
 				}
 
 				Type argType = args[i].GetType();
@@ -119,6 +118,7 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => c.GetParameters()
 				.Select(p => p.ParameterType).Except(constructorTypeArgs).Count() == 0)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method)
+				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => x.MetadataToken == method.MetadataToken)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => x.GetParameters().Length == constructorTypeArgs.Count)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault();
 			constructorArgs = args;
