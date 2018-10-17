@@ -53,6 +53,19 @@ namespace StandardDot.CoreExtensions.Object
 		/// <param name="overrideSettings">Settings to override the copy logic.</param>
 		/// <typeparam name="T">The type of the instance given.</typeparam>
 		/// <returns>A deep copy of the object.</returns>
+		public static T Copy<T>(this T instance, ICopyOverrideSettings overrideSettings)
+		{
+			return instance.Copy(typeof(T), overrideSettings);
+		}
+
+		/// <summary>
+		/// Creates a copy of the object.
+		/// </summary>
+		/// <param name="instance">The object to be copied.</param>
+		/// <param name="expectedType">The type that should be found.</param>
+		/// <param name="overrideSettings">Settings to override the copy logic.</param>
+		/// <typeparam name="T">The type of the instance given.</typeparam>
+		/// <returns>A deep copy of the object.</returns>
 		public static T Copy<T>(this T instance, Type expectedType, ICopyOverrideSettings overrideSettings)
 		{
 			return instance.Copy(expectedType, new[] { overrideSettings });
