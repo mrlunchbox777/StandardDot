@@ -48,8 +48,11 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				throw new InvalidOperationException("Copyable cannot be instantiated directly; use a subclass.");
 			}
 
-			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method);
+			var allConstructors = GetType().GetTypeInfo().DeclaredConstructors;
+			constructor = allConstructors.FirstOrDefault(x => (x as MethodBase) == method)
+				?? allConstructors.FirstOrDefault(x => x.MetadataToken == method.MetadataToken);
 			constructorArgs = args;
+			// if we can match the constructor by token or equality, that's the one we need
 			if (constructor != null)
 			{
 				return;
@@ -83,11 +86,8 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 
 				if (args[i] == null)
 				{
-					if (assumeCorrectBecauseGeneric || Nullable.GetUnderlyingType(parameterType) != null)
-					{
-						constructorTypeArgs.Add(parameters[i].ParameterType);
-						continue;
-					}
+					constructorTypeArgs.Add(parameters[i].ParameterType);
+					continue;
 				}
 
 				Type argType = args[i].GetType();
@@ -95,7 +95,7 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 				{
 					argType = argType.IsGenericTypeDefinition ? argType.GetGenericTypeDefinition() : argType.UnderlyingSystemType;
 				}
-				if (!assumeCorrectBecauseGeneric && !argType.GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo())
+				if (!assumeCorrectBecauseGeneric && !parameterType.GetTypeInfo().IsAssignableFrom(argType.GetTypeInfo())
 					&& (!(args[i] is Type && parameterType == typeof(Type))))
 				{
 					throw new InvalidOperationException(string.Format("Copyable constructed with invalid type {0} for argument #{2} (should be {1})",
@@ -119,6 +119,7 @@ namespace StandardDot.CoreExtensions.Object.DeepClone
 			constructor = GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(c => c.GetParameters()
 				.Select(p => p.ParameterType).Except(constructorTypeArgs).Count() == 0)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => (x as MethodBase) == method)
+				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => x.MetadataToken == method.MetadataToken)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault(x => x.GetParameters().Length == constructorTypeArgs.Count)
 				?? GetType().GetTypeInfo().DeclaredConstructors.FirstOrDefault();
 			constructorArgs = args;
