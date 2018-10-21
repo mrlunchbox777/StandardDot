@@ -2,6 +2,10 @@
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.0</TargetFramework>
+
+		<AssemblyName>StandardDot.TestClasses</AssemblyName>
+
+		<RootNamespace>StandardDot.TestClasses</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
