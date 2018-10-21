@@ -28,7 +28,7 @@
 			"command": "powershell",
 			"type": "process",
 			"args": [
-				"${workspaceFolder}/startCompleteBuild.ps1"
+				"${workspaceFolder}/.vscode/startCompleteBuild.ps1"
 			],
 			"problemMatcher": "$msCompile",
 			"group": "build"
