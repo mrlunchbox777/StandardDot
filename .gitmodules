@@ -1,0 +1,6 @@
+[submodule ".\\src\\Cake"]
+	path = .\\src\\Cake
+	url = git@github.com:mrlunchbox777/Cake.git
+[submodule "src/cake"]
+	path = src/cake
+	url = git@github.com:mrlunchbox777/Cake.git
