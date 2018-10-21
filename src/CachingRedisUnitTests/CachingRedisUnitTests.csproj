@@ -3,6 +3,10 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.0</TargetFramework>
 
+		<AssemblyName>StandardDot.Caching.Redis.UnitTests</AssemblyName>
+
+		<RootNamespace>StandardDot.Caching.Redis.UnitTests</RootNamespace>
+
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 

@@ -3,6 +3,10 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.0</TargetFramework>
 
+		<AssemblyName>StandardDot.Authentication.IntegrationTests</AssemblyName>
+
+		<RootNamespace>StandardDot.Authentication.IntegrationTests</RootNamespace>
+
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 

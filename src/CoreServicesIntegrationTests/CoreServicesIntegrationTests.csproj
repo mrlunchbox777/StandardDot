@@ -3,6 +3,10 @@
 	<PropertyGroup>
 		<TargetFramework>netcoreapp2.0</TargetFramework>
 
+		<AssemblyName>StandardDot.CoreServices.IntegrationTests</AssemblyName>
+
+		<RootNamespace>StandardDot.CoreServices.IntegrationTests</RootNamespace>
+
 		<IsPackable>false</IsPackable>
 	</PropertyGroup>
 

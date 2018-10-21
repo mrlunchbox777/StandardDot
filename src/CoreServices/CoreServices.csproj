@@ -2,7 +2,7 @@
 
 	<PropertyGroup>
 		<!-- This gets defaulted into package version -->
-		<Version>0.0.0.46</Version>
+		<Version>0.0.0.47</Version>
 
 		<!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
 		<IsPackable>true</IsPackable>
@@ -35,6 +35,10 @@
 		<!-- <NuspecProperties><NuspecProperties> -->
 
 		<TargetFramework>netstandard2.0</TargetFramework>
+
+		<AssemblyName>StandardDot.CoreServices</AssemblyName>
+
+		<RootNamespace>StandardDot.CoreServices</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
