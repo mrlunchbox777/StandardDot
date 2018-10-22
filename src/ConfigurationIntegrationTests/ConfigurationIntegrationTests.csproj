@@ -15,7 +15,7 @@
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.20" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.0.24" />
 		<PackageReference Include="StandardDot.Configuration" Version="0.0.0.23" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.47" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.48" />
 		<PackageReference Include="xunit" Version="2.4.0" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.0">
 		  <PrivateAssets>all</PrivateAssets>
