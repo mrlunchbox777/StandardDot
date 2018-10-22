@@ -12,7 +12,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.19" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.20" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.0.23" />
 		<PackageReference Include="StandardDot.Configuration" Version="0.0.0.22" />
 		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.47" />
