@@ -49,9 +49,9 @@ This repository is for basic code that can be imported into any .NET Standard co
 ### Contribution guidelines
 
 * Writing tests
-    * We use [XUnit](https://xunit.github.io/)
-    * We are aiming for >90% code coverage, so basically all code should have acompanying test
+	* We use [XUnit](https://xunit.github.io/)
+	* We are aiming for >90% code coverage, so basically all code should have acompanying test
 * Code review
-    * All pull requests will need to be reviewed by an admin
+	* All pull requests will need to be reviewed by an admin
 * You can find results of testing and code quality analysis on [SonarQube](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch)
 * To get code to [`develop`](https://github.com/mrlunchbox777/shoellibraries/tree/develop) or [`master`](https://github.com/mrlunchbox777/shoellibraries/tree/master) there must a pull request (Which can only be accepted by an admin)
