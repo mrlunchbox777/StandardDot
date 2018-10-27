@@ -307,5 +307,6 @@ tools/**
 src/.vscode/solution-explorer/
 
 ### Custom ###
-*.info
+**/lcov.info
 **/coverage.json
+**/coverage.xml
