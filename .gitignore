@@ -305,3 +305,7 @@ tools/**
 .history
 *.code-workspace
 src/.vscode/solution-explorer/
+
+### Custom ###
+*.info
+**/coverage.json
