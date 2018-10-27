@@ -310,3 +310,4 @@ src/.vscode/solution-explorer/
 **/lcov.info
 **/coverage.json
 **/coverage.xml
+.sonarqube/
