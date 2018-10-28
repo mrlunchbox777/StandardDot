@@ -305,3 +305,9 @@ tools/**
 .history
 *.code-workspace
 src/.vscode/solution-explorer/
+
+### Custom ###
+**/lcov.info
+**/coverage.json
+**/coverage.xml
+.sonarqube/
