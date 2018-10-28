@@ -37,4 +37,5 @@ Task("Common-Setup-Environment")
 		Config.UnitTests.SonarProjectKey = "StandardDot:branch";
 		Config.UnitTests.ReportsPaths = "/src/*Tests/coverage.xml";
 		Config.UnitTests.SonarExclusions = "**Tests**.cs";
+		Config.UnitTests.Sudo = true;
 	});
