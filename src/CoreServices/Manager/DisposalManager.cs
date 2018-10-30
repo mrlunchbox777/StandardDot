@@ -6,14 +6,13 @@ using System.Threading.Tasks;
 
 namespace StandardDot.CoreServices.Manager
 {
-	public class DisposalManager : IDisposable
+	public class DisposalManager : AFinalDispose
 	{
 		private ConcurrentDictionary<Guid, IDisposable> _items = new ConcurrentDictionary<Guid, IDisposable>();
-		private bool _disposed = false;
 
 		public async Task RegisterIDisposable(IDisposable target)
 		{
-			if (_disposed)
+			if (Disposed)
 			{
 				throw new ObjectDisposedException(nameof(DisposalManager));
 			}
@@ -23,10 +22,11 @@ namespace StandardDot.CoreServices.Manager
 			}
 		}
 
-		protected virtual void Dispose(bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			if (!disposing || _disposed)
+			if (!disposing || Disposed)
 			{
+				base.Dispose(disposing);
 				return;
 			}
 			if (!(_items?.Any() ?? false))
@@ -51,18 +51,7 @@ namespace StandardDot.CoreServices.Manager
 					// If it's already disposed that is ok
 				}
 			}
-			_disposed = true;
-		}
-
-		public void Dispose()
-		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
-		}
-
-		~DisposalManager()
-		{
-			Dispose(false);
+			base.Dispose(disposing);
 		}
 	}
 }
