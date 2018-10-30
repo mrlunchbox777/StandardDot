@@ -1,21 +1,26 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace StandardDot.CoreServices.Manager
 {
 	public class DisposalManager : IDisposable
 	{
-		private ConcurrentBag<IDisposable> _items = new ConcurrentBag<IDisposable>();
+		private ConcurrentDictionary<Guid, IDisposable> _items = new ConcurrentDictionary<Guid, IDisposable>();
 		private bool _disposed = false;
 
-		public void RegisterIDisposable(IDisposable target)
+		public async Task RegisterIDisposable(IDisposable target)
 		{
 			if (_disposed)
 			{
 				throw new ObjectDisposedException(nameof(DisposalManager));
 			}
-			_items.Add(target);
+			while(!_items.TryAdd(Guid.NewGuid(), target))
+			{
+				await Task.Delay(1);
+			}
 		}
 
 		protected virtual void Dispose(bool disposing)
@@ -28,10 +33,25 @@ namespace StandardDot.CoreServices.Manager
 			{
 				return;
 			}
-			foreach (var item in _items)
+			while (_items.Any())
 			{
-				item?.Dispose();
+				KeyValuePair<Guid, IDisposable> holder = _items.FirstOrDefault();
+				if (holder.Key == default(Guid))
+				{
+					continue;
+				}
+				_items[holder.Key] = null;
+				_items.TryRemove(holder.Key, out IDisposable value);
+				try
+				{
+					holder.Value?.Dispose();
+				}
+				catch (ObjectDisposedException)
+				{
+					// If it's already disposed that is ok
+				}
 			}
+			_disposed = true;
 		}
 
 		public void Dispose()
