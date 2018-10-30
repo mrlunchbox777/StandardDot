@@ -2,23 +2,35 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace StandardDot.CoreServices.Manager
 {
 	public class DisposalManager : AFinalDispose
 	{
-		private ConcurrentDictionary<Guid, IDisposable> _items = new ConcurrentDictionary<Guid, IDisposable>();
+		public int retryLimit { get; set; } = 10;
+
+		private ConcurrentDictionary<ManagedIDisposableKey, IDisposable> _items = new ConcurrentDictionary<ManagedIDisposableKey, IDisposable>();
 
 		public async Task RegisterIDisposable(IDisposable target)
 		{
-			if (Disposed)
-			{
-				throw new ObjectDisposedException(nameof(DisposalManager));
-			}
-			while(!_items.TryAdd(Guid.NewGuid(), target))
+			ValidateDisposed();
+			await RegisterIDisposable(target, new ManagedIDisposableKey {Id = Guid.NewGuid()});
+		}
+
+		public async Task RegisterIDisposable(IDisposable target, ManagedIDisposableKey key)
+		{
+			ValidateDisposed();
+			int attempt = 0;
+			while(!_items.TryAdd(key, target))
 			{
 				await Task.Delay(1);
+				attempt++;
+				if (attempt >= retryLimit)
+				{
+					throw new InvalidOperationException("Unable to manage resource - " + (target?.GetType()?.FullName ?? "unknown IDisposable"));
+				}
 			}
 		}
 
@@ -35,13 +47,24 @@ namespace StandardDot.CoreServices.Manager
 			}
 			while (_items.Any())
 			{
-				KeyValuePair<Guid, IDisposable> holder = _items.FirstOrDefault();
-				if (holder.Key == default(Guid))
+				KeyValuePair<ManagedIDisposableKey, IDisposable> holder = _items.FirstOrDefault();
+				if (holder.Key == default(ManagedIDisposableKey))
 				{
 					continue;
 				}
 				_items[holder.Key] = null;
-				_items.TryRemove(holder.Key, out IDisposable value);
+				int attempt = 0;
+				IDisposable value;
+				while(!_items.TryRemove(holder.Key, out value))
+				{
+					Thread.Sleep(1);
+					attempt++;
+					if (attempt >= retryLimit)
+					{
+						throw new InvalidOperationException("Unable to free resource - " + (value?.GetType()?.FullName ?? "unknown IDisposable"));
+					}
+				};
+				holder.Key.TriggerCallbefore(value);
 				try
 				{
 					holder.Value?.Dispose();
@@ -50,6 +73,7 @@ namespace StandardDot.CoreServices.Manager
 				{
 					// If it's already disposed that is ok
 				}
+				holder.Key.TriggerCallback(value);
 			}
 			base.Dispose(disposing);
 		}

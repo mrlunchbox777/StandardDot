@@ -4,6 +4,16 @@ namespace StandardDot.CoreServices.Manager
 {
 	public abstract class AFinalDispose : IFinalDispose
 	{
+		protected virtual string DisposedMessage => this?.GetType()?.FullName ?? "unknown " + nameof(AFinalDispose);
+
+		protected virtual void ValidateDisposed()
+		{
+			if (Disposed)
+			{
+				throw new ObjectDisposedException(DisposedMessage);
+			}
+		}
+
 		public virtual void Open()
 		{
 			if (Disposed)
