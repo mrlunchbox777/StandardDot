@@ -2,12 +2,15 @@ using System.Runtime.Serialization;
 
 namespace StandardDot.Dto.Exception
 {
+	/// <summary>
+	/// A class that can be used to serialize any exception. Validity of serialization is valued over complete data.
+	/// </summary>
 	[DataContract]
-	public class JavaScriptError
+	public class SerializableJavaScriptError
 	{
-		public JavaScriptError() { }
+		public SerializableJavaScriptError() { }
 		
-		public JavaScriptError(string message, string name
+		public SerializableJavaScriptError(string message, string name
 			// Mozilla
 			, string fileName = null, int? lineNumber = null, int? columnNumber = null, string stack = null
 			// Microsoft
@@ -15,6 +18,16 @@ namespace StandardDot.Dto.Exception
 			// methods
 			, string errorSource = null, string toStringResult = null)
 		{
+			Message = message;
+			Name = name;
+			FileName = fileName;
+			LineNumber = lineNumber;
+			ColumnNumber = columnNumber;
+			Stack = stack;
+			Description = description;
+			Number = number;
+			ErrorSource = errorSource;
+			ToStringResult = toStringResult;
 		}
 
 		[DataMember(Name = "message")]
