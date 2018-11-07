@@ -16,7 +16,8 @@ namespace StandardDot.Dto.Exception
 			// Microsoft
 			, string description = null, int? number = null
 			// methods
-			, string errorSource = null, string toStringResult = null, string notes = null)
+			, string errorSource = null, string toStringResult = null
+			, string notes = null)
 		{
 			Message = message;
 			Name = name;
