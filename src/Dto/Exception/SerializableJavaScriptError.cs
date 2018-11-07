@@ -16,7 +16,7 @@ namespace StandardDot.Dto.Exception
 			// Microsoft
 			, string description = null, int? number = null
 			// methods
-			, string errorSource = null, string toStringResult = null)
+			, string errorSource = null, string toStringResult = null, string notes = null)
 		{
 			Message = message;
 			Name = name;
@@ -28,7 +28,11 @@ namespace StandardDot.Dto.Exception
 			Number = number;
 			ErrorSource = errorSource;
 			ToStringResult = toStringResult;
+			Notes = notes;
 		}
+		
+		[DataMember(Name = "notes")]
+		public string Notes { get; set; }
 
 		[DataMember(Name = "message")]
 		public string Message { get; set; }
