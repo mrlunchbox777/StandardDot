@@ -18,7 +18,7 @@ namespace StandardDot.Dto.Exception
 		{}
 
 		public JavascriptException(SerializableJavaScriptError error, System.Exception innerException = null)
-			: this(error.Name + " - " + error.Message, innerException)
+			: this("Javascript Error - " + error.Name + " - " + error.Message, innerException)
 		{
 			_error = error;
 		}
