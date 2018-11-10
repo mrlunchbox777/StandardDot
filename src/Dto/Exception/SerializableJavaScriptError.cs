@@ -1,9 +1,10 @@
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 
 namespace StandardDot.Dto.Exception
 {
 	/// <summary>
-	/// A class that can be used to serialize any exception. Validity of serialization is valued over complete data.
+	/// A class that can be used to serialize any Javascript exception. Validity of serialization is valued over complete data.
 	/// </summary>
 	[DataContract]
 	public class SerializableJavaScriptError
@@ -31,9 +32,6 @@ namespace StandardDot.Dto.Exception
 			ToStringResult = toStringResult;
 			Notes = notes;
 		}
-		
-		[DataMember(Name = "notes")]
-		public string Notes { get; set; }
 
 		[DataMember(Name = "message")]
 		public string Message { get; set; }
@@ -89,6 +87,19 @@ namespace StandardDot.Dto.Exception
 			get => !string.IsNullOrWhiteSpace(ErrorSource) || !string.IsNullOrWhiteSpace(ToStringResult);
 			set {}
 		}
-        
+		
+		// notes
+		[DataMember(Name = "notes")]
+		public string Notes { get; set; }
+
+		public SerializableException ToSerializableException(System.Exception innerException = null)
+		{
+			return new SerializableException(ToException(innerException));
+		}
+
+		public JavascriptException ToException(System.Exception innerException = null)
+		{
+			return new JavascriptException(this, innerException);
+		}
     }
 }
