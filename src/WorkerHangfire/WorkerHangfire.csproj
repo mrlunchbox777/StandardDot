@@ -2,22 +2,22 @@
 
 	<PropertyGroup>
 		<!-- This gets defaulted into package version -->
-		<Version>0.0.0.49</Version>
+		<Version>0.0.0.1</Version>
 
 		<!-- https://docs.microsoft.com/en-us/dotnet/core/tools/csproj#nuget-metadata-properties -->
 		<IsPackable>true</IsPackable>
 		<!-- <PackageVersion>Automatically gathered from Version</PackageVersion> -->
-		<PackageId>StandardDot.CoreServices</PackageId>
-		<Title>StandardDot.CoreServices</Title>
+		<PackageId>StandardDot.Worker.Hangfire</PackageId>
+		<Title>StandardDot.Worker.Hangfire</Title>
 		<Authors>mrlunchbox777</Authors>
-		<Description>Core Services for StandardDot</Description>
+		<Description>Hangfire task management for StandardDot</Description>
 		<Copyright>Copyright 2018 (c) mrlunchbox777. All rights reserved.</Copyright>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
 		<PackageLicenseUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md</PackageLicenseUrl>
 		<PackageProjectUrl>https://github.com/mrlunchbox777/StandardDot/tree/master</PackageProjectUrl>
 		<PackageIconUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png</PackageIconUrl>
 		<PackageReleaseNotes>First release</PackageReleaseNotes>
-		<PackageTags>standarddot services</PackageTags>
+		<PackageTags>standarddot task management hangfire</PackageTags>
 		<PackageOutputPath>./</PackageOutputPath>
 		<IncludeSymbols>false</IncludeSymbols>
 		<IncludeSource>false</IncludeSource>
@@ -36,15 +36,17 @@
 
 		<TargetFramework>netstandard2.0</TargetFramework>
 
-		<AssemblyName>StandardDot.CoreServices</AssemblyName>
+		<AssemblyName>StandardDot.Worker.Hangfire</AssemblyName>
 
-		<RootNamespace>StandardDot.CoreServices</RootNamespace>
+		<RootNamespace>StandardDot.Worker.Hangfire</RootNamespace>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.20" />
-		<PackageReference Include="StandardDot.Dto" Version="0.0.0.13" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.39" />
+		<ProjectReference Include="..\Worker\Worker.csproj" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Hangfire" Version="1.6.20" />
 	</ItemGroup>
 
 </Project>

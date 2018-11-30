@@ -14,12 +14,26 @@ namespace StandardDot.Dto.Exception
 	{
 		public SerializableException() { }
 
+		/// <param name="javaScriptError">The error to convert to a <see cref="SerializableException"></param>
+		/// <param name="innerException">The <see cref="Exception"> to use as the InnerException, default null</param>
+		/// <param name="includeTargetSite">If the target site should be included in the serialization, default true</param>
+		/// <param name="includeData">If the data should be included in the serialization
+		///     <note>Even when included data is not guarunteed to be complete. It only includes primitives and <see cref="DataContractAttribute" />s</note>
+		///     , default false</param>
+		/// <param name="includeDataIfJavascriptException">If data should be include if the exception is <see cref="JavascriptException" />
+		///		, default true</param>
+		public SerializableException(SerializableJavaScriptError javaScriptError, System.Exception innerException = null, bool includeTargetSite = true, bool includeData = false, bool includeDataIfJavascriptException = true)
+			: this(javaScriptError.ToException(innerException))
+		{}
+
 		/// <param name="exception">The exception to convert to serializable form</param>
 		/// <param name="includeTargetSite">If the target site should be included in the serialization, default true</param>
 		/// <param name="includeData">If the data should be included in the serialization
 		///     <note>Even when included data is not guarunteed to be complete. It only includes primitives and <see cref="DataContractAttribute" />s</note>
 		///     , default false</param>
-		public SerializableException(System.Exception exception, bool includeTargetSite = true, bool includeData = false)
+		/// <param name="includeDataIfJavascriptException">If data should be include if the exception is <see cref="JavascriptException" />
+		///		, default true</param>
+		public SerializableException(System.Exception exception, bool includeTargetSite = true, bool includeData = false, bool includeDataIfJavascriptException = true)
 		{
 			if (exception == null)
 			{
@@ -41,7 +55,7 @@ namespace StandardDot.Dto.Exception
 				: new SerializableException(exception.InnerException, includeTargetSite, includeData);
 			Message = exception.Message;
 			HResult = exception.HResult;
-			if (includeData)
+			if (includeData || (exception is JavascriptException && includeDataIfJavascriptException))
 			{
 				if (!(exception.Data?.Count > 0))
 				{

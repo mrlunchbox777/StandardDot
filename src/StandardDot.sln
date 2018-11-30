@@ -54,6 +54,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CachingRedis", "CachingRedi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CachingRedisUnitTests", "CachingRedisUnitTests\CachingRedisUnitTests.csproj", "{EF7FEA8F-56B7-4B0F-9476-869276F669B5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "Worker\Worker.csproj", "{7F37B987-9089-4A48-B5ED-2BD238D58B0F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -376,6 +378,18 @@ Global
 		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x64.Build.0 = Release|Any CPU
 		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x86.ActiveCfg = Release|Any CPU
 		{EF7FEA8F-56B7-4B0F-9476-869276F669B5}.Release|x86.Build.0 = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|x64.Build.0 = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Debug|x86.Build.0 = Debug|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|x64.ActiveCfg = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|x64.Build.0 = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|x86.ActiveCfg = Release|Any CPU
+		{7F37B987-9089-4A48-B5ED-2BD238D58B0F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
