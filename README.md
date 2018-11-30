@@ -6,7 +6,7 @@
 
 ## Standard Dot
 
-[![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) [![Build Status](http://ec2-34-220-188-250.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-220-188-250.us-west-2.compute.amazonaws.com:8080/job/StandardDot)
+[![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot)
 
 Basic .NET Standard Libraries
 
