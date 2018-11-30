@@ -3,7 +3,7 @@ using StandardDot.CoreExtensions.Object;
 using StandardDot.CoreExtensions.Object.DeepClone;
 using Xunit;
 
-namespace CoreExtensionsUnitTests.Object.DeepClone
+namespace StandardDot.CoreExtensionsUnitTests.Object.DeepClone
 {
 	public class CopyOverrideSettingsTest
 	{
