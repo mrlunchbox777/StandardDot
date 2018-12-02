@@ -9,17 +9,19 @@ namespace StandardDot.Caching.Redis.Dto
 	[DataContract]
 	public class RedisId
 	{
-		public static string[] DataMemberNames =
-		typeof(RedisId).GetProperties()
-			.Select(x => x.GetCustomAttributes(typeof(DataMemberAttribute), true).Cast<DataMemberAttribute>())
-			.SelectMany(x => x).Select(x => x.Name)
-			.ToArray();
 		// new []
 		// {
 		// 	"hashSetIdentifier",
 		// 	"objectIdentifier",
 		// 	"serviceType"
 		// };
+		private static string[] _dataMemberNames =
+			typeof(RedisId).GetProperties()
+				.Select(x => x.GetCustomAttributes(typeof(DataMemberAttribute), true).Cast<DataMemberAttribute>())
+				.SelectMany(x => x).Select(x => x.Name)
+				.ToArray();
+
+		public static string[] DataMemberNames => _dataMemberNames;
 
 		[DataMember(Name = "hashSetIdentifier")]
 		public string HashSetIdentifier { get; set; }

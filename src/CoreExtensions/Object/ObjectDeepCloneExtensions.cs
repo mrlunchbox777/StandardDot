@@ -173,7 +173,10 @@ namespace StandardDot.CoreExtensions.Object
 					{
 						instance = (IInstanceProvider)Activator.CreateInstance(t.AsType());
 					}
-					catch { } // Ignore provider if it cannot be created
+					catch
+					{
+						// Ignore provider if it cannot be created
+					}
 					if (instance != null)
 						yield return instance;
 				}
