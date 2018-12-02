@@ -31,10 +31,10 @@ Task("Common-Setup-Environment")
 		// Config.UnitTests.ListTests = true;
 		Config.UnitTests.TargetFramework = "netcoreapp2.0";
 		
-		Config.UnitTests.ParameterArguments.Add("CollectCoverage=true");
-		Config.UnitTests.ParameterArguments.Add("CoverletOutputFormat=opencover");
-		Config.UnitTests.ParameterArguments.Add("CoverletOutput=./coverage.xml");
-		Config.UnitTests.SonarProjectKey = "StandardDot:branch";
-		Config.UnitTests.ReportsPaths = "/src/*Tests/coverage.xml";
-		Config.UnitTests.SonarExclusions = "**Tests**.cs";
+		//Config.UnitTests.ParameterArguments.Add("CollectCoverage=true");
+		//Config.UnitTests.ParameterArguments.Add("CoverletOutputFormat=opencover");
+		//Config.UnitTests.ParameterArguments.Add("CoverletOutput=./coverage.xml");
+		//Config.UnitTests.SonarProjectKey = "StandardDot:branch";
+		//Config.UnitTests.ReportsPaths = "/src/*Tests/coverage.xml";
+		//Config.UnitTests.SonarExclusions = "**Tests**.cs";
 	});

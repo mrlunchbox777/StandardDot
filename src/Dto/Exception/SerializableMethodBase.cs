@@ -96,7 +96,7 @@ namespace StandardDot.Dto.Exception
 		[DataMember(Name = "isConstructor")]
 		public virtual bool IsConstructor { get; set; }
 
-		[DataMember(Name = "rethodHandle")]
+		[DataMember(Name = "methodHandle")]
 		public virtual SerializableRuntimeMethodHandle MethodHandle { get; set; }
 
 		[DataMember(Name = "isAssembly")]
