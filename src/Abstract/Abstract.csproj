@@ -43,7 +43,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="StandardDot.Enums" Version="0.0.0.9" />
-		<PackageReference Include="StandardDot.Dto" Version="0.0.0.14" />
+		<PackageReference Include="StandardDot.Dto" Version="0.0.0.15" />
 	</ItemGroup>
 
 </Project>
