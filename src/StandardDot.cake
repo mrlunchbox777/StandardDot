@@ -18,7 +18,7 @@ Task("Common-Setup-Environment")
 		Config.ConfigurableSettings.DeleteLocalCopyDirBeforeCopy = false;
 
 		Config.Nuget.CreateNugetPackage = Config.ProjectInfo.IsProduction;
-		Config.Nuget.BuildForPack = false;
+		Config.Nuget.BuildForPack = true;
 		Config.Nuget.Server = "https://www.nuget.org/";
 		Config.Nuget.Symbols = true;
 		Config.Nuget.IncludeSource = true;
