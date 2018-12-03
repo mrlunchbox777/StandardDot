@@ -17,11 +17,11 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
 		<PackageReference Include="Moq" Version="4.10.0" />
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.20" />
-		<PackageReference Include="StandardDot.Caching" Version="0.0.0.24" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.48" />
-		<PackageReference Include="StandardDot.Dto" Version="0.0.0.13" />
-		<PackageReference Include="StandardDot.Enums" Version="0.0.0.8" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.21" />
+		<PackageReference Include="StandardDot.Caching" Version="0.0.0.25" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.0.50" />
+		<PackageReference Include="StandardDot.Dto" Version="0.0.0.14" />
+		<PackageReference Include="StandardDot.Enums" Version="0.0.0.9" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
 		  <PrivateAssets>all</PrivateAssets>
