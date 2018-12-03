@@ -17,7 +17,7 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
 		<PackageReference Include="Moq" Version="4.10.0" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.42" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.0.43" />
 		<PackageReference Include="StandardDot.Dto" Version="0.0.0.15" />
 		<PackageReference Include="StandardDot.Enums" Version="0.0.0.9" />
 		<PackageReference Include="xunit" Version="2.4.1" />
