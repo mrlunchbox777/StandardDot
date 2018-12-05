@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CoreExtensions
+namespace StandardDot.CoreExtensions
 {
 	public static class IEnumerableExtensions
 	{
