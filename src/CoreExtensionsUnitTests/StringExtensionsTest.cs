@@ -1,4 +1,6 @@
 using System;
+using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
 using StandardDot.TestClasses;
 using Xunit;
@@ -93,6 +95,19 @@ namespace StandardDot.CoreExtensions.UnitTests
 
 			Assert.Equal(epochPlusAMinute, epochPlusAMinueString.GetTimeSpanFromUnixTimestampString());
 			Assert.Null(StringExtensions.GetTimeSpanFromUnixTimestampString(null));
+		}
+
+		[Fact]
+		public void ToSecureStringTest()
+		{
+			string source = "this is a test string";
+			var secure = new SecureString();
+			foreach (char c in source)
+			{
+				secure.AppendChar(c);
+			}
+			
+			Assert.Equal(secure.CalculateHash(), source.ToSecureString().CalculateHash());
 		}
 	}
 }
