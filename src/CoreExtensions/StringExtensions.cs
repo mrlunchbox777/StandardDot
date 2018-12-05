@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.IO.Compression;
 using System.Runtime.Serialization.Json;
+using System.Security;
 using System.Text;
 using CoreExtensions.DataContract;
 using StandardDot.Abstract.CoreServices;
@@ -169,6 +170,21 @@ namespace StandardDot.CoreExtensions
 			{
 				return input.Unzip();
 			}
+		}
+
+		/// <summary>
+		/// Converts a string to a SecureString
+		/// </summary>
+		/// <param name="source">The string to secure</param>
+		/// <returns>The SecureString that represents the source</returns>
+		public static SecureString ToSecureString(this string source)
+		{
+			var secure = new SecureString();
+			foreach (char c in source)
+			{
+				secure.AppendChar(c);
+			}
+			return secure;
 		}
 	}
 }
