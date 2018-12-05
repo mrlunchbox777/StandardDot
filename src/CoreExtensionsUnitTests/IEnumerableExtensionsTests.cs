@@ -69,7 +69,7 @@ namespace StandardDot.CoreExtensions.UnitTests
 			sources2.AddRange(source2);
 
 			Assert.NotEqual(sources.Count, sources2.Count);
-			List<int> result = sources2.DistinctBy(x => x).ToList();
+			List<int> result = sources2.Distinct().ToList();
 			Assert.NotEqual(sources2.Count, result.Count);
 			Assert.Equal(sources.Count, result.Count);
 			for (int i = 0; i < sources.Count; i++)
