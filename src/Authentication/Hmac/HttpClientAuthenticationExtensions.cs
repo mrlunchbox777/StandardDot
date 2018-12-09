@@ -3,7 +3,6 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 
-/// TODO: Add comments
 namespace StandardDot.Authentication.Hmac
 {
 	/// <summary>
@@ -52,6 +51,7 @@ namespace StandardDot.Authentication.Hmac
 		/// <param name="method">The method that the request will be used</param>
 		/// <param name="content">The content of the request</param>
 		/// <param name="headerGenerator">The header generator to use (this will not be registered)</param>
+		/// <exception cref="NullReferenceException">If no valid header generator was passed</exception>
 		public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method, string content,
 			HmacHeaderGenerator headerGenerator)
 		{
@@ -69,6 +69,7 @@ namespace StandardDot.Authentication.Hmac
 		/// <param name="requestUri">The Uri that the request will be sent to</param>
 		/// <param name="method">The method that the request will be used</param>
 		/// <param name="headerGenerator">The header generator to use (this will not be registered)</param>
+		/// <exception cref="NullReferenceException">If no valid header generator was passed</exception>
 		public static void AddHmacHeadersWithGenerator(this HttpClient client, Uri requestUri, HttpMethod method,
 			HmacHeaderGenerator headerGenerator)
 		{
@@ -86,6 +87,7 @@ namespace StandardDot.Authentication.Hmac
 		/// <param name="requestUri">The Uri that the request will be sent to</param>
 		/// <param name="method">The method that the request will be used</param>
 		/// <param name="content">The content of the request</param>
+		/// <exception cref="NullReferenceException">If no valid header generator is registered</exception>
 		public static void AddHmacHeaders(this HttpClient client, Uri requestUri, HttpMethod method, string content)
 		{
 			if (!IsAnyHeaderGeneratorRegisteredProp)
@@ -101,6 +103,7 @@ namespace StandardDot.Authentication.Hmac
 		/// <param name="client">The client that will be used to make the request</param>
 		/// <param name="requestUri">The Uri that the request will be sent to</param>
 		/// <param name="method">The method that the request will be used</param>
+		/// <exception cref="NullReferenceException">If no valid header generator is registered</exception>
 		public static void AddHmacHeaders(this HttpClient client, Uri requestUri, HttpMethod method)
 		{
 			client.AddHmacHeaders(requestUri, method, null);
