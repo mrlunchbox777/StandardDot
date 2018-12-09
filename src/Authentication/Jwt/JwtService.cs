@@ -3,8 +3,6 @@ using System;
 using System.Security;
 using JWT;
 using JWT.Algorithms;
-using JWT.Serializers;
-using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.CoreExtensions;
 using StandardDot.CoreExtensions.Object;
@@ -15,18 +13,20 @@ namespace StandardDot.Authentication.Jwt
 	/// <summary>
 	/// The base JWT Service Class that will handle JWT authentication
 	/// </summary>
-	public class JwtService
+	public class JwtService : IDisposable
 	{
+		/// <param name="args">The <see cref="JwtServiceArgs" /> to use, default null</param>
 		public JwtService(JwtServiceArgs args = null)
 		{
-			args = args?.Copy() ?? new JwtServiceArgs();
+			_args = args?.Copy() ?? new JwtServiceArgs();
 			_secureSecret = args.SecureSecret;
-			_secret = _secureSecret?.ToPlainText() ?? args.Secret;
+			_secureSecret = _secureSecret ?? args.Secret?.ToSecureString();
+			_args.Secret = null;
+			_args.SecureSecret?.Dispose();
+			_args.SecureSecret = null;
 		}
 
 		private SecureString _secureSecret;
-
-		private string _secret;
 
 
 		protected virtual JwtServiceArgs _args { get; }
@@ -44,18 +44,20 @@ namespace StandardDot.Authentication.Jwt
 		protected virtual IJwtAlgorithm Algorithm => _args.Algorithm;
 
 		protected virtual IJwtEncoder Encoder => _args.Encoder;
-		
-		protected virtual ICachingService CachingService => _args.CachingService;
 
 		protected virtual ILoggingService LoggingService => _args.LoggingService;
 
-		protected virtual string Secret => _secret;
+		protected virtual string Secret => _secureSecret?.ToPlainText();
 
 		/// <summary>
-		/// 
+		/// Decodes a Jwt Payload with the parameters passed in initially
 		/// </summary>
-		/// <param name=""></param>
-		/// <returns></returns>
+		/// <param name="jwt">The Jwt String</param>
+		/// <typeparam name="T">The type of the payload to decode</typeparam>
+		/// <exception cref="TokenExpiredException">If the token has expired, logged if logging service available</exception>
+		/// <exception cref="SignatureVerificationException">If the token has an invalid signature, logged if logging service available</exception>
+		/// <exception cref="Exception">If decoding failed, logged if logging service available</exception>
+		/// <returns>The Decoded Payload</returns>
 		public T DecodeJwtPayload<T>(string jwt)
 		{
 			try
@@ -81,22 +83,21 @@ namespace StandardDot.Authentication.Jwt
 		}
 
 		/// <summary>
-		/// 
+		/// Encodes a Jwt Payload using the parameters passed in initially
 		/// </summary>
-		/// <param name=""></param>
-		/// <returns></returns>
+		/// <typeparam name="T">The type of the payload to encode</typeparam>
+		/// <param name="payload">The payload that needs to be encoded</param>
+		/// <returns>The encoded Jwt Payload</returns>
 		public string EncodeJwtPayload<T>(T payload)
 		{
 			var token = Encoder.Encode(payload, Secret);
 			return token;
 		}
 
-		public void RegisterJwt<T>(T jwt)
+		public void Dispose()
 		{
-			if (CachingService != null)
-			{
-
-			}
+			_args?.Dispose();
+			_secureSecret?.Dispose();
 		}
 	}
 }

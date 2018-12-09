@@ -13,7 +13,7 @@ namespace StandardDot.Authentication.Jwt
 		/// </summary>
 		/// <typeparam name="T">The type for the JWT</typeparam>
 		/// <param name="jwtExpiration">The Expiration for the JWT, default 1 hour</param>
-		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService"> with no params</param>
+		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService" /> with no params</param>
 		/// <param name="jwtIdentifier">The key that identifies the JWT, default StandardDotJwt</param>
 		/// <returns>The application builder with the JWT service added to it</returns>
 		public static IApplicationBuilder UseJwtService<T>(this IApplicationBuilder builder,

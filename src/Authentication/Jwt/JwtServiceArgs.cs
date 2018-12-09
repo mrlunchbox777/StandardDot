@@ -3,16 +3,14 @@ using System.Security;
 using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
-using StandardDot.Abstract.Caching;
 using StandardDot.Abstract.CoreServices;
-using StandardDot.Caching;
 
 namespace StandardDot.Authentication.Jwt
 {
 	/// <summary>
 	/// Provides the arguments for the Jwt Service including a set of good defaults
 	/// </summary>
-	public class JwtServiceArgs
+	public class JwtServiceArgs : IDisposable
 	{
 		/// <summary>
 		/// Create the default set of JwtServiceArgs
@@ -37,50 +35,47 @@ namespace StandardDot.Authentication.Jwt
 				Provider = new UtcDateTimeProvider();
 				UrlEncoder = new JwtBase64UrlEncoder();
 				Algorithm = new HMACSHA256Algorithm();
-				DefaultCacheLifeSpan = TimeSpan.FromHours(1);
 				Secret = Environment.GetEnvironmentVariable("JWT_SECRET");
-
-				CachingService = new MemoryCachingService(DefaultCacheLifeSpan);
+				
 				Validator = new JwtValidator(Serializer, Provider);
 				Decoder = new JwtDecoder(Serializer, Validator, UrlEncoder);
 				Encoder = new JwtEncoder(Algorithm, Serializer, UrlEncoder);
 			}
 		}
 
-		/// <summary>The Expiration for the cached Request/JWT, default 1 hour</summary>
-		public TimeSpan DefaultCacheLifeSpan { get; set; }
-
-		/// <summary>The Json serialization service used to handle JWTs, default <see cref="JsonNetSerializer"></summary>
+		/// <summary>The Json serialization service used to handle JWTs, default <see cref="JsonNetSerializer" /></summary>
 		public IJsonSerializer Serializer { get; set; }
 
-		/// <summary>The provider for DateTimes, default <see cref="UtcDateTimeProvider"></summary>
+		/// <summary>The provider for DateTimes, default <see cref="UtcDateTimeProvider" /></summary>
 		public IDateTimeProvider Provider { get; set; }
 
-		/// <summary>The validation service for JWTs, default <see cref="JwtValidator"></summary>
+		/// <summary>The validation service for JWTs, default <see cref="JwtValidator" /></summary>
 		public IJwtValidator Validator { get; set; }
 
-		/// <summary>The Base64 Encoding Service for JWTs, default <see cref="JwtBase64UrlEncoder"></summary>
+		/// <summary>The Base64 Encoding Service for JWTs, default <see cref="JwtBase64UrlEncoder" /></summary>
 		public IBase64UrlEncoder UrlEncoder { get; set; }
 
-		/// <summary>The Decoding Service for JWTs, default <see cref="JwtDecoder"></summary>
+		/// <summary>The Decoding Service for JWTs, default <see cref="JwtDecoder" /></summary>
 		public IJwtDecoder Decoder { get; set; }
 
-		/// <summary>The Encryption Algorithm for JWTs, default <see cref="HMACSHA256Algorithm"></summary>
+		/// <summary>The Encryption Algorithm for JWTs, default <see cref="HMACSHA256Algorithm" /></summary>
 		public IJwtAlgorithm Algorithm { get; set; }
 
-		/// <summary>The Encoding Service for JWTs, default <see cref="JwtEncoder"></summary>
+		/// <summary>The Encoding Service for JWTs, default <see cref="JwtEncoder" /></summary>
 		public IJwtEncoder Encoder { get; set; }
 
 		/// <summary>The plain text secret used to encrypt the JWT, default <c>Environment.GetEnvironmentVariable("JWT_SECRET")</c></summary>
 		public string Secret { get; set; }
-
-		/// <summary>The caching service to store current JWTs for a request, <see cref="MemoryCachingService"></summary>
-		public ICachingService CachingService { get; set; }
 
 		/// <summary>The logging service for errors, default null - no logging</summary>
 		public ILoggingService LoggingService { get; set; }
 
 		/// <summary>The secure secret used to encrypt the JWT</summary>
 		public SecureString SecureSecret { get; set; }
+
+		public void Dispose()
+		{
+			SecureSecret?.Dispose();
+		}
 	}
 }

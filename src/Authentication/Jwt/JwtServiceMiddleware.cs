@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 namespace StandardDot.Authentication.Jwt
 {
 	/// <summary>
-	/// The middleware for a <see cref="JwtService">
+	/// The middleware for a <see cref="JwtService" />
 	/// </summary>
 	/// <typeparam name="T">The type for the JWT</typeparam>
 	public class JwtServiceMiddleware<T>
@@ -13,8 +13,8 @@ namespace StandardDot.Authentication.Jwt
 	{
 		/// <param name="next">The next middleware to run</param>
 		/// <param name="jwtExpiration">The Expiration for the JWT, default 1 hour</param>
-		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService"> with no params</param>
-		/// <param name="jwtIdentifier">The key that identifies the JWT, default StandardDotJwt</param>
+		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService" /> with no params</param>
+		/// <param name="jwtIdentifier">The key that identifies the JWT, default <c>"StandardDotJwt"</c></param>
 		public JwtServiceMiddleware(RequestDelegate next, TimeSpan? jwtExpiration = null, string jwtIdentifier = null, JwtService jwtService = null)
 		{
 			_next = next;
