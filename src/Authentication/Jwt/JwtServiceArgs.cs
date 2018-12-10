@@ -4,6 +4,9 @@ using JWT;
 using JWT.Algorithms;
 using JWT.Serializers;
 using StandardDot.Abstract.CoreServices;
+using StandardDot.CoreExtensions;
+using StandardDot.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object.DeepClone;
 
 namespace StandardDot.Authentication.Jwt
 {
@@ -41,6 +44,8 @@ namespace StandardDot.Authentication.Jwt
 				Decoder = new JwtDecoder(Serializer, Validator, UrlEncoder);
 				Encoder = new JwtEncoder(Algorithm, Serializer, UrlEncoder);
 			}
+			LoggingService = loggingService;
+			SecureSecret = secureSecret;
 		}
 
 		/// <summary>The Json serialization service used to handle JWTs, default <see cref="JsonNetSerializer" /></summary>

@@ -6,6 +6,7 @@ using JWT.Algorithms;
 using StandardDot.Abstract.CoreServices;
 using StandardDot.CoreExtensions;
 using StandardDot.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object.DeepClone;
 using StandardDot.Enums;
 
 namespace StandardDot.Authentication.Jwt
@@ -18,9 +19,11 @@ namespace StandardDot.Authentication.Jwt
 		/// <param name="args">The <see cref="JwtServiceArgs" /> to use, default null</param>
 		public JwtService(JwtServiceArgs args = null)
 		{
-			_args = args?.Copy() ?? new JwtServiceArgs();
-			_secureSecret = args.SecureSecret;
-			_secureSecret = _secureSecret ?? args.Secret?.ToSecureString();
+			_args = args == null
+				? new JwtServiceArgs()
+				: args;
+			_secureSecret = _args?.SecureSecret?.ToPlainText()?.ToSecureString();
+			_secureSecret = _secureSecret ?? _args.Secret?.ToSecureString();
 			_args.Secret = null;
 			_args.SecureSecret?.Dispose();
 			_args.SecureSecret = null;
