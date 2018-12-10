@@ -1,7 +1,7 @@
 using System;
 using Xunit;
 
-namespace StandardDot.Core.UnitTest.Event
+namespace StandardDot.Core.UnitTests.Event
 {
 	public class AsyncEventGeneric
 	{
