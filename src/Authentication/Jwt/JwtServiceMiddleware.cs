@@ -67,14 +67,14 @@ namespace StandardDot.Authentication.Jwt
 			string header = GetHeaderFromContext(context);
 			T token = GetTokenFromCookieOrHeader(cookie, header);
 			context.Items.Add(_jwtIdentifier, token);
-			// Call the next delegate/middleware in the pipeline
 			await AfterJwtWorkBeforeNext(this, context, cookie, header, token);
+			// Call the next delegate/middleware in the pipeline
 			await _next(context);
+			// do after context work such as updating the jwt as shown below
 			string newCookie = GetCookieFromContext(context);
 			string newHeader = GetHeaderFromContext(context);
 			T newToken = GetTokenFromCookieOrHeader(newCookie, newHeader);
 			await AfterNextBeforeJwtWork(this, context, cookie, header, token, newCookie, newHeader, newToken);
-			// do after context work such as updating the jwt as shown below
 			if (_updateExpiration && !context.Response.HasStarted)
 			{
 				newToken.Expiration = DateTime.UtcNow.Add(_jwtExpiration);
