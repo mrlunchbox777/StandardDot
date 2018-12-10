@@ -14,8 +14,8 @@ namespace StandardDot.Dto.Exception
 	{
 		public SerializableException() { }
 
-		/// <param name="javaScriptError">The error to convert to a <see cref="SerializableException"></param>
-		/// <param name="innerException">The <see cref="Exception"> to use as the InnerException, default null</param>
+		/// <param name="javaScriptError">The error to convert to a <see cref="SerializableException" /></param>
+		/// <param name="innerException">The <see cref="Exception" /> to use as the InnerException, default null</param>
 		/// <param name="includeTargetSite">If the target site should be included in the serialization, default true</param>
 		/// <param name="includeData">If the data should be included in the serialization
 		///     <note>Even when included data is not guarunteed to be complete. It only includes primitives and <see cref="DataContractAttribute" />s</note>
