@@ -43,7 +43,7 @@ namespace StandardDot.Authentication.Jwt
 
 		private string _secret;
 
-		protected virtual string Secret => _secret ?? _secureSecret.;
+		// protected virtual string Secret => _secret ?? _secureSecret.;
 		
 		protected virtual IJsonSerializer Serializer { get; }
 		
