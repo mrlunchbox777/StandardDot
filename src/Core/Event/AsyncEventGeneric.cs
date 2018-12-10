@@ -33,7 +33,9 @@ namespace StandardDot.Core.Event
 
 		private event Func<T, Te, Task> asyncEvent;
 
-		internal IList<Func<T, Te, Task>> SubscriberItems = new List<Func<T, Te, Task>>();
+		private IList<Func<T, Te, Task>> _subscriberItems = new List<Func<T, Te, Task>>();
+
+		internal IList<Func<T, Te, Task>> SubscriberItems { get => _subscriberItems; set => _subscriberItems = value; }
 
 		private bool _unaddedFuncs = true;
 
@@ -43,7 +45,7 @@ namespace StandardDot.Core.Event
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>An array of tasks for invocation</returns>
-		private Task[] GetTasks(T sender, Te args)
+		private async Task<Task[]> GetTasks(T sender, Te args)
 		{
 			if (_unaddedFuncs)
 			{
@@ -65,14 +67,18 @@ namespace StandardDot.Core.Event
 
 			for (int i = 0; i < SubscriberItems.Count; i++)
 			{
-				handlerTasks[i] = Task.Factory.StartNew(() => {
+				handlerTasks[i] = await Task.Factory.StartNew(async () => {
 					try
 					{
-						SubscriberItems[i](sender, args);
+						await SubscriberItems[i](sender, args);
 					}
 					catch(Exception ex)
 					{
-						_loggingAction.Invoke(ex);
+						if (_loggingAction != null)
+						{
+							await _loggingAction(ex);
+						}
+						throw;
 					}
 				});
 			}
@@ -97,7 +103,12 @@ namespace StandardDot.Core.Event
 		/// <returns>The task that represents the sending of the event</returns>
 		public async Task Raise(T sender, Te args)
 		{
-			Task[] handlerTasks = GetTasks(sender, args);
+			Task[] handlerTasks = await GetTasks(sender, args);
+
+			if (!(handlerTasks?.Any() ?? false))
+			{
+				return;
+			}
 
 			try
 			{
@@ -136,7 +147,7 @@ namespace StandardDot.Core.Event
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>A <see cref="Task" /> that reprensents the completion of invocation</returns>
-		public Task Invoke(T sender, Te args) => Raise(sender, args);
+		public async Task Invoke(T sender, Te args) => await Raise(sender, args);
 
 		/// <summary>
 		/// Gets the <see cref="MethodInfo" /> for the underlying event
@@ -158,9 +169,9 @@ namespace StandardDot.Core.Event
 		/// <param name="callback">The callback for the invocation</param>
 		/// <param name="@object">The object for the invocation</param>
 		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
-		public IAsyncResult BeginInvoke(T sender, Te args, AsyncCallback callback, object @object)
+		public async Task<IAsyncResult> BeginInvoke(T sender, Te args, AsyncCallback callback, object @object)
 		{
-			GetTasks(sender, args);
+			await GetTasks(sender, args);
 			return asyncEvent.BeginInvoke(sender, args, callback, @object);
 		}
 
@@ -169,9 +180,9 @@ namespace StandardDot.Core.Event
 		/// </summary>
 		/// <param name="params">All needed params for the invocation of the event</param>
 		/// <returns>The <see cref="object" /> that represents the invocation</returns>
-		public object DynamicInvoke(params object[] args)
+		public async Task<object> DynamicInvoke(params object[] args)
 		{
-			GetTasks((T)args[0], args[1] as Te);
+			await GetTasks((T)args[0], args[1] as Te);
 			return asyncEvent.DynamicInvoke(args);
 		}
 
@@ -186,7 +197,7 @@ namespace StandardDot.Core.Event
 		}
 
 		/// <summary>
-		/// Watches for the end of the invocation
+		/// Calls <c>GetObjectData(info, context)</c> on the underlying event
 		/// </summary>
 		/// <param name="info">The info for serialization</param>
 		/// <param name="result">The context for serialization</param>

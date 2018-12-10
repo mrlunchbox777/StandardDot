@@ -25,5 +25,6 @@ namespace StandardDot.Core.Event
 		/// <param name="loggingAction">The logging action to call with upon exceptions</param>
 		public AsyncEvent(Func<Exception, Task> loggingAction)
 			: base (loggingAction)
-		{ }}
+		{ }
+	}
 }
