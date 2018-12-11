@@ -94,7 +94,6 @@ namespace StandardDot.Core.Event
 			asyncEvent = null;
 		}
 
-
 		/// <summary>
 		/// Invokes the event and calls all subscribers
 		/// </summary>
