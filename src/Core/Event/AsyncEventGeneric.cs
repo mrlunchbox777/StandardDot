@@ -45,7 +45,8 @@ namespace StandardDot.Core.Event
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>An array of tasks for invocation</returns>
-		private async Task<Task[]> GetTasks(T sender, Te args)
+		private async Task<List<Task>> GetTasks(T sender, Te args,
+			Func<Exception, T, Te,Task<bool>> exceptionHandler)
 		{
 			if (_unaddedFuncs)
 			{
@@ -60,30 +61,30 @@ namespace StandardDot.Core.Event
 
 			if (handler == null)
 			{
-				return new Task[0];
+				return new List<Task>();
 			}
 
-			Task[] handlerTasks = new Task[SubscriberItems.Count];
+			List<Task> returnTasks = new List<Task>(SubscriberItems.Count);
 
 			for (int i = 0; i < SubscriberItems.Count; i++)
 			{
-				handlerTasks[i] = await Task.Factory.StartNew(async () => {
+				await Task.Factory.StartNew(async () => {
 					try
 					{
-						await SubscriberItems[i](sender, args);
+						Task current = SubscriberItems[i](sender, args);
+						if (current != null)
+						{
+							returnTasks.Add(current);
+						}
 					}
 					catch(Exception ex)
 					{
-						if (LoggingAction != null)
-						{
-							await LoggingAction(ex);
-						}
-						throw;
+						await ExceptionHandler(ex, sender, args, exceptionHandler);
 					}
 				});
 			}
 
-			return handlerTasks;
+			return returnTasks;
 		}
 
 		/// <summary>
@@ -102,7 +103,19 @@ namespace StandardDot.Core.Event
 		/// <returns>The task that represents the sending of the event</returns>
 		public async Task Raise(T sender, Te args)
 		{
-			Task[] handlerTasks = await GetTasks(sender, args);
+			await Raise(sender, args);
+		}
+
+		/// <summary>
+		/// Invokes the event and calls all subscribers
+		/// </summary>
+		/// <param name="sender">The sender of the invocation</param>
+		/// <param name="args">The arguments for the invocation</param>
+		/// <returns>The task that represents the sending of the event</returns>
+		public async Task Raise(T sender, Te args,
+			Func<Exception, T, Te,Task<bool>> exceptionHandler = null)
+		{
+			List<Task> handlerTasks = await GetTasks(sender, args, exceptionHandler);
 
 			if (!(handlerTasks?.Any() ?? false))
 			{
@@ -115,11 +128,7 @@ namespace StandardDot.Core.Event
 			}
 			catch (Exception ex)
 			{
-				if (LoggingAction != null)
-				{
-					await LoggingAction(ex);
-				}
-				throw;
+				await ExceptionHandler(ex, sender, args, exceptionHandler);
 			}
 		}
 
@@ -131,6 +140,32 @@ namespace StandardDot.Core.Event
 		{
 			_unaddedFuncs = true;
 			SubscriberItems.Add(subscriber);
+		}
+
+		/// <summary>
+		/// Logs and Handles the exception if applicable, throws by default
+		/// </summary>
+		/// <param name="sender">The sender of the invocation</param>
+		/// <param name="args">The arguments for the invocation</param>
+		/// <returns>The task that represents the handling of exceptions</returns>
+		protected async Task ExceptionHandler(Exception exception, T sender = default(T), Te args = null,
+			Func<Exception, T, Te,Task<bool>> exceptionHandler = null)
+		{
+			if (LoggingAction != null)
+			{
+				await LoggingAction(exception);
+			}
+			if (exceptionHandler != null)
+			{
+				if (await exceptionHandler(exception, sender, args))
+				{
+					throw new AggregateException("Async Event exception. See InnerException for details", exception);
+				}
+			}
+			else
+			{
+					throw new AggregateException("Async Event exception. See InnerException for details", exception);
+			}
 		}
 
 		#region Event Implementation
@@ -170,8 +205,22 @@ namespace StandardDot.Core.Event
 		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
 		public async Task<IAsyncResult> BeginInvoke(T sender, Te args, AsyncCallback callback, object @object)
 		{
-			await GetTasks(sender, args);
+			await GetTasks(sender, args, null);
 			return asyncEvent.BeginInvoke(sender, args, callback, @object);
+		}
+		
+		/// <summary>
+		/// Calls Raise
+		/// </summary>
+		/// <param name="sender">The sender of the invocation</param>
+		/// <param name="args">The arguments for the invocation</param>
+		/// <param name="callback">The callback for the invocation</param>
+		/// <param name="@object">The object for the invocation</param>
+		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
+		public IAsyncResult BeginInvoke(T sender, Te args, AsyncCallback callback, object @object,
+			Func<Exception, T, Te,Task<bool>> exceptionHandler)
+		{
+			return Raise(sender, args, exceptionHandler);
 		}
 
 		/// <summary>
@@ -181,8 +230,13 @@ namespace StandardDot.Core.Event
 		/// <returns>The <see cref="object" /> that represents the invocation</returns>
 		public async Task<object> DynamicInvoke(params object[] args)
 		{
-			await GetTasks((T)args[0], args[1] as Te);
-			return asyncEvent.DynamicInvoke(args);
+			Func<Exception, T, Te,Task<bool>> exceptionHandler =
+				args.FirstOrDefault(x => x is Func<Exception, T, Te,Task<bool>>
+					|| (x != null && typeof(AsyncEvent<T, Te>).IsAssignableFrom(x.GetType())))
+				as Func<Exception, T, Te,Task<bool>>;
+			IEnumerable<object> newArgs = args.Where(x => !(x is Func<Exception, T, Te,Task<bool>>));
+			await GetTasks((T)args[0], args[1] as Te, exceptionHandler);
+			return asyncEvent.DynamicInvoke(newArgs);
 		}
 
 		/// <summary>
@@ -204,6 +258,25 @@ namespace StandardDot.Core.Event
 		{
 			asyncEvent.GetObjectData(info, context);
 		}
+		
+		/// <summary>
+		/// Calls <c>GetObjectData(info, context)</c> on the underlying event
+		/// </summary>
+		/// <param name="info">The info for serialization</param>
+		/// <param name="result">The context for serialization</param>
+		public async Task GetObjectData(SerializationInfo info, StreamingContext context,
+			Func<Exception, T, Te,Task<bool>> exceptionHandler)
+		{
+			await GetTasks(default(T), null, exceptionHandler);
+			try
+			{
+				asyncEvent.GetObjectData(info, context);
+			}
+			catch (Exception ex)
+			{
+				await ExceptionHandler(ex, default(T), null, exceptionHandler);
+			}
+		}
 		#endregion Event Implementation
 
 		#region Operators
@@ -215,6 +288,14 @@ namespace StandardDot.Core.Event
 		/// <returns>The primary <see cref="AsyncEvent" /> with the addtional subscribers</returns>
 		public static AsyncEvent<T, Te> operator +(AsyncEvent<T, Te> subscriber1, AsyncEvent<T, Te> subscriber2)
 		{
+			if (subscriber1 == null)
+			{
+				subscriber1 = new AsyncEvent<T, Te>();
+			}
+			if (!(subscriber2?.SubscriberItems.Any() ?? false))
+			{
+				return subscriber1;
+			}
 			foreach (Func<T, Te, Task> current in subscriber2.SubscriberItems)
 			{
 				subscriber1.Add(current);

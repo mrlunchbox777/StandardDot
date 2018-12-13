@@ -36,8 +36,7 @@ namespace StandardDot.Core.UnitTests.Event
 
 			Assert.True(didThrow);
 			Assert.Equal(1, threw);
-			Assert.Equal(threw * 2, logged.Count);
-			Assert.Equal(2, logged.Count);
+			Assert.Equal(threw, logged.Count);
 			foreach(var log in logged)
 			{
 				Assert.Equal(exception, log);
