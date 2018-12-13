@@ -26,10 +26,10 @@ namespace StandardDot.Core.Event
 		/// <param name="loggingAction">The logging action to call with upon exceptions</param>
 		public AsyncEvent(Func<Exception, Task> loggingAction)
 		{
-			_loggingAction = loggingAction;
+			LoggingAction = loggingAction;
 		}
 
-		private Func<Exception, Task> _loggingAction;
+		protected Func<Exception, Task> LoggingAction { get; }
 
 		private event Func<T, Te, Task> asyncEvent;
 
@@ -74,9 +74,9 @@ namespace StandardDot.Core.Event
 					}
 					catch(Exception ex)
 					{
-						if (_loggingAction != null)
+						if (LoggingAction != null)
 						{
-							await _loggingAction(ex);
+							await LoggingAction(ex);
 						}
 						throw;
 					}
@@ -115,9 +115,9 @@ namespace StandardDot.Core.Event
 			}
 			catch (Exception ex)
 			{
-				if (_loggingAction != null)
+				if (LoggingAction != null)
 				{
-					await _loggingAction(ex);
+					await LoggingAction(ex);
 				}
 				throw;
 			}
@@ -206,6 +206,7 @@ namespace StandardDot.Core.Event
 		}
 		#endregion Event Implementation
 
+		#region Operators
 		/// <summary>
 		/// Adds an <see cref="AsyncEvent" /> or 1+ <see cref="Func<T, Te, Task>" />(s) to an <see cref="AsyncEvent" />
 		/// </summary>
@@ -249,5 +250,6 @@ namespace StandardDot.Core.Event
 			}
 			return current;
 		}
+		#endregion
 	}
 }
