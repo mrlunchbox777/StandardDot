@@ -49,6 +49,51 @@ namespace StandardDot.Authentication.Jwt
 			}
 		}
 
+		/// <param name="next">The next middleware to run</param>
+		/// <param name="beforeSubscriber">A Subscriber to the after jwt work, before next is called event</param>
+		/// <param name="updateExpiration">If the middleware should update the JWT expiration, default <c>true</c></param>
+		/// <param name="jwtExpiration">The Expiration for the JWT, default 1 hour</param>
+		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService" /> with no params</param>
+		/// <param name="jwtIdentifier">The key that identifies the JWT, default <c>"StandardDotJwt"</c></param>
+		/// <param name="afterSubscribers">Subscribers to the after next is called, before jwt work event</param>
+		public JwtServiceMiddleware(RequestDelegate next,
+			Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task> beforeSubscriber,
+			bool updateExpiration = true, TimeSpan? jwtExpiration = null,
+			string jwtIdentifier = null, JwtService jwtService = null,
+			IEnumerable<Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task>> afterSubscribers = null)
+			: this(next, updateExpiration, jwtExpiration, jwtIdentifier, jwtService, new [] {beforeSubscriber}, afterSubscribers)
+		{ }
+		
+		/// <param name="next">The next middleware to run</param>
+		/// <param name="afterSubscriber">Subscribers to the after next is called, before jwt work event</param>
+		/// <param name="updateExpiration">If the middleware should update the JWT expiration, default <c>true</c></param>
+		/// <param name="jwtExpiration">The Expiration for the JWT, default 1 hour</param>
+		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService" /> with no params</param>
+		/// <param name="jwtIdentifier">The key that identifies the JWT, default <c>"StandardDotJwt"</c></param>
+		/// <param name="beforeSubscribers">A Subscriber to the after jwt work, before next is called event</param>
+		public JwtServiceMiddleware(RequestDelegate next,
+			Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task> afterSubscriber,
+			bool updateExpiration = true, TimeSpan? jwtExpiration = null,
+			string jwtIdentifier = null, JwtService jwtService = null,
+			IEnumerable<Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task>> beforeSubscribers = null)
+			: this(next, updateExpiration, jwtExpiration, jwtIdentifier, jwtService, beforeSubscribers, new [] {afterSubscriber})
+		{ }
+		
+		/// <param name="next">The next middleware to run</param>
+		/// <param name="beforeSubscriber">A Subscriber to the after jwt work, before next is called event</param>
+		/// <param name="afterSubscriber">A Subscriber to the after next is called, before jwt work event</param>
+		/// <param name="updateExpiration">If the middleware should update the JWT expiration, default <c>true</c></param>
+		/// <param name="jwtExpiration">The Expiration for the JWT, default 1 hour</param>
+		/// <param name="jwtService">The service to use in the middleware, default <see cref="JwtService" /> with no params</param>
+		/// <param name="jwtIdentifier">The key that identifies the JWT, default <c>"StandardDotJwt"</c></param>
+		public JwtServiceMiddleware(RequestDelegate next,
+			Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task> beforeSubscriber,
+			Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task> afterSubscriber,
+			bool updateExpiration = true, TimeSpan? jwtExpiration = null,
+			string jwtIdentifier = null, JwtService jwtService = null)
+			: this(next, updateExpiration, jwtExpiration, jwtIdentifier, jwtService, new [] {beforeSubscriber}, new [] {afterSubscriber})
+		{ }
+
 		private readonly TimeSpan _jwtExpiration;
 
 		protected readonly RequestDelegate _next;
@@ -136,27 +181,10 @@ namespace StandardDot.Authentication.Jwt
 		{
 			return context?.Request?.Headers?[_jwtIdentifier];
 		}
-
-		/// <summary>
-		/// A method that will be run after jwt work and before the next call is made
-		/// </summary>
-		/// <param name="sender">The <see cref="JwtServiceMiddleware" /> that raised the event</param>
-		/// <param name="args">The <see cref="JwtEventArgs<T>" /> that were passed by the sender</param>
-		/// <returns>A Task for when this subscriber has completed</returns>
-		public delegate Task AfterJwtWorkBeforeNextAction(JwtServiceMiddleware<T> sender, JwtEventArgs<T> args);
-
 		/// <summary>
 		/// An event that will be raised after jwt work is done, but before next is called
 		/// </summary>
 		protected AsyncEvent<JwtServiceMiddleware<T>, JwtEventArgs<T>> AfterJwtWorkBeforeNext;
-
-		/// <summary>
-		/// A method that will be run after the next call is made and before jwt work
-		/// </summary>
-		/// <param name="sender">The <see cref="JwtServiceMiddleware" /> that raised the event</param>
-		/// <param name="args">The <see cref="AfterWorkJwtEventArgs<T>" /> that were passed by the sender</param>
-		/// <returns>A Task for when this subscriber has completed</returns>
-		public delegate Task AfterNextBeforeJwtWorkAction(JwtServiceMiddleware<T> sender, AfterWorkJwtEventArgs<T> args);
 
 		/// <summary>
 		/// An event that will be raised after next is calle, but before jwt work is done
