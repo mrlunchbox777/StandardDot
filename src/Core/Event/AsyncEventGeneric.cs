@@ -46,7 +46,7 @@ namespace StandardDot.Core.Event
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>An array of tasks for invocation</returns>
 		private async Task<List<Task>> GetTasks(T sender, Te args,
-			Func<Exception, T, Te,Task<bool>> exceptionHandler)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler)
 		{
 			if (_unaddedFuncs)
 			{
@@ -68,7 +68,8 @@ namespace StandardDot.Core.Event
 
 			for (int i = 0; i < SubscriberItems.Count; i++)
 			{
-				await Task.Factory.StartNew(async () => {
+				await Task.Factory.StartNew(async () =>
+				{
 					try
 					{
 						Task current = SubscriberItems[i](sender, args);
@@ -77,7 +78,7 @@ namespace StandardDot.Core.Event
 							returnTasks.Add(current);
 						}
 					}
-					catch(Exception ex)
+					catch (Exception ex)
 					{
 						await ExceptionHandler(ex, sender, args, exceptionHandler);
 					}
@@ -113,7 +114,7 @@ namespace StandardDot.Core.Event
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>The task that represents the sending of the event</returns>
 		public async Task Raise(T sender, Te args,
-			Func<Exception, T, Te,Task<bool>> exceptionHandler = null)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler = null)
 		{
 			List<Task> handlerTasks = await GetTasks(sender, args, exceptionHandler);
 
@@ -149,7 +150,7 @@ namespace StandardDot.Core.Event
 		/// <param name="args">The arguments for the invocation</param>
 		/// <returns>The task that represents the handling of exceptions</returns>
 		protected async Task ExceptionHandler(Exception exception, T sender = default(T), Te args = null,
-			Func<Exception, T, Te,Task<bool>> exceptionHandler = null)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler = null)
 		{
 			if (LoggingAction != null)
 			{
@@ -208,7 +209,7 @@ namespace StandardDot.Core.Event
 			await GetTasks(sender, args, null);
 			return asyncEvent.BeginInvoke(sender, args, callback, @object);
 		}
-		
+
 		/// <summary>
 		/// Calls Raise
 		/// </summary>
@@ -218,7 +219,7 @@ namespace StandardDot.Core.Event
 		/// <param name="@object">The object for the invocation</param>
 		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
 		public IAsyncResult BeginInvoke(T sender, Te args, AsyncCallback callback, object @object,
-			Func<Exception, T, Te,Task<bool>> exceptionHandler)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler)
 		{
 			return Raise(sender, args, exceptionHandler);
 		}
@@ -230,11 +231,11 @@ namespace StandardDot.Core.Event
 		/// <returns>The <see cref="object" /> that represents the invocation</returns>
 		public async Task<object> DynamicInvoke(params object[] args)
 		{
-			Func<Exception, T, Te,Task<bool>> exceptionHandler =
-				args.FirstOrDefault(x => x is Func<Exception, T, Te,Task<bool>>
+			Func<Exception, T, Te, Task<bool>> exceptionHandler =
+				args.FirstOrDefault(x => x is Func<Exception, T, Te, Task<bool>>
 					|| (x != null && typeof(AsyncEvent<T, Te>).IsAssignableFrom(x.GetType())))
-				as Func<Exception, T, Te,Task<bool>>;
-			IEnumerable<object> newArgs = args.Where(x => !(x is Func<Exception, T, Te,Task<bool>>));
+				as Func<Exception, T, Te, Task<bool>>;
+			IEnumerable<object> newArgs = args.Where(x => !(x is Func<Exception, T, Te, Task<bool>>));
 			await GetTasks((T)args[0], args[1] as Te, exceptionHandler);
 			return asyncEvent.DynamicInvoke(newArgs);
 		}
@@ -258,14 +259,14 @@ namespace StandardDot.Core.Event
 		{
 			asyncEvent.GetObjectData(info, context);
 		}
-		
+
 		/// <summary>
 		/// Calls <c>GetObjectData(info, context)</c> on the underlying event
 		/// </summary>
 		/// <param name="info">The info for serialization</param>
 		/// <param name="result">The context for serialization</param>
 		public async Task GetObjectData(SerializationInfo info, StreamingContext context,
-			Func<Exception, T, Te,Task<bool>> exceptionHandler)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler)
 		{
 			await GetTasks(default(T), null, exceptionHandler);
 			try
@@ -312,7 +313,7 @@ namespace StandardDot.Core.Event
 		{
 			if (asyncEvent == null)
 			{
-				return (x, y) => Task.Factory.StartNew(() => {});
+				return (x, y) => Task.Factory.StartNew(() => { });
 			}
 			return (x, y) => asyncEvent.Raise(x, y);
 		}
