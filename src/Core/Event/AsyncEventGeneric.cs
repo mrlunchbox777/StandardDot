@@ -103,7 +103,7 @@ namespace StandardDot.Core.Event
 		/// <returns>The task that represents the sending of the event</returns>
 		public async Task Raise(T sender, Te args)
 		{
-			await Raise(sender, args);
+			await Raise(sender, args, null);
 		}
 
 		/// <summary>
@@ -164,7 +164,7 @@ namespace StandardDot.Core.Event
 			}
 			else
 			{
-					throw new AggregateException("Async Event exception. See InnerException for details", exception);
+				throw new AggregateException("Async Event exception. See InnerException for details", exception);
 			}
 		}
 
@@ -306,7 +306,7 @@ namespace StandardDot.Core.Event
 		/// <summary>
 		/// Converts an <see cref="AsyncEvent" /> to a <see cref="Func<T, Te, Task>" />
 		/// </summary>
-		/// <param name="result">The <see cref="IAsyncResult" /> that will be invoked by the <see cref="Func<T, Te, Task>" /></param>
+		/// <param name="asyncEvent">The <see cref="AsyncEvent" /> that will have <c>Raise(x,y)</c> invoked by the <see cref="Func<T, Te, Task>" /></param>
 		/// <returns>The <see cref="Func<T, Te, Task>" /> that represents the invocation of the <see cref="AsyncEvent" /></returns>
 		public static explicit operator Func<T, Te, Task>(AsyncEvent<T, Te> asyncEvent)
 		{
@@ -320,14 +320,14 @@ namespace StandardDot.Core.Event
 		/// <summary>
 		/// Converts a <see cref="Func<T, Te, Task>" /> to an <see cref="AsyncEvent" />
 		/// </summary>
-		/// <param name="result">The <see cref="Func<T, Te, Task>" /> that will be invoked by the <see cref="IAsyncResult" /></param>
+		/// <param name="subscriberFunction">The <see cref="Func<T, Te, Task>" /> that will be invoked by the <see cref="AsyncEvent" /></param>
 		/// <returns>The <see cref="AsyncEvent" /> that will have a subscriber <see cref="Func<T, Te, Task>" /></returns>
-		public static implicit operator AsyncEvent<T, Te>(Func<T, Te, Task> asyncEvent)
+		public static implicit operator AsyncEvent<T, Te>(Func<T, Te, Task> subscriberFunction)
 		{
 			AsyncEvent<T, Te> current = new AsyncEvent<T, Te>();
-			if (asyncEvent != null)
+			if (subscriberFunction != null)
 			{
-				current.Add(asyncEvent);
+				current.Add(subscriberFunction);
 			}
 			return current;
 		}

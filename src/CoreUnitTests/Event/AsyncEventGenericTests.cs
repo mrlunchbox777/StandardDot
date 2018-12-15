@@ -21,8 +21,8 @@ namespace StandardDot.Core.UnitTests.Event
 				= new AsyncEvent<object, EventArgs>(logger);
 			myEvent += thrower;
 
-			Exception exception = null;
 			bool didThrow = false;
+			int aggregateCount = 0;
 			try
 			{
 				await myEvent.Raise(this, null);
@@ -30,17 +30,23 @@ namespace StandardDot.Core.UnitTests.Event
 			catch (Exception ex)
 			{
 				didThrow = true;
-				Assert.Equal(logged.First(), ex);
-				exception = ex;
+				var notAggregate = ex;
+				while (notAggregate is AggregateException)
+				{
+					aggregateCount++;
+					notAggregate = notAggregate.InnerException;
+				}
+				Assert.True(notAggregate is InvalidOperationException);
+				Assert.Equal(logged.Single(), notAggregate);
+				Assert.True(ex is AggregateException);
+				// we don't log the aggregate
+				// Assert.Equal(logged.Last(), ex);
 			}
 
 			Assert.True(didThrow);
-			Assert.Equal(1, threw);
+			Assert.Equal(1, aggregateCount);
+			Assert.Equal(1, logged.Count);
 			Assert.Equal(threw, logged.Count);
-			foreach(var log in logged)
-			{
-				Assert.Equal(exception, log);
-			}
 		}
 	}
 }
