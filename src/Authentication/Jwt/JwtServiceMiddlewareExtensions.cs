@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using StandardDot.Authentication.Jwt.EventArgs;
 
 namespace StandardDot.Authentication.Jwt
 {
@@ -23,8 +25,8 @@ namespace StandardDot.Authentication.Jwt
 		/// <returns>The application builder with the JWT service added to it</returns>
 		public static IApplicationBuilder UseJwtService<T>(this IApplicationBuilder builder, bool updateExpiration = true,
 			TimeSpan? jwtExpiration = null, JwtService jwtService = null, string jwtIdentifier = null,
-			IEnumerable<JwtServiceMiddleware<T>.AfterJwtWorkBeforeNextArgs> beforeSubscribers = null,
-			IEnumerable<JwtServiceMiddleware<T>.AfterNextBeforeJwtWorkArgs> afterSubscribers = null)
+			IEnumerable<Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task>> beforeSubscribers = null,
+			IEnumerable<Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task>> afterSubscribers = null)
 			where T : IJwtToken
 		{
 			builder.UseMiddleware<JwtServiceMiddleware<T>>(updateExpiration, jwtExpiration, jwtIdentifier, jwtService,

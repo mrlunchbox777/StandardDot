@@ -25,7 +25,8 @@ namespace StandardDot.Authentication.Jwt
 		/// <param name="afterSubscribers">Subscribers to the after next is called, before jwt work event</param>
 		public JwtServiceMiddleware(RequestDelegate next, bool updateExpiration = true, TimeSpan? jwtExpiration = null,
 			string jwtIdentifier = null, JwtService jwtService = null,
-			IEnumerable<AfterJwtWorkBeforeNextAction> beforeSubscribers = null, IEnumerable<AfterNextBeforeJwtWorkAction> afterSubscribers = null)
+			IEnumerable<Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task>> beforeSubscribers = null,
+			IEnumerable<Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task>> afterSubscribers = null)
 		{
 			_next = next;
 			_updateExpiration = updateExpiration;
@@ -34,21 +35,16 @@ namespace StandardDot.Authentication.Jwt
 			_jwtExpiration = jwtExpiration ?? new TimeSpan(1, 0, 0);
 			if (beforeSubscribers != null)
 			{
-				foreach(AfterJwtWorkBeforeNextAction beforeSubscriber in beforeSubscribers)
+				foreach(Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task> beforeSubscriber in beforeSubscribers)
 				{
-					AfterJwtWorkBeforeNext += (Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task>)(async (x, y)
-						=> { await beforeSubscriber(x, y); });
-					// var add = async (x, y) => await beforeSubscriber(x, y);
-					// AfterJwtWorkBeforeNext += add;
+					AfterJwtWorkBeforeNext += beforeSubscriber;
 				}
 			}
 			if (afterSubscribers != null)
 			{
-				foreach(AfterNextBeforeJwtWorkAction afterSubscriber in afterSubscribers)
+				foreach(Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task> afterSubscriber in afterSubscribers)
 				{
-					AfterNextBeforeJwtWork += (Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task>)(async (x, y)
-						=> { await afterSubscriber(x, y); });
-					// AfterNextBeforeJwtWork += afterSubscriber;
+					AfterNextBeforeJwtWork += afterSubscriber;
 				}
 			}
 		}
