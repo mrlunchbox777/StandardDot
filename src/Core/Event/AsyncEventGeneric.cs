@@ -31,8 +31,6 @@ namespace StandardDot.Core.Event
 
 		protected Func<Exception, Task> LoggingAction { get; }
 
-		private event Func<T, Te, Task> asyncEvent;
-
 		private IList<Func<T, Te, Task>> _subscriberItems = new List<Func<T, Te, Task>>();
 
 		internal IList<Func<T, Te, Task>> SubscriberItems { get => _subscriberItems; set => _subscriberItems = value; }
@@ -48,31 +46,16 @@ namespace StandardDot.Core.Event
 		private async Task<List<Task>> GetTasks(T sender, Te args,
 			Func<Exception, T, Te, Task<bool>> exceptionHandler)
 		{
-			if (_unaddedFuncs)
-			{
-				ClearDelegatesFromEventLiteral();
-				foreach (Func<T, Te, Task> subscriber in SubscriberItems)
-				{
-					asyncEvent += subscriber;
-				}
-				_unaddedFuncs = false;
-			}
-			Func<T, Te, Task> handler = asyncEvent;
-
-			if (handler == null)
-			{
-				return new List<Task>();
-			}
 
 			List<Task> returnTasks = new List<Task>(SubscriberItems.Count);
 
-			for (int i = 0; i < SubscriberItems.Count; i++)
+			foreach(var item in SubscriberItems)
 			{
 				await Task.Factory.StartNew(async () =>
 				{
 					try
 					{
-						Task current = SubscriberItems[i](sender, args);
+						Task current = item(sender, args);
 						if (current != null)
 						{
 							returnTasks.Add(current);
@@ -86,14 +69,6 @@ namespace StandardDot.Core.Event
 			}
 
 			return returnTasks;
-		}
-
-		/// <summary>
-		/// Clears all subscribers fromt the event literal
-		/// </summary>
-		internal void ClearDelegatesFromEventLiteral()
-		{
-			asyncEvent = null;
 		}
 
 		/// <summary>
@@ -171,9 +146,9 @@ namespace StandardDot.Core.Event
 
 		#region Event Implementation
 		/// <summary>
-		/// Gets the functions for the event
+		/// Gets the subscribers to the underlying event
 		/// </summary>
-		/// <returns>A <see cref="List<Func<T, Te, Task>>" /> of the underlying event</returns>
+		/// <returns>A <see cref="List<Func<T, Te, Task>>" /> of the subscribers to the underlying event</returns>
 		public List<Func<T, Te, Task>> GetInvocationList() => SubscriberItems.ToList();
 
 		/// <summary>
@@ -185,38 +160,24 @@ namespace StandardDot.Core.Event
 		public async Task Invoke(T sender, Te args) => await Raise(sender, args);
 
 		/// <summary>
-		/// Gets the <see cref="MethodInfo" /> for the underlying event
+		/// Gets the <c>Raise</c> <see cref="MethodInfo" />
 		/// </summary>
-		/// <returns>The <see cref="MethodInfo" /> for the underlying event</returns>
-		public MethodInfo Method => asyncEvent.Method;
+		/// <returns>The <see cref="MethodInfo" /> for the <c>Raise</c> method></returns>
+		public MethodInfo Method => this.GetType().GetMethod("Raise");
 
 		/// <summary>
-		/// Gets the <c>event.Target</c> for the underlying event
+		/// Returns <c>this</c>
 		/// </summary>
-		/// <returns>The <c>event.Target</c> object for the underlying event</returns>
-		public object Target => asyncEvent.Target;
-
-		/// <summary>
-		/// Starts the Invocation of the event
-		/// </summary>
-		/// <param name="sender">The sender of the invocation</param>
-		/// <param name="args">The arguments for the invocation</param>
-		/// <param name="callback">The callback for the invocation</param>
-		/// <param name="@object">The object for the invocation</param>
-		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
-		public async Task<IAsyncResult> BeginInvoke(T sender, Te args, AsyncCallback callback, object @object)
-		{
-			await GetTasks(sender, args, null);
-			return asyncEvent.BeginInvoke(sender, args, callback, @object);
-		}
+		/// <returns>This async event</returns>
+		public object Target => this;
 
 		/// <summary>
 		/// Calls Raise
 		/// </summary>
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
-		/// <param name="callback">The callback for the invocation</param>
-		/// <param name="@object">The object for the invocation</param>
+		/// <param name="callback">The callback for the invocation, not used kept for compatibility</param>
+		/// <param name="@object">The object for the invocation, not used kept for compatibility</param>
 		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
 		public IAsyncResult BeginInvoke(T sender, Te args, AsyncCallback callback, object @object,
 			Func<Exception, T, Te, Task<bool>> exceptionHandler)
@@ -225,29 +186,38 @@ namespace StandardDot.Core.Event
 		}
 
 		/// <summary>
-		/// Starts the dynamic Invocation of the event
+		/// Starts Raise and returns the task
 		/// </summary>
 		/// <param name="params">All needed params for the invocation of the event</param>
-		/// <returns>The <see cref="object" /> that represents the invocation</returns>
-		public async Task<object> DynamicInvoke(params object[] args)
+		/// <returns>The <see cref="Task" /> that represents the invocation</returns>
+		public async Task DynamicInvoke(params object[] args)
 		{
 			Func<Exception, T, Te, Task<bool>> exceptionHandler =
-				args.FirstOrDefault(x => x is Func<Exception, T, Te, Task<bool>>
-					|| (x != null && typeof(AsyncEvent<T, Te>).IsAssignableFrom(x.GetType())))
-				as Func<Exception, T, Te, Task<bool>>;
-			IEnumerable<object> newArgs = args.Where(x => !(x is Func<Exception, T, Te, Task<bool>>));
-			await GetTasks((T)args[0], args[1] as Te, exceptionHandler);
-			return asyncEvent.DynamicInvoke(newArgs);
+				args.FirstOrDefault(x => x != null && typeof(Func<Exception, T, Te, Task<bool>>).
+					IsAssignableFrom(x.GetType())) as Func<Exception, T, Te, Task<bool>>;
+			T sender = (T)args.FirstOrDefault(x => x != null && typeof(T).
+					IsAssignableFrom(x.GetType()));
+			Te eventArgs = (Te)args.FirstOrDefault(x => x != null && typeof(Te).
+					IsAssignableFrom(x.GetType()));
+			await Raise(sender, eventArgs, exceptionHandler);
 		}
 
 		/// <summary>
 		/// Watches for the end of the invocation
 		/// </summary>
 		/// <param name="result">The <see cref="IAsyncResult" /> that represents the invocation</param>
+		/// <param name="result">The amount of time to delay between checking the IAsyncResult, default 10ms</param>
 		/// <returns>The <see cref="Task" /> that represents the end of the invocation</returns>
-		public Task EndInvoke(IAsyncResult result)
+		public async Task EndInvoke(IAsyncResult result, int delayMs = 10)
 		{
-			return asyncEvent.EndInvoke(result);
+			if (result == null)
+			{
+				return;
+			}
+			while (!result.IsCompleted)
+			{
+				await Task.Delay(delayMs);
+			}
 		}
 
 		/// <summary>
@@ -257,7 +227,10 @@ namespace StandardDot.Core.Event
 		/// <param name="result">The context for serialization</param>
 		public void GetObjectData(SerializationInfo info, StreamingContext context)
 		{
-			asyncEvent.GetObjectData(info, context);
+			foreach (var item in SubscriberItems)
+			{
+				item.GetObjectData(info, context);
+			}
 		}
 
 		/// <summary>
@@ -299,6 +272,10 @@ namespace StandardDot.Core.Event
 			}
 			foreach (Func<T, Te, Task> current in subscriber2.SubscriberItems)
 			{
+				if (current == null)
+				{
+					continue;
+				}
 				subscriber1.Add(current);
 			}
 			return subscriber1;
