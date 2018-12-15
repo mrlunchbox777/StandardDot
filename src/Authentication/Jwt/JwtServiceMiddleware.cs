@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using StandardDot.Authentication.Jwt.EventArgs;
+using StandardDot.Core.Event;
 
 namespace StandardDot.Authentication.Jwt
 {
@@ -23,7 +25,7 @@ namespace StandardDot.Authentication.Jwt
 		/// <param name="afterSubscribers">Subscribers to the after next is called, before jwt work event</param>
 		public JwtServiceMiddleware(RequestDelegate next, bool updateExpiration = true, TimeSpan? jwtExpiration = null,
 			string jwtIdentifier = null, JwtService jwtService = null,
-			IEnumerable<AfterJwtWorkBeforeNextArgs> beforeSubscribers = null, IEnumerable<AfterNextBeforeJwtWorkArgs> afterSubscribers = null)
+			IEnumerable<AfterJwtWorkBeforeNextAction> beforeSubscribers = null, IEnumerable<AfterNextBeforeJwtWorkAction> afterSubscribers = null)
 		{
 			_next = next;
 			_updateExpiration = updateExpiration;
@@ -32,16 +34,21 @@ namespace StandardDot.Authentication.Jwt
 			_jwtExpiration = jwtExpiration ?? new TimeSpan(1, 0, 0);
 			if (beforeSubscribers != null)
 			{
-				foreach(AfterJwtWorkBeforeNextArgs beforeSubscriber in beforeSubscribers)
+				foreach(AfterJwtWorkBeforeNextAction beforeSubscriber in beforeSubscribers)
 				{
-					AfterJwtWorkBeforeNext += beforeSubscriber;
+					AfterJwtWorkBeforeNext += (Func<JwtServiceMiddleware<T>, JwtEventArgs<T>, Task>)(async (x, y)
+						=> { await beforeSubscriber(x, y); });
+					// var add = async (x, y) => await beforeSubscriber(x, y);
+					// AfterJwtWorkBeforeNext += add;
 				}
 			}
 			if (afterSubscribers != null)
 			{
-				foreach(AfterNextBeforeJwtWorkArgs afterSubscriber in afterSubscribers)
+				foreach(AfterNextBeforeJwtWorkAction afterSubscriber in afterSubscribers)
 				{
-					AfterNextBeforeJwtWork += afterSubscriber;
+					AfterNextBeforeJwtWork += (Func<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>, Task>)(async (x, y)
+						=> { await afterSubscriber(x, y); });
+					// AfterNextBeforeJwtWork += afterSubscriber;
 				}
 			}
 		}
@@ -67,14 +74,36 @@ namespace StandardDot.Authentication.Jwt
 			string header = GetHeaderFromContext(context);
 			T token = GetTokenFromCookieOrHeader(cookie, header);
 			context.Items.Add(_jwtIdentifier, token);
-			await AfterJwtWorkBeforeNext(this, context, cookie, header, token);
+			await AfterJwtWorkBeforeNext.Raise(this, new JwtEventArgs<T>
+			{
+				Context = context,
+				Cookie = cookie,
+				Header = header,
+				Token = token
+			});
 			// Call the next delegate/middleware in the pipeline
 			await _next(context);
 			// do after context work such as updating the jwt as shown below
 			string newCookie = GetCookieFromContext(context);
 			string newHeader = GetHeaderFromContext(context);
 			T newToken = GetTokenFromCookieOrHeader(newCookie, newHeader);
-			await AfterNextBeforeJwtWork(this, context, cookie, header, token, newCookie, newHeader, newToken);
+			await AfterNextBeforeJwtWork.Raise(this, new AfterWorkJwtEventArgs<T>
+				{
+					BeforeArgs = new JwtEventArgs<T>
+					{
+						Context = context,
+						Cookie = cookie,
+						Header = header,
+						Token = token
+					},
+					AfterArgs = new JwtEventArgs<T>
+					{
+						Context = context,
+						Cookie = newCookie,
+						Header = newHeader,
+						Token = newToken
+					}
+				});
 			if (_updateExpiration && !context.Response.HasStarted)
 			{
 				newToken.Expiration = DateTime.UtcNow.Add(_jwtExpiration);
@@ -116,37 +145,26 @@ namespace StandardDot.Authentication.Jwt
 		/// A method that will be run after jwt work and before the next call is made
 		/// </summary>
 		/// <param name="sender">The <see cref="JwtServiceMiddleware" /> that raised the event</param>
-		/// <param name="context">The context for the current request</param>
-		/// <param name="cookie">The string for the cookie pulled from the request, possibly null</param>
-		/// <param name="header">The string for the header pulled from the request, possibly null</param>
-		/// <param name="token">The token pulled from the request, possibly null</param>
+		/// <param name="args">The <see cref="JwtEventArgs<T>" /> that were passed by the sender</param>
 		/// <returns>A Task for when this subscriber has completed</returns>
-		public delegate Task AfterJwtWorkBeforeNextArgs(JwtServiceMiddleware<T> sender, HttpContext context,
-			string cookie, string header, T token);
+		public delegate Task AfterJwtWorkBeforeNextAction(JwtServiceMiddleware<T> sender, JwtEventArgs<T> args);
 
 		/// <summary>
 		/// An event that will be raised after jwt work is done, but before next is called
 		/// </summary>
-		protected event AfterJwtWorkBeforeNextArgs AfterJwtWorkBeforeNext;
+		protected AsyncEvent<JwtServiceMiddleware<T>, JwtEventArgs<T>> AfterJwtWorkBeforeNext;
 
 		/// <summary>
 		/// A method that will be run after the next call is made and before jwt work
 		/// </summary>
 		/// <param name="sender">The <see cref="JwtServiceMiddleware" /> that raised the event</param>
-		/// <param name="context">The context for the current request</param>
-		/// <param name="cookie">The string for the cookie pulled from the request before the next call, possibly null</param>
-		/// <param name="header">The string for the header pulled from the request before the next call, possibly null</param>
-		/// <param name="originalToken">The token pulled from the request before the next call, possibly null</param>
-		/// <param name="cookie">The string for the cookie pulled from the request, possibly null</param>
-		/// <param name="header">The string for the header pulled from the request, possibly null</param>
-		/// <param name="token">The token pulled from the request, possibly null</param>
+		/// <param name="args">The <see cref="AfterWorkJwtEventArgs<T>" /> that were passed by the sender</param>
 		/// <returns>A Task for when this subscriber has completed</returns>
-		public delegate Task AfterNextBeforeJwtWorkArgs(JwtServiceMiddleware<T> sender, HttpContext context,
-			string originalCookie, string originalHeader, T originalToken, string cookie, string header, T token);
+		public delegate Task AfterNextBeforeJwtWorkAction(JwtServiceMiddleware<T> sender, AfterWorkJwtEventArgs<T> args);
 
 		/// <summary>
 		/// An event that will be raised after next is calle, but before jwt work is done
 		/// </summary>
-		protected event AfterNextBeforeJwtWorkArgs AfterNextBeforeJwtWork;
+		protected AsyncEvent<JwtServiceMiddleware<T>, AfterWorkJwtEventArgs<T>> AfterNextBeforeJwtWork;
 	}
 }
