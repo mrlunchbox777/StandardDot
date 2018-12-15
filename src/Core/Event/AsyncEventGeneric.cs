@@ -42,9 +42,10 @@ namespace StandardDot.Core.Event
 		/// </summary>
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
+		/// <param name="exceptionHandler">The handler for exceptions (true throws), default null (no handling)</param>
 		/// <returns>An array of tasks for invocation</returns>
 		private async Task<List<Task>> GetTasks(T sender, Te args,
-			Func<Exception, T, Te, Task<bool>> exceptionHandler)
+			Func<Exception, T, Te, Task<bool>> exceptionHandler = null)
 		{
 
 			List<Task> returnTasks = new List<Task>(SubscriberItems.Count);
@@ -87,6 +88,7 @@ namespace StandardDot.Core.Event
 		/// </summary>
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
+		/// <param name="exceptionHandler">The handler for exceptions (true throws), default null (no handling)</param>
 		/// <returns>The task that represents the sending of the event</returns>
 		public async Task Raise(T sender, Te args,
 			Func<Exception, T, Te, Task<bool>> exceptionHandler = null)
@@ -123,6 +125,7 @@ namespace StandardDot.Core.Event
 		/// </summary>
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
+		/// <param name="exceptionHandler">The handler for exceptions (true throws), default null (no handling)</param>
 		/// <returns>The task that represents the handling of exceptions</returns>
 		protected async Task ExceptionHandler(Exception exception, T sender = default(T), Te args = null,
 			Func<Exception, T, Te, Task<bool>> exceptionHandler = null)
@@ -156,8 +159,9 @@ namespace StandardDot.Core.Event
 		/// </summary>
 		/// <param name="sender">The sender of the invocation</param>
 		/// <param name="args">The arguments for the invocation</param>
+		/// <param name="exceptionHandler">The handler for exceptions (true throws), default null (no handling)</param>
 		/// <returns>A <see cref="Task" /> that reprensents the completion of invocation</returns>
-		public async Task Invoke(T sender, Te args) => await Raise(sender, args);
+		public async Task Invoke(T sender, Te args, Func<Exception, T, Te, Task<bool>> exceptionHandler) => await Raise(sender, args);
 
 		/// <summary>
 		/// Gets the <c>Raise</c> <see cref="MethodInfo" />
@@ -178,6 +182,7 @@ namespace StandardDot.Core.Event
 		/// <param name="args">The arguments for the invocation</param>
 		/// <param name="callback">The callback for the invocation, not used kept for compatibility</param>
 		/// <param name="@object">The object for the invocation, not used kept for compatibility</param>
+		/// <param name="exceptionHandler">The handler for exceptions (true throws), default null (no handling)</param>
 		/// <returns>The <see cref="IAsyncResult" /> that represents the invocation</returns>
 		public IAsyncResult BeginInvoke(T sender, Te args, AsyncCallback callback, object @object,
 			Func<Exception, T, Te, Task<bool>> exceptionHandler)
