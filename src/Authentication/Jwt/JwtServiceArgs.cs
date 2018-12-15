@@ -25,9 +25,9 @@ namespace StandardDot.Authentication.Jwt
 		{ }
 
 		/// <summary>
-		/// Create a new JwtServiceArgs with optionally default arguments
+		/// Create the default set of JwtServiceArgs
 		/// </summary>
-		/// <param name="useDefaults">If defaults should be used when creating the arguments</param>
+		/// <param name="useDefaults">If the JWT Service should use defaults</param>
 		/// <param name="loggingService">The logging service to log errors with, default null</param>
 		/// <param name="secureSecret">The secure secret used to encode JWTs, default null</param>
 		public JwtServiceArgs(bool useDefaults, ILoggingService loggingService = null, SecureString secureSecret = null)
@@ -44,6 +44,7 @@ namespace StandardDot.Authentication.Jwt
 				Decoder = new JwtDecoder(Serializer, Validator, UrlEncoder);
 				Encoder = new JwtEncoder(Algorithm, Serializer, UrlEncoder);
 			}
+			
 			LoggingService = loggingService;
 			SecureSecret = secureSecret;
 		}
