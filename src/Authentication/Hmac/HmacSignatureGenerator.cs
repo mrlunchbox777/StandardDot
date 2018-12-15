@@ -29,6 +29,8 @@ namespace StandardDot.Authentication.Hmac
 		/// <param name="appId">The appid that will be used to generate headers</param>
 		/// <param name="secretKey">The secret key that will be used to generate headers</param>
 		/// <param name="content">The content of the request, default null</param>
+		/// <param name="nonce">The identifier for the request, default null-><c>Guid.NewGuid().ToString("N")</c></param>
+		/// <param name="requestTime">The requestTime, default null-><c>DateTime.UtcNow</c></param>
 		public virtual string GenerateFullHmacSignature(string requestedResource, string method, string appId, string secretKey,
 			string content = null, string nonce = null, DateTime? requestTime = null)
 		{
