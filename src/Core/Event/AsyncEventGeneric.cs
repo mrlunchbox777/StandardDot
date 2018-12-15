@@ -229,26 +229,7 @@ namespace StandardDot.Core.Event
 		{
 			foreach (var item in SubscriberItems)
 			{
-				item.GetObjectData(info, context);
-			}
-		}
-
-		/// <summary>
-		/// Calls <c>GetObjectData(info, context)</c> on the underlying event
-		/// </summary>
-		/// <param name="info">The info for serialization</param>
-		/// <param name="result">The context for serialization</param>
-		public async Task GetObjectData(SerializationInfo info, StreamingContext context,
-			Func<Exception, T, Te, Task<bool>> exceptionHandler)
-		{
-			await GetTasks(default(T), null, exceptionHandler);
-			try
-			{
-				asyncEvent.GetObjectData(info, context);
-			}
-			catch (Exception ex)
-			{
-				await ExceptionHandler(ex, default(T), null, exceptionHandler);
+				item?.GetObjectData(info, context);
 			}
 		}
 		#endregion Event Implementation
