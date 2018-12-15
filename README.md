@@ -6,7 +6,10 @@
 
 ## Standard Dot
 
-[![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Amaster&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Amaster) [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot)
+| Type | Develop | Master | Branch |
+| --- | --- | --- | --- |
+| Sonar Qube | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Adevelop&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Amaster&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Amaster) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) |
+| Jenkins | -> | [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot/buildTimeTrend) | <- |
 
 Basic .NET Standard Libraries
 
@@ -19,11 +22,11 @@ This repository is for basic code that can be imported into any .NET Standard co
 
 ### Licenses
 
-[MIT License](/LICENSE.txt)
+[MIT License](/LICENSE)
 
 ### Other READMEs
 
-* [Basics](/README-Basics.md)
+* [Basics](/docs/README-Basics.md)
 * [Hmac Authentication](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
 
 ### How to get set up
@@ -31,7 +34,7 @@ This repository is for basic code that can be imported into any .NET Standard co
 #### Summary of set up
 
 * Read through the whole readme here, and read the other readme's as needed
-* Check the [Basics](/README-Basics.md) for setup if you are new
+* Check the [Basics](docs/README-Basics.md) for setup if you are new
 
 #### Configuration
 
@@ -43,8 +46,9 @@ This repository is for basic code that can be imported into any .NET Standard co
 
 #### Deployment instructions
 
-* There currently isn't a nuget package, but this project can be imported as a [subtree](https://medium.com/@v/git-subtrees-a-tutorial-6ff568381844)
-* It is a current goal to get this working with cake and get CD set up with Jenkins and Sonar Qube
+* You can find all of the StandardDot packages on [nuget.org](https://www.nuget.org/packages?q=StandardDot)
+* The goal is to have a readme for each project that will give general instructions for usage on each project
+* This project is built and tested automatically by [Jenkins](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/) and [SonarQube](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop)
 
 ### Contribution guidelines
 
