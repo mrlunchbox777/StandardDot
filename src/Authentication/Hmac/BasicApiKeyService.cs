@@ -19,6 +19,10 @@ namespace StandardDot.Authentication.Hmac
 
 		protected virtual IDictionary<string, string> Source { get; set; }
 
+		/// <summary>
+		/// Creates a new ApiKey
+		/// </summary>
+		/// <returns>An ApiKey</returns>
 		public string GenerateApiKey()
 		{
 			using (RNGCryptoServiceProvider cryptoProvider = new RNGCryptoServiceProvider())

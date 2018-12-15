@@ -1,96 +1,106 @@
 
-// using System;
-// using System.Security;
-// using JWT;
-// using JWT.Algorithms;
-// using JWT.Serializers;
-// using StandardDot.Abstract.CoreServices;
-// using StandardDot.Enums;
+using System;
+using System.Security;
+using JWT;
+using JWT.Algorithms;
+using StandardDot.Abstract.CoreServices;
+using StandardDot.CoreExtensions;
+using StandardDot.CoreExtensions.Object;
+using StandardDot.CoreExtensions.Object.DeepClone;
+using StandardDot.Enums;
 
-// namespace StandardDot.Authentication.Jwt
-// {
-// 	/// <summary>
-// 	/// The base JWT Service Class that will handle JWT authentication
-// 	/// </summary>
-// 	public class JwtService
-// 	{
-// 		/// <param name="secret">The secret used to encrypt the JWT</param>
-// 		/// <param name="serializer">The Json serialization service used to handle JWTs</param>
-// 		/// <param name="provider">The provider for DateTimes</param>
-// 		/// <param name="validator">The validation service for JWTs</param>
-// 		/// <param name="urlEncoder">The Base64 Encoding Service for JWTs</param>
-// 		/// <param name="decoder">The Decoding Service for JWTs</param>
-// 		/// <param name="algorithm">The Encryption Algorith for JWTs</param>
-// 		/// <param name="encoder">The Encoding Service for JWTs</param>
-// 		/// <param name="loggingService">The logging service for errors, default null - no logging</param>
-// 		public JwtService(IJsonSerializer serializer, IDateTimeProvider provider, IJwtValidator validator,
-// 			IBase64UrlEncoder urlEncoder, IJwtDecoder decoder, IJwtAlgorithm algorithm, IJwtEncoder encoder,
-// 			ILoggingService loggingService = null, string secret = null, SecureString secureSecret = null)
-// 		{
-// 			Serializer = serializer;
-// 			Provider = provider;
-// 			Validator = validator;
-// 			UrlEncoder = urlEncoder;
-// 			Decoder = decoder;
-// 			Algorithm = algorithm;
-// 			Encoder = encoder;
-// 			LoggingService = loggingService;
-// 			_secret = secret;
-// 			_secureSecret = secureSecret;
-// 		}
+namespace StandardDot.Authentication.Jwt
+{
+	/// <summary>
+	/// The base JWT Service Class that will handle JWT authentication
+	/// </summary>
+	public class JwtService : IDisposable
+	{
+		/// <param name="args">The <see cref="JwtServiceArgs" /> to use, default null</param>
+		public JwtService(JwtServiceArgs args = null)
+		{
+			_args = args == null
+				? new JwtServiceArgs()
+				: args;
+			_secureSecret = _args?.SecureSecret?.ToPlainText()?.ToSecureString();
+			_secureSecret = _secureSecret ?? _args.Secret?.ToSecureString();
+			_args.Secret = null;
+			_args.SecureSecret?.Dispose();
+			_args.SecureSecret = null;
+		}
 
-// 		private SecureString _secureSecret;
+		private SecureString _secureSecret;
 
-// 		private string _secret;
 
-// 		// protected virtual string Secret => _secret ?? _secureSecret.;
+		protected virtual JwtServiceArgs _args { get; }
 		
-// 		protected virtual IJsonSerializer Serializer { get; }
+		protected virtual IJsonSerializer Serializer => _args.Serializer;
 		
-// 		protected virtual IDateTimeProvider Provider { get; }
-		
-// 		protected virtual IJwtValidator Validator { get; } 
-		
-// 		protected virtual IBase64UrlEncoder UrlEncoder { get; }
-		
-// 		protected virtual IJwtDecoder Decoder { get; }
-		
-// 		protected virtual IJwtAlgorithm Algorithm { get; }
-		
-// 		protected virtual IJwtEncoder Encoder { get; }
-		
-// 		protected virtual ILoggingService LoggingService { get; }
+		protected virtual IDateTimeProvider Provider => _args.Provider;
 
-// 		/// <summary>
-// 		/// 
-// 		/// </summary>
-// 		/// <param name=""></param>
-// 		public T DecodeJwtPayload<T>(string jwt)
-// 		{
-// 			try
-// 			{
-// 				T payload = Decoder.DecodeToObject<T>(jwt, Secret, verify: true);
-// 				return payload;
-// 			}
-// 			catch (TokenExpiredException ex)
-// 			{
-// 				LoggingService?.LogException(ex, "Token has expired", LogLevel.Info);
-// 			}
-// 			catch (SignatureVerificationException ex)
-// 			{
-// 				LoggingService?.LogException(ex, "Token has invalid signature", LogLevel.Info);
-// 			}
-// 			catch (Exception ex)
-// 			{
-// 				LoggingService?.LogException(ex, "Decoding Jwt threw an exception", LogLevel.Error);
-// 			}
-// 			return default(T);
-// 		}
+		protected virtual IJwtValidator Validator => _args.Validator;
 
-// 		public string EncodeJwtPayload<T>(T payload)
-// 		{
-// 			var token = Encoder.Encode(payload, Secret);
-// 			return token;
-// 		}
-// 	}
-// }
+		protected virtual IBase64UrlEncoder UrlEncoder => _args.UrlEncoder;
+
+		protected virtual IJwtDecoder Decoder => _args.Decoder;
+
+		protected virtual IJwtAlgorithm Algorithm => _args.Algorithm;
+
+		protected virtual IJwtEncoder Encoder => _args.Encoder;
+
+		protected virtual ILoggingService LoggingService => _args.LoggingService;
+
+		protected virtual string Secret => _secureSecret?.ToPlainText();
+
+		/// <summary>
+		/// Decodes a Jwt Payload with the parameters passed in initially
+		/// </summary>
+		/// <param name="jwt">The Jwt String</param>
+		/// <typeparam name="T">The type of the payload to decode</typeparam>
+		/// <exception cref="TokenExpiredException">If the token has expired, logged if logging service available</exception>
+		/// <exception cref="SignatureVerificationException">If the token has an invalid signature, logged if logging service available</exception>
+		/// <exception cref="Exception">If decoding failed, logged if logging service available</exception>
+		/// <returns>The Decoded Payload</returns>
+		public T DecodeJwtPayload<T>(string jwt)
+		{
+			try
+			{
+				T payload = Decoder.DecodeToObject<T>(jwt, Secret, verify: true);
+				return payload;
+			}
+			catch (TokenExpiredException ex)
+			{
+				LoggingService?.LogException(ex, "Token has expired", LogLevel.Info);
+				throw;
+			}
+			catch (SignatureVerificationException ex)
+			{
+				LoggingService?.LogException(ex, "Token has invalid signature", LogLevel.Info);
+				throw;
+			}
+			catch (Exception ex)
+			{
+				LoggingService?.LogException(ex, "Decoding Jwt threw an exception", LogLevel.Error);
+				throw;
+			}
+		}
+
+		/// <summary>
+		/// Encodes a Jwt Payload using the parameters passed in initially
+		/// </summary>
+		/// <typeparam name="T">The type of the payload to encode</typeparam>
+		/// <param name="payload">The payload that needs to be encoded</param>
+		/// <returns>The encoded Jwt Payload</returns>
+		public string EncodeJwtPayload<T>(T payload)
+		{
+			var token = Encoder.Encode(payload, Secret);
+			return token;
+		}
+
+		public void Dispose()
+		{
+			_args?.Dispose();
+			_secureSecret?.Dispose();
+		}
+	}
+}
