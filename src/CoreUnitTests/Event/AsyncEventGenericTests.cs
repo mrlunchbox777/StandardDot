@@ -45,7 +45,7 @@ namespace StandardDot.Core.UnitTests.Event
 
 			Assert.True(didThrow);
 			Assert.Equal(1, aggregateCount);
-			Assert.Equal(1, logged.Count);
+			Assert.Single(logged);
 			Assert.Equal(threw, logged.Count);
 		}
 
