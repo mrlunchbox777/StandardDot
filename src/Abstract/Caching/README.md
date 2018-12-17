@@ -1,4 +1,4 @@
-# Template
+# Caching
 
 ## Navigation
 
