@@ -42,7 +42,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StandardDot.Enums" Version="0.0.0.9" />
+		<PackageReference Include="StandardDot.Enums" Version="0.0.0.10" />
 	</ItemGroup>
 
 </Project>
