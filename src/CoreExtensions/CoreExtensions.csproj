@@ -13,7 +13,7 @@
 		<Description>Extensions for StandardDot</Description>
 		<Copyright>Copyright 2018 (c) mrlunchbox777. All rights reserved.</Copyright>
 		<PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
-		<PackageLicenseUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/LICENSE.md</PackageLicenseUrl>
+		<license type="expression">MIT</license>
 		<PackageProjectUrl>https://github.com/mrlunchbox777/StandardDot/tree/master</PackageProjectUrl>
 		<PackageIconUrl>https://github.com/mrlunchbox777/StandardDot/blob/master/StandardDotIcon.png</PackageIconUrl>
 		<PackageReleaseNotes>First release</PackageReleaseNotes>
