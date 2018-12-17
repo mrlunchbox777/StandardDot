@@ -221,12 +221,12 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Enums</summary>
 <p>
 
-* [Enums]() - [Package]()
+* [Enums](/src/Enums/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Enums/)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Unit Tests]()
+		* [Unit Tests](/src/EnumsUnitTests/README.md)
 
 		</p>
 	  </details>
