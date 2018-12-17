@@ -173,25 +173,24 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Core Services</summary>
 <p>
 
-* [Core Services]() - [Package]()
-	* [Extensions]()
-	* [Logging]()
-	* [Manager]()
-	* [Pagination]()
-	* [Serialization]()
+* [Core Services](/src/CoreServices/README.md) - [Package](https://www.nuget.org/packages/StandardDot.CoreServices/)
+	* [Extensions](/src/CoreServices/Extensions/README.md)
+	* [Logging](/src/CoreServices/Logging/README.md)
+	* [Manager](/src/CoreServices/Manager/README.md)
+	* [Pagination](/src/CoreServices/Pagination/README.md)
+	* [Serialization](/src/CoreServices/Serialization/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Integration Tests]()
-			* [Logging]()
-			* [Serialization]()
-		* [Unit Tests]()
-			* [Extensions]()
-			* [Logging]()
-			* [Pagination]()
-			* [Serialization]()
-
+		* [Integration Tests](/src/CoreServicesIntegrationTests/README.md)
+			* [Logging](/src/CoreServicesIntegrationTests/Logging/README.md)
+			* [Serialization](/src/CoreServicesIntegrationTests/Serialization/README.md)
+		* [Unit Tests](/src/CoreServicesUnitTests/README.md)
+			* [Extensions](/src/CoreServicesUnitTests/Extensions/README.md)
+			* [Logging](/src/CoreServicesUnitTests/Logging/README.md)
+			* [Pagination](/src/CoreServicesUnitTests/Pagination/README.md)
+			* [Serialization](/src/CoreServicesUnitTests/Serialization/README.md)
 		</p>
 	  </details>
 </p>
