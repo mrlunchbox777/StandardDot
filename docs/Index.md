@@ -48,7 +48,7 @@ For all documentation check the last updated to ensure that it has been kept up 
 
 * [Authentication](/src/Authentication/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Authentication/)
 	* [Hmac](/src/Authentication/Hmac/README.md)
-	* [Jwt](/src/Jwt/README.md)
+	* [Jwt](/src/Authentication/Jwt/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
@@ -137,7 +137,7 @@ For all documentation check the last updated to ensure that it has been kept up 
 <p>
 
 * [Core](/src/Core/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Core/)
-	* [Event](/src/CoreUnitTests/Event/README.md)
+	* [Event](/src/Core/Event/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
