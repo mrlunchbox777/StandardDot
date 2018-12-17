@@ -153,18 +153,17 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Core Extensions</summary>
 <p>
 
-* [Core Extensions]() - [Package]()
-	* [DataContract]()
-	* [Object]()
-		* [Deep Clone]()
+* [Core Extensions](/src/CoreExtensions/README.md) - [Package](https://www.nuget.org/packages/StandardDot.CoreExtensions/)
+	* [DataContract](/src/CoreExtensions/DataContract/README.md)
+	* [Object](/src/CoreExtensions/Object/README.md)
+		* [Deep Clone](/src/CoreExtensions/Object/DeepClone/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Unit Tests]()
-			* [DataContract]()
-			* [Object]()
-				* [Deep Clone]()
+		* [Unit Tests](/src/CoreExtensionsUnitTests/README.md)
+			* [Object](/src/CoreExtensionsUnitTests/Object/README.md)
+				* [Deep Clone](/src/CoreExtensionsUnitTests/Object/DeepClone/README.md)
 
 		</p>
 	  </details>
