@@ -247,13 +247,15 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Worker</summary>
 <p>
 
-* [Worker]() - No Package, in development
+* [Worker](/src/Worker/README.md) - No Package, in development
+
 </p>
 </details>
 
 <details><summary>Worker Hangfire</summary>
 <p>
 
-* [Worker Hangfire]() - No Package, in development
+* [Worker Hangfire](/src/WorkerHangfire/README.md) - No Package, in development
+
 </p>
 </details>
