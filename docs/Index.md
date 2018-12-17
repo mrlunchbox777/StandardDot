@@ -1,0 +1,280 @@
+# Documentation Index
+
+Last updated Dec 16, 2018
+
+## Stats
+
+| Type | Develop | Master | Branch |
+| :--- | :---: | :---: | :---: |
+| Sonar Qube | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Adevelop&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Amaster&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Amaster) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) |
+| Jenkins | -> | [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot/buildTimeTrend) | <- |
+
+## Navigation
+
+[Home](/README.md)
+
+<details><summary>Abstract</summary>
+<p>
+
+* [Abstract]() - [Package]()
+	* [Caching]()
+	* [Configuration]()
+	* [Core Services]()
+	* [Data Structures]()
+	*	<details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Integration Tests]()
+			* [Caching]()
+			* [Configuration]()
+			* [Core Services]()
+		* [Unit Tests]()
+			* [Abstract Implementations]()
+			* [Abstract Objects]()
+			* [Caching]()
+			* [Configuration]()
+			* [Core Services]()
+			* [Test Configuration Metadatas]()
+			* [Test Configurations]()
+
+		</p>
+		</details>
+</p>
+</details>
+
+<details><summary>Authentication</summary>
+<p>
+
+* [Authentication]() - [Package]()
+	* [Hmac](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
+	* [Jwt]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Integration Tests]()
+			* [Hmac]()
+		* [Unit Tests]()
+			* [Hmac]()
+			* [Jwt]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Caching</summary>
+<p>
+
+* [Caching]() - [Package]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Caching Redis</summary>
+<p>
+
+* [Caching Redis]() - [Package]()
+	* [Abstract]()
+	* [DataStructures]()
+	* [Dto]()
+	* [Enums]()
+	* [Providers]()
+	* [Service]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+			* [Configuration]()
+			* [Dto]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Configuration</summary>
+<p>
+
+* [Configuration]() - [Package]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Integration Tests]()
+		* [Unit Tests]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Constants</summary>
+<p>
+
+* [Constants]() - [Package]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Core</summary>
+<p>
+
+* [Core]() - [Package]()
+	* [Event]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+			* [Event]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Core Extensions</summary>
+<p>
+
+* [Core Extensions]() - [Package]()
+	* [DataContract]()
+	* [Object]()
+		* [Deep Clone]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+			* [DataContract]()
+			* [Object]()
+				* [Deep Clone]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Core Services</summary>
+<p>
+
+* [Core Services]() - [Package]()
+	* [Extensions]()
+	* [Logging]()
+	* [Manager]()
+	* [Pagination]()
+	* [Serialization]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Integration Tests]()
+			* [Logging]()
+			* [Serialization]()
+		* [Unit Tests]()
+			* [Extensions]()
+			* [Logging]()
+			* [Pagination]()
+			* [Serialization]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Dto</summary>
+<p>
+
+* [Caching Redis]() - [Package]()
+	* [Core  Services]()
+	* [Exception]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Integration Tests]()
+			* [Core  Services]()
+			* [Exception]()
+		* [Unit Tests]()
+			* [Core  Services]()
+			* [Exception]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Enums</summary>
+<p>
+
+* [Enums]() - [Package]()
+	* <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+
+		</p>
+	  </details>
+</p>
+</details>
+
+<details><summary>Test Classes</summary>
+<p>
+
+* [Test Classes]() - No Package (Used for testing)
+	* [Abstract Implementation]()
+	* [TestConfigurationMetadatas]()
+	* [TestConfiguration]()
+</p>
+</details>
+
+<details><summary>Worker</summary>
+<p>
+
+* [Worker]() - No Package, in development
+	<!-- * <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+			* [Configuration]()
+			* [Dto]()
+
+		</p>
+	  </details> -->
+</p>
+</details>
+
+<details><summary>Worker Hangfire</summary>
+<p>
+
+* [Worker Hangfire]() - No Package, in development
+	<!-- * <details>
+		<summary>Testing</summary>
+		<p>
+
+		* [Unit Tests]()
+			* [Configuration]()
+			* [Dto]()
+
+		</p>
+	  </details> -->
+</p>
+</details>

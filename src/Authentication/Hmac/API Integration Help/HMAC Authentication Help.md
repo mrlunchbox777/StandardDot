@@ -1,6 +1,9 @@
 # HMAC Help
 
-[Home](/README.md)
+## Navigation
+
+* [Home](/README.md)
+	* [Documentation](/docs/Index.md)
 
 ## Boiler Plate Code
 
