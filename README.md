@@ -33,7 +33,7 @@ All packages generated here will be deployed to nuget and can be implemented by 
 
 ### [Report Issues and Request Features](https://github.com/mrlunchbox777/StandardDot/issues/new)
 
-If you have any features you'd like to request, problems you have found, or questions [open an issue](https://github.com/mrlunchbox777/StandardDot/issues/new)
+If you have any features you'd like to request, problems you have found, or questions **[open an issue](https://github.com/mrlunchbox777/StandardDot/issues/new)**
 
 ### Other READMEs
 

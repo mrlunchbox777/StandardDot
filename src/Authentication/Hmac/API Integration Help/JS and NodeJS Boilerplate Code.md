@@ -1,10 +1,18 @@
 # Javascript and NodeJS Boiler Plate Code
 
-[Hmac Authentication](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
+## Navigation
 
-[Home](/README.md)
+* [Home](/README.md)
+	* [Index](/docs/Index.md)
+		* [Authentication](/src/Authentication/README.md)
+			* [Hmac](/src/Authentication/Hmac/README.md)
+				* [Hmac Authentication Help](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
 
-## How To Integrate
+### Children
+
+## Info
+
+### How To Integrate
 
 [Other libraries](https://www.jokecamp.com/blog/examples-of-creating-base64-hashes-using-hmac-sha256-in-different-languages/)
 

@@ -1,5 +1,7 @@
 # Documentation Index
 
+For all documentation check the last updated to ensure that it has been kept up to date with the code. If you find any exceptions [please report them.](https://github.com/mrlunchbox777/StandardDot/issues/new)
+
 ## Stats
 
 | Type | Develop | Master | Branch |
@@ -44,7 +46,7 @@
 <details><summary>Authentication</summary>
 <p>
 
-* [Authentication]() - [Package]()
+* [Authentication](/src/Abstract/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Authentication/)
 	* [Hmac](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
 	* [Jwt]()
 	* <details>
