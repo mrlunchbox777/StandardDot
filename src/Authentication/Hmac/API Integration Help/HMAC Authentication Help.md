@@ -3,7 +3,7 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Documentation](/docs/Index.md)
+	* [Index](/docs/Index.md)
 
 ## Boiler Plate Code
 

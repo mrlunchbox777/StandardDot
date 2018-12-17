@@ -31,6 +31,10 @@ There is a significant amount of inline documentation. In addition these readme'
 
 All packages generated here will be deployed to nuget and can be implemented by add them to your project.
 
+### [Report Issues and Request Features](https://github.com/mrlunchbox777/StandardDot/issues/new)
+
+If you have any features you'd like to request, problems you have found, or questions [open an issue](https://github.com/mrlunchbox777/StandardDot/issues/new)
+
 ### Other READMEs
 
 * [Stack Basics](/docs/README-Basics.md)

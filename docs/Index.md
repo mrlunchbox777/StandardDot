@@ -1,7 +1,5 @@
 # Documentation Index
 
-Last updated Dec 16, 2018
-
 ## Stats
 
 | Type | Develop | Master | Branch |
@@ -16,27 +14,27 @@ Last updated Dec 16, 2018
 <details><summary>Abstract</summary>
 <p>
 
-* [Abstract]() - [Package]()
-	* [Caching]()
-	* [Configuration]()
-	* [Core Services]()
-	* [Data Structures]()
+* [Abstract](/src/Abstract/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Abstract/)
+	* [Caching](/src/Abstract/Caching/README.md)
+	* [Configuration](/src/Abstract/Configuration/README.md)
+	* [Core Services](/src/Abstract/CoreServices/README.md)
+	* [Data Structures](/src/Abstract/DataStructures/README.md)
 	*	<details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Integration Tests]()
-			* [Caching]()
-			* [Configuration]()
-			* [Core Services]()
-		* [Unit Tests]()
-			* [Abstract Implementations]()
-			* [Abstract Objects]()
-			* [Caching]()
-			* [Configuration]()
-			* [Core Services]()
-			* [Test Configuration Metadatas]()
-			* [Test Configurations]()
+		* [Integration Tests](/src/AbstractIntegrationTests/README.md)
+			* [Caching](/src/AbstractIntegrationTests/Caching/README.md)
+			* [Configuration](/src/AbstractIntegrationTests/Configuration/README.md)
+			* [Core Services](/src/AbstractIntegrationTests/CoreServices/README.md)
+		* [Unit Tests](/src/AbstractUnitTests/README.md)
+			* [Abstract Implementations](/src/AbstractUnitTests/AbstractImplementations/README.md)
+			* [Abstract Objects](/src/AbstractUnitTests/AbstractObjects/README.md)
+			* [Caching](/src/AbstractUnitTests/Caching/README.md)
+			* [Configuration](/src/AbstractUnitTests/Configuration/README.md)
+			* [Core Services](/src/AbstractUnitTests/CoreServices/README.md)
+			* [Test Configuration Metadatas](/src/AbstractUnitTests/TestConfigurationMetadatas/README.md)
+			* [Test Configurations](/src/AbstractUnitTests/TestConfigurations/README.md)
 
 		</p>
 		</details>
@@ -249,16 +247,6 @@ Last updated Dec 16, 2018
 <p>
 
 * [Worker]() - No Package, in development
-	<!-- * <details>
-		<summary>Testing</summary>
-		<p>
-
-		* [Unit Tests]()
-			* [Configuration]()
-			* [Dto]()
-
-		</p>
-	  </details> -->
 </p>
 </details>
 
@@ -266,15 +254,5 @@ Last updated Dec 16, 2018
 <p>
 
 * [Worker Hangfire]() - No Package, in development
-	<!-- * <details>
-		<summary>Testing</summary>
-		<p>
-
-		* [Unit Tests]()
-			* [Configuration]()
-			* [Dto]()
-
-		</p>
-	  </details> -->
 </p>
 </details>
