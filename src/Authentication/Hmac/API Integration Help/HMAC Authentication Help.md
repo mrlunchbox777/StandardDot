@@ -1,17 +1,28 @@
 # HMAC Help
 
-[Home](/README.md)
+## Navigation
 
-## Boiler Plate Code
+* [Home](/README.md)
+	* [Index](/docs/Index.md)
+		* [Authentication](/src/Authentication/README.md)
+			* [Hmac](/src/Authentication/Hmac/README.md)
+
+### Children
+
+* [C# Boiler Plate](/src/Authentication/Hmac/C%23%20Boilerplate%20Code.md)
+* [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
+* [JS and NodeJS Boiler Plate](/src/Authentication/Hmac/API%20Integration%20Help/JS%20and%20NodeJS%20Boilerplate%20Code.md)
+
+## Info
+
+### Boiler Plate Code
 
 * [C#](/src/Authentication/Hmac/API%20Integration%20Help/C%23%20Boilerplate%20Code.md)
 * [JS and Node](/src/Authentication/Hmac/API%20Integration%20Help/JS%20and%20NodeJS%20Boilerplate%20Code.md)
 
-## [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
+### [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
 
-## Basic Instructions
-
-[A Basic README](/src/Authentication/Hmac/API%20Integration%20Help/README.md)
+### Basic Instructions
 
 We use HMAC Authentication to verify requests.
 
@@ -64,12 +75,11 @@ Steps in the process
 3. Generate a Unix Timestamp from UTC
 4. MD5 hash your content, and then Base64 Encode the hash
 5. Create your signature string
-    - `{AppId}{RequestHttpMethod}{RequestUriString}{RequestTimeStamp}{Nonce}{RequestContentBase64String}`
+	* `{AppId}{RequestHttpMethod}{RequestUriString}{RequestTimeStamp}{Nonce}{RequestContentBase64String}`
 6. HMAC SHA256 Hash your signature, using your Secret Key as the hashing key, and then Base64 Encode the hash - [C++](https://gist.github.com/woodja/6082940)
 7. Create your header
-    - Complete Header - `[Authorization: sds AppId:Signature:Nonce:Timestamp]`
-    - Header Value - `sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
+	* Complete Header - `[Authorization: sds AppId:Signature:Nonce:Timestamp]`
+	* Header Value - `sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
 8. Submit your header with your request, and you should be authenticated
-
 
 There are several utility enpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)

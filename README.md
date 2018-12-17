@@ -1,56 +1,68 @@
-# README
+# README - Standard Dot
 
 ![StandardDot](https://img.shields.io/badge/Standard%20Dot-0.0.1-blue.svg)
 ![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0-green.svg)
 ![.NET Core](https://img.shields.io/badge/.NET%20Core-2.0-green.svg)
 
-## Standard Dot
+## Stats
 
 | Type | Develop | Master | Branch |
-| --- | --- | --- | --- |
+| :--- | :---: | :---: | :---: |
 | Sonar Qube | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Adevelop&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Amaster&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Amaster) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) |
 | Jenkins | -> | [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot/buildTimeTrend) | <- |
 
-Basic .NET Standard Libraries
-
 ### What this repository is for
 
-This repository is for basic code that can be imported into any .NET Standard compatible project.
+Basic .NET Standard Libraries
 
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-* [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code)
+This repository is for basic code that can be imported into any .NET Standard compatible project.
 
 ### Licenses
 
 [MIT License](/LICENSE)
 
+## Usage
+
+### [Documentation](/docs/Index.md)
+
+There is a significant amount of inline documentation. In addition these readme's should give a general overview of each subsection.
+
+### [Nuget](https://www.nuget.org/packages?q=standarddot)
+
+All packages generated here will be deployed to nuget and can be implemented by add them to your project.
+
+### [Report Issues and Request Features](https://github.com/mrlunchbox777/StandardDot/issues/new)
+
+If you have any features you'd like to request, problems you have found, or questions **[open an issue](https://github.com/mrlunchbox777/StandardDot/issues/new)**
+
 ### Other READMEs
 
-* [Basics](/docs/README-Basics.md)
-* [Hmac Authentication](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
+* [Stack Basics](/docs/README-Basics.md)
+* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+* [Markdown Cheatsheet](https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet#code)
 
-### How to get set up
+## How to get set up
 
-#### Summary of set up
+### Summary of set up
 
 * Read through the whole readme here, and read the other readme's as needed
-* Check the [Basics](docs/README-Basics.md) for setup if you are new
+* Check the [Stack Basics](docs/README-Basics.md) for setup if you are new
 
-#### Configuration
+### Configuration
 
 * You need the [.NET Core SDK](https://www.microsoft.com/net/download/windows)
 
-#### How to run tests
+### How to run tests
 
 * The tests are included in the project and use [XUnit](https://xunit.github.io/). You can run them from [VS Code](https://code.visualstudio.com/) and a [Dot Net Core Extension](https://github.com/matijarmk/dotnet-core-commands) might help.
 
-#### Deployment instructions
+### Deployment instructions
 
 * You can find all of the StandardDot packages on [nuget.org](https://www.nuget.org/packages?q=StandardDot)
 * The goal is to have a readme for each project that will give general instructions for usage on each project
 * This project is built and tested automatically by [Jenkins](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/) and [SonarQube](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop)
 
-### Contribution guidelines
+## Contribution guidelines
 
 * Writing tests
 	* We use [XUnit](https://xunit.github.io/)
