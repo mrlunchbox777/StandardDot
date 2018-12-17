@@ -105,13 +105,13 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Configuration</summary>
 <p>
 
-* [Configuration]() - [Package]()
+* [Configuration](/src/Configuration/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Configuration/)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Integration Tests]()
-		* [Unit Tests]()
+		* [Integration Tests](/src/ConfigurationIntegrationTests/README.md)
+		* [Unit Tests](/src/ConfigurationUnitTests/README.md)
 
 		</p>
 	  </details>
