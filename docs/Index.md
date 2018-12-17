@@ -47,17 +47,17 @@ For all documentation check the last updated to ensure that it has been kept up 
 <p>
 
 * [Authentication](/src/Abstract/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Authentication/)
-	* [Hmac](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
-	* [Jwt]()
+	* [Hmac](/src/Authentication/Hmac/README.md)
+	* [Jwt](/src/Jwt/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Integration Tests]()
-			* [Hmac]()
-		* [Unit Tests]()
-			* [Hmac]()
-			* [Jwt]()
+		* [Integration Tests](/src/AuthenticationIntegrationsTests/README.md)
+			* [Hmac](/src/AuthenticationIntegrationsTests/Hmac/README.md)
+		* [Unit Tests](/src/AuthenticationUnitTests/README.md)
+			* [Hmac](/src/AuthenticationUnitTests/Hmac/README.md)
+			* [Jwt](/src/AuthenticationUnitTests/Jwt/README.md)
 
 		</p>
 	  </details>
