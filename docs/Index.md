@@ -121,12 +121,12 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Constants</summary>
 <p>
 
-* [Constants]() - [Package]()
+* [Constants](/src/Constants/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Constants/)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Unit Tests]()
+		* [Unit Tests](/src/ConstantsUnitTests/README.md)
 
 		</p>
 	  </details>
