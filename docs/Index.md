@@ -236,10 +236,11 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Test Classes</summary>
 <p>
 
-* [Test Classes]() - No Package (Used for testing)
-	* [Abstract Implementation]()
-	* [TestConfigurationMetadatas]()
-	* [TestConfiguration]()
+* [Test Classes](/src/TestClasses/README.md) - No Package (Used for testing)
+	* [Abstract Implementations](/src/TestClasses/AbstractImplementations/README.md)
+	* [Test Configuration Metadatas](/src/TestClasses/TestConfigurationMetadatas/README.md)
+	* [Test Configurations](/src/TestClasses/TestConfigurations/README.md)
+
 </p>
 </details>
 
