@@ -1,4 +1,4 @@
-# Authentication Integration Tests
+# Authentication Unit Tests
 
 ## Navigation
 
