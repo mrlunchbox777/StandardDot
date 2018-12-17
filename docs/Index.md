@@ -136,14 +136,14 @@ For all documentation check the last updated to ensure that it has been kept up 
 <details><summary>Core</summary>
 <p>
 
-* [Core]() - [Package]()
-	* [Event]()
+* [Core](/src/Core/README.md) - [Package](https://www.nuget.org/packages/StandardDot.Core/)
+	* [Event](/src/CoreUnitTests/Event/README.md)
 	* <details>
 		<summary>Testing</summary>
 		<p>
 
-		* [Unit Tests]()
-			* [Event]()
+		* [Unit Tests](/src/CoreUnitTests/README.md)
+			* [Event](/src/CoreUnitTests/Event/README.md)
 
 		</p>
 	  </details>
