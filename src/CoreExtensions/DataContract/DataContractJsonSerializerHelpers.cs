@@ -10,15 +10,17 @@ namespace CoreExtensions.DataContract
 		public static DataContractJsonSerializer GetSerializer<T>(ISerializationSettings serializationSettings)
 		{
 			DataContractJsonSerializer ser = null;
-			if ((!(serializationSettings?.KnownTypes?.Any() ?? false)) && (serializationSettings?.Resolver == null))
+			bool knownTypesExist = serializationSettings?.KnownTypes?.Any() ?? false;
+			bool resolverExists = serializationSettings?.Resolver != null;
+			if (!knownTypesExist && !resolverExists)
 			{
 				ser = new DataContractJsonSerializer(typeof(T));
 			}
-			else if (serializationSettings?.Resolver != null)
+			else if (resolverExists)
 			{
 				throw new InvalidOperationException("Json serialization doesn't use a resolver.");
 			}
-			else if (serializationSettings?.KnownTypes?.Any() ?? false)
+			else if (knownTypesExist)
 			{
 				ser = new DataContractJsonSerializer(typeof(T), serializationSettings.KnownTypes);
 			}
