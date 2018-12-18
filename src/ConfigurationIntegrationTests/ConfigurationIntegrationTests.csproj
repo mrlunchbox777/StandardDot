@@ -16,10 +16,10 @@
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 		</PackageReference>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.0" />
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.1.1" />
-		<PackageReference Include="StandardDot.Caching" Version="0.0.1.1" />
-		<PackageReference Include="StandardDot.Configuration" Version="0.0.1.1" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.1.1" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.1.3" />
+		<PackageReference Include="StandardDot.Caching" Version="0.0.1.4" />
+		<PackageReference Include="StandardDot.Configuration" Version="0.0.1.4" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.1.5" />
 		<PackageReference Include="xunit" Version="2.4.1" />
 		<PackageReference Include="xunit.runner.visualstudio" Version="2.4.1">
 		  <PrivateAssets>all</PrivateAssets>
