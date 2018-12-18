@@ -12,3 +12,5 @@
 * [Core Extensions Unit Tests](/src/CoreExtensionsUnitTests/README.md)
 
 ## Info
+
+### Table of Contents

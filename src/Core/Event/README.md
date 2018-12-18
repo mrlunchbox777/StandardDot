@@ -11,3 +11,5 @@
 * [Event Unit Tests](/src/CoreUnitTests/Event/README.md)
 
 ## Info
+
+### Table of Contents

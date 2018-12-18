@@ -12,6 +12,8 @@
 
 ## Info
 
+### Table of Contents
+
 ```csharp
 using System;
 using System.Configuration;

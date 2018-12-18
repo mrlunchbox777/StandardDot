@@ -11,3 +11,5 @@
 * [Pagination Unit Tests](/src/CoreServicesUnitTests/Pagination/README.md)
 
 ## Info
+
+### Table of Contents

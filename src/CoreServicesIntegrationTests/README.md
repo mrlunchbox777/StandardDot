@@ -12,3 +12,5 @@
 * [Serialization Integration Tests](/src/CoreServicesIntegrationTests/Serialization/README.md)
 
 ## Info
+
+### Table of Contents

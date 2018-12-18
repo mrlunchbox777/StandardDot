@@ -12,3 +12,5 @@
 * [Deep Clone Unit Tests](/src/CoreExtensionsUnitTests/Object/DeepClone/README.md)
 
 ## Info
+
+### Table of Contents

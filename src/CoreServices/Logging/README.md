@@ -12,3 +12,5 @@
 * [Logging Unit Tests](/src/CoreServicesUnitTests/Logging/README.md)
 
 ## Info
+
+### Table of Contents

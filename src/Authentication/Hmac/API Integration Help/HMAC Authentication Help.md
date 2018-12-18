@@ -15,6 +15,8 @@
 
 ## Info
 
+### Table of Contents
+
 ### Boiler Plate Code
 
 * [C#](/src/Authentication/Hmac/API%20Integration%20Help/C%23%20Boilerplate%20Code.md)
