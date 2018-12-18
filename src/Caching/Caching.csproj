@@ -42,7 +42,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="StandardDot.Abstract" Version="0.0.0.24" />
+		<PackageReference Include="StandardDot.Abstract" Version="0.0.1.1" />
 	</ItemGroup>
 
 </Project>
