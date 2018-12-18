@@ -41,7 +41,7 @@ namespace StandardDot.Abstract.DataStructures
 
 		public override void CopyTo(T[] array, int arrayIndex)
 		{
-			CopyTo(array, arrayIndex);
+			SourceCollection.CopyTo(array, arrayIndex);
 		}
 
 		public override bool Remove(T item)
