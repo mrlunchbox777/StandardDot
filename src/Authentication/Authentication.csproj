@@ -48,7 +48,7 @@
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.1.3" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.1.4" />
 		<PackageReference Include="StandardDot.Core" Version="0.0.1" />
-		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.1.4" />
+		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.1.5" />
 		<PackageReference Include="StandardDot.CoreServices" Version="0.0.1.5" />
 		<PackageReference Include="StandardDot.Enums" Version="0.0.1" />
 		<PackageReference Include="StandardDot.Constants" Version="0.0.1" />
