@@ -1,3 +1,4 @@
+using System.Linq;
 using System;
 using System.Collections.Generic;
 
@@ -35,6 +36,17 @@ namespace StandardDot.CoreExtensions
 		public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
 		{
 			return DistinctBy(source, x => x.GetHashCode());
+		}
+		
+		/// <summary>
+		/// If there are any elements in a collection, default false
+		/// </summary>
+		/// <typeparam name="TSource">The type in the source <see cref="IEnumerable" /></typeparam>
+		/// <param name="source">The source IEnumerable</param>
+		/// <returns>If there are any elements in a collection</returns>
+		public static bool AnySafe<TSource>(this IEnumerable<TSource> source)
+		{
+			return source?.Any() ?? false;
 		}
 	}
 }
