@@ -108,9 +108,9 @@ namespace StandardDot.Caching.Redis.DataStructures
 		/// Removes an item from the collection
 		/// </summary>
 		/// <param name="item">The item to remove</param>
-		/// <param name="item">The item to remove</param>
-		/// <exception cref="System.InvalidOperationException">Unable to add an item to redis that doesn't
-		/// derive from <see cref="StandardDot.Caching.Redis.Abstract.IRedisCachedObject" /></exception>
+		/// <param name="throwException">If an exception should be thrown when the item can not be cached</param>
+		/// <exception cref="System.InvalidOperationException">Unable to cast the item to a
+		/// <see cref="StandardDot.Caching.Redis.Abstract.IRedisCachedObject" /></exception>
 		/// <returns>If the item was removed</returns>
 		protected virtual IRedisCachedObject GetCastedItem(T item, bool throwException = true)
 		{
