@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using StandardDot.CoreExtensions;
 
 namespace StandardDot.CoreServices.Manager
 {
@@ -43,8 +44,9 @@ namespace StandardDot.CoreServices.Manager
 				base.Dispose(disposing);
 				return;
 			}
-			if (!(_items?.Any() ?? false))
+			if (_items.NotAnySafe())
 			{
+				base.Dispose(disposing);
 				return;
 			}
 			while (_items.Any())
@@ -66,7 +68,7 @@ namespace StandardDot.CoreServices.Manager
 						throw new InvalidOperationException("Unable to free resource - " + (value?.GetType()?.FullName ?? "unknown IDisposable"));
 					}
 				};
-				holder.Key.TriggerCallbefore(value);
+				holder.Key.TriggerCallbefore(value, this);
 				try
 				{
 					value?.Dispose();
@@ -75,7 +77,7 @@ namespace StandardDot.CoreServices.Manager
 				{
 					// If it's already disposed that is ok
 				}
-				holder.Key.TriggerCallback(null);
+				holder.Key.TriggerCallback(this);
 			}
 			base.Dispose(disposing);
 		}
