@@ -2,6 +2,9 @@ using System;
 
 namespace StandardDot.CoreServices.Manager
 {
+	/// <summary>
+	/// A Key for the Disposal Manager, it is basically a Guid with a callbefore and callback
+	/// </summary>
 	public class ManagedIDisposableKey
 	{
 		public Guid Id { get; set; }

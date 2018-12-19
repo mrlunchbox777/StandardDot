@@ -13,17 +13,19 @@ namespace StandardDot.CoreServices.Manager
 
 		private ConcurrentDictionary<ManagedIDisposableKey, IDisposable> _items = new ConcurrentDictionary<ManagedIDisposableKey, IDisposable>();
 
-		public async Task RegisterIDisposable(IDisposable target)
+		public async Task<ManagedIDisposableKey> RegisterIDisposable(IDisposable target)
 		{
 			ValidateDisposed();
-			await RegisterIDisposable(target, new ManagedIDisposableKey {Id = Guid.NewGuid()});
+			ManagedIDisposableKey key = new ManagedIDisposableKey { Id = Guid.NewGuid() };
+			await RegisterIDisposable(target, key);
+			return key;
 		}
 
 		public async Task RegisterIDisposable(IDisposable target, ManagedIDisposableKey key)
 		{
 			ValidateDisposed();
 			int attempt = 0;
-			while(!_items.TryAdd(key, target))
+			while (!_items.TryAdd(key, target))
 			{
 				await Task.Delay(1);
 				attempt++;
@@ -55,7 +57,7 @@ namespace StandardDot.CoreServices.Manager
 				_items[holder.Key] = null;
 				int attempt = 0;
 				IDisposable value;
-				while(!_items.TryRemove(holder.Key, out value))
+				while (!_items.TryRemove(holder.Key, out value))
 				{
 					Thread.Sleep(1);
 					attempt++;
@@ -67,13 +69,13 @@ namespace StandardDot.CoreServices.Manager
 				holder.Key.TriggerCallbefore(value);
 				try
 				{
-					holder.Value?.Dispose();
+					value?.Dispose();
 				}
 				catch (ObjectDisposedException)
 				{
 					// If it's already disposed that is ok
 				}
-				holder.Key.TriggerCallback(value);
+				holder.Key.TriggerCallback(null);
 			}
 			base.Dispose(disposing);
 		}
