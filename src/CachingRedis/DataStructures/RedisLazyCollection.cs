@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using StandardDot.Abstract.DataStructures;
 using StandardDot.Caching.Redis.Abstract;
+using StandardDot.CoreExtensions;
 
 namespace StandardDot.Caching.Redis.DataStructures
 {
@@ -19,7 +20,7 @@ namespace StandardDot.Caching.Redis.DataStructures
 
 		protected virtual RedisCachingService Service { get; }
 
-		// slow and bad... is there a better way?
+		// TODO: slow and bad... is there a better way?
 		public override int Count => Source.Count();
 
 		public override bool IsReadOnly => false;
@@ -27,12 +28,13 @@ namespace StandardDot.Caching.Redis.DataStructures
 		public override void Add(T item)
 		{
 			IRedisCachedObject castedItem = GetCastedItem(item);
+			// TODO: this needs to add to the locally stored value as well
 			Service.Cache(castedItem.Id, item);
 		}
 
 		public override void Clear()
 		{
-			while (Source?.Any() ?? false)
+			while (Source.AnySafe())
 			{
 				bool removed = Remove(Source.FirstOrDefault());
 				if (!removed)
