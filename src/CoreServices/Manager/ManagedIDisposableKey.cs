@@ -22,28 +22,16 @@ namespace StandardDot.CoreServices.Manager
 
 		public override bool Equals(object obj)
 		{
-			if (Id == null)
-			{
-				return obj == null;
-			}
 			return Id.Equals(obj);
 		}
 
 		public override int GetHashCode()
 		{
-			if (Id == null)
-			{
-				return Guid.Empty.GetHashCode();
-			}
 			return Id.GetHashCode();
 		}
 
 		public override string ToString()
 		{
-			if (Id == null)
-			{
-				Guid.Empty.ToString();
-			}
 			return Id.ToString();
 		}
 
