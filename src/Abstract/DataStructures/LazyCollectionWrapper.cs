@@ -30,7 +30,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// Gets the count for the source that has been enumerated
-		/// <note>Does not return the full count, just the count that has been returned when called</note>
 		/// </summary>
 		/// <returns>The count of items that have been enumerated when called</returns>
 		public override int Count => SourceCollection.Count;
@@ -43,7 +42,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// Adds an item to the collection
-		/// <note>Adds to the source collection (treats is as if it was the item most recently enumerated)</note>
 		/// </summary>
 		/// <param name="item">The item to add</param>
 		public override void Add(T item)
@@ -54,7 +52,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// Clears the source collection
-		/// <note>Does not clear the whole source collection, just the collection that has been enumerated when called</note>
 		/// </summary>
 		public override void Clear()
 		{
@@ -63,7 +60,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// If the source enumerated so far contains the item
-		/// <note>Does not check the whole source collection, just the collection that has been enumerated when called</note>
 		/// </summary>
 		/// <param name="item">The item to check for</param>
 		/// <returns>If the source is contains the item</returns>
@@ -74,7 +70,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// Copies the source enumerated so far to the array
-		/// <note>Does not copy the whole source collection, just the collection that has been enumerated when called</note>
 		/// </summary>
 		/// <param name="array">The array to copy to</param>
 		/// <param name="arrayIndex">The index of the array</param>
@@ -85,7 +80,6 @@ namespace StandardDot.Abstract.DataStructures
 
 		/// <summary>
 		/// Removes an item from the collection
-		/// <note>Does not try to remove from the whole source collection, just the collection that has been enumerated when called</note>
 		/// </summary>
 		/// <param name="item">The item to remove</param>
 		/// <returns>If the item was removed</returns>
