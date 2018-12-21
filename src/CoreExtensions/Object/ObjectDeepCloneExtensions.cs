@@ -613,7 +613,7 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToAttempt = overrideSettings?.Where(s => s?.FullNamesToAttempt?.Any() ?? false).SelectMany(s => s.FullNamesToAttempt)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToAttempt?.Any() ?? false)
+				if (fullNamesToAttempt.AnySafe())
 				{
 					cachedFullNamesToAttempt.Add(overrideSettings.GetHashCode(), fullNamesToAttempt);
 				}
