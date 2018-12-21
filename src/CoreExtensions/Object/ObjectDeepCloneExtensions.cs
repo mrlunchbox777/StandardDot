@@ -574,7 +574,7 @@ namespace StandardDot.CoreExtensions.Object
 					}
 				}
 			}
-			if (fullNamesToInclude?.Any() ?? false)
+			if (fullNamesToInclude.AnySafe())
 			{
 				foreach (string fullNameToInclude in fullNamesToInclude)
 				{
