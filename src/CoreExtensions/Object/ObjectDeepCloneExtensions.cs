@@ -559,7 +559,7 @@ namespace StandardDot.CoreExtensions.Object
 				}
 			}
 
-			if (fullNamesToSkip?.Any() ?? false)
+			if (fullNamesToSkip.AnySafe())
 			{
 				foreach (string fullNameToSkip in fullNamesToSkip)
 				{
