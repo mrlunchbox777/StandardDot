@@ -619,7 +619,7 @@ namespace StandardDot.CoreExtensions.Object
 				}
 			}
 
-			if (fullNamesToAttempt?.Any() ?? false)
+			if (fullNamesToAttempt.AnySafe())
 			{
 				foreach (string fullNameToAttempt in fullNamesToAttempt)
 				{
