@@ -539,7 +539,7 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToSkip = overrideSettings?.Where(s => s?.FullNamesToSkip?.Any() ?? false).SelectMany(s => s.FullNamesToSkip)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToSkip?.Any() ?? false)
+				if (fullNamesToSkip.AnySafe())
 				{
 					cachedFullNamesToSkip.Add(overrideSettings.GetHashCode(), fullNamesToSkip);
 				}
