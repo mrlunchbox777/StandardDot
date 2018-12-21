@@ -553,7 +553,7 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToInclude = overrideSettings?.Where(s => s?.FullNamesToInclude?.Any() ?? false).SelectMany(s => s.FullNamesToInclude)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToInclude?.Any() ?? false)
+				if (fullNamesToInclude.AnySafe())
 				{
 					cachedFullNamesToInclude.Add(overrideSettings.GetHashCode(), fullNamesToInclude);
 				}
