@@ -16,7 +16,7 @@
 
 ## Info
 
-This package contains a number of abstract classes that are used and implemented by other packages. It provides a layer of abstraction that gives the user freedom to implement and inject implementations as desired. For example there are several different caching services, and users can write their own caching service, as long as they implement [ICachingService](/src/Abstract/Caching/ICachingService.cs), then it can be substitued in anywhere ICachingService is used. 
+This package contains a number of abstract classes that are used and implemented by other packages. It provides a layer of abstraction that gives the user freedom to implement and inject implementations as desired. For example there are several different caching services, and users can write their own caching service, as long as they implement [ICachingService](/src/Abstract/Caching/ICachingService.cs), then it can be substitued in anywhere ICachingService is used.
 
 If a package needs a service/provider/facorty/etc it should be using an interface or other abstraction from this package to get it so that users can select any implementation of that abstraction to use. As much as possible those packages should allow nulls for those services/providers/factories/etc so that if users do not want to use a particular part of a service they don't have to.
 
