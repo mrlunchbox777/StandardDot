@@ -26,6 +26,18 @@ namespace StandardDot.CoreServices.Manager
 			{
 				return obj == null;
 			}
+			if (obj == null)
+			{
+				return Id == null;
+			}
+			if (obj is Guid)
+			{
+				return Id == (Guid)obj;
+			}
+			if (obj is ManagedIDisposableKey)
+			{
+				return Id == ((ManagedIDisposableKey)obj).Id;
+			}
 			return Id.Equals(obj);
 		}
 
@@ -47,17 +59,27 @@ namespace StandardDot.CoreServices.Manager
 			return Id.ToString();
 		}
 
+		public string ToString(string format)
+		{
+			if (Id == null)
+			{
+				Guid.Empty.ToString(format);
+			}
+			return Id.ToString(format);
+		}
+
 		public static bool operator == (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
-			if (item1 == null)
+			object objItem1 = item1 as object;
+			if (objItem1 == null && (item2 as object) == null)
 			{
-				return item2 == null;
+				return true;
 			}
-			if (item2 == null)
+			if (objItem1 == null)
 			{
-				return item1 == null;
+				return item2.Equals(item1);
 			}
-			return item1.Id.Equals(item2.Id);
+			return item1.Equals(item2);
 		}
 
 		public static bool operator != (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
