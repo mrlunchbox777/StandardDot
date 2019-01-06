@@ -59,6 +59,15 @@ namespace StandardDot.CoreServices.Manager
 			return Id.ToString();
 		}
 
+		public string ToString(string format)
+		{
+			if (Id == null)
+			{
+				Guid.Empty.ToString(format);
+			}
+			return Id.ToString(format);
+		}
+
 		public static bool operator == (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
 			object objItem1 = item1 as object;

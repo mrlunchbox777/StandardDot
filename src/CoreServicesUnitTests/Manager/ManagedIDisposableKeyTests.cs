@@ -10,11 +10,22 @@ namespace StandardDot.CoreServices.UnitTests.Manager
 		public void PropertyTests()
 		{
 			ManagedIDisposableKey managedIDisposableKey = new ManagedIDisposableKey();
-			Guid id = Guid.NewGuid();
-			managedIDisposableKey.Id = id;
+			Guid id = Guid.Empty;
+			// managedIDisposableKey.Id = id;
 
 			Assert.Equal(id, managedIDisposableKey.Id);
 			Assert.True(managedIDisposableKey.Equals(id));
+			Assert.Equal(id.GetHashCode(), managedIDisposableKey.GetHashCode());
+			Assert.Equal(id.ToString(), managedIDisposableKey.ToString());
+			Assert.Equal(id.ToString("n"), managedIDisposableKey.ToString("n"));
+
+			id = Guid.NewGuid();
+			managedIDisposableKey.Id = id;
+			Assert.Equal(id, managedIDisposableKey.Id);
+			Assert.True(managedIDisposableKey.Equals(id));
+			Assert.Equal(id.GetHashCode(), managedIDisposableKey.GetHashCode());
+			Assert.Equal(id.ToString(), managedIDisposableKey.ToString());
+			Assert.Equal(id.ToString("n"), managedIDisposableKey.ToString("n"));
 		}
 
 		[Fact]
@@ -41,5 +52,8 @@ namespace StandardDot.CoreServices.UnitTests.Manager
 			Assert.True(managedIDisposableKey != managedIDisposableKey3);
 			Assert.True(managedIDisposableKey2 != managedIDisposableKey3);
 		}
+
+		// [Fact]
+		// public void EventTests
 	}
 }
