@@ -48,11 +48,12 @@ namespace StandardDot.CoreServices.Manager
 			while (_items.Any())
 			{
 				KeyValuePair<ManagedIDisposableKey, IDisposable> holder = _items.FirstOrDefault();
-				if (holder.Key == default(ManagedIDisposableKey))
+				ManagedIDisposableKey key = holder.Key;
+				if (key.Id == Guid.Empty)
 				{
 					continue;
 				}
-				_items[holder.Key] = null;
+				// _items[holder.Key] = null;
 				int attempt = 0;
 				IDisposable value;
 				while(!_items.TryRemove(holder.Key, out value))
@@ -64,16 +65,16 @@ namespace StandardDot.CoreServices.Manager
 						throw new InvalidOperationException("Unable to free resource - " + (value?.GetType()?.FullName ?? "unknown IDisposable"));
 					}
 				};
-				holder.Key.TriggerCallbefore(value);
+				key?.TriggerCallbefore(value);
 				try
 				{
-					holder.Value?.Dispose();
+					value?.Dispose();
 				}
 				catch (ObjectDisposedException)
 				{
 					// If it's already disposed that is ok
 				}
-				holder.Key.TriggerCallback(value);
+				key?.TriggerCallback(value);
 			}
 			base.Dispose(disposing);
 		}
