@@ -12,12 +12,18 @@ namespace StandardDot.CoreServices.Manager
 
 		internal void TriggerCallbefore(IDisposable value)
 		{
-			Callbefore(this, value);
+			if (Callbefore != null)
+			{
+				Callbefore(this, value);
+			}
 		}
 
 		internal void TriggerCallback(IDisposable value)
 		{
-			Callback(this, value);
+			if (Callback != null)
+			{
+				Callback(this, value);
+			}
 		}
 
 		public override bool Equals(object obj)
