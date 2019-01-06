@@ -53,7 +53,11 @@ namespace StandardDot.CoreServices.Manager
 			{
 				return item2 == null;
 			}
-			return item1.Equals(item2);
+			if (item2 == null)
+			{
+				return item1 == null;
+			}
+			return item1.Id.Equals(item2.Id);
 		}
 
 		public static bool operator != (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
