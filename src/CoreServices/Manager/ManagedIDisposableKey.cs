@@ -65,7 +65,10 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="manager">The <see cref="StandardDot.CoreServices.Manager.DisposalManager" /> that is disposing the value</param>
 		internal void TriggerCallbefore(IDisposable value, DisposalManager manager)
 		{
-			Callbefore(this, value, manager);
+			if (Callbefore != null)
+			{
+				Callbefore(this, value, manager);
+			}
 		}
 
 		/// <summary>
@@ -74,7 +77,10 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="manager">The <see cref="StandardDot.CoreServices.Manager.DisposalManager" /> that disposed the value</param>
 		internal void TriggerCallback(DisposalManager manager)
 		{
-			Callback(this, manager);
+			if (Callback != null)
+			{
+				Callback(this, manage);
+			}
 		}
 
 		/// <summary>
@@ -83,6 +89,18 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="obj">The object to check equality against</param>
 		public override bool Equals(object obj)
 		{
+			if (obj == null)
+			{
+				return Id == null;
+			}
+			if (obj is Guid)
+			{
+				return Id == (Guid)obj;
+			}
+			if (obj is ManagedIDisposableKey)
+			{
+				return Id == ((ManagedIDisposableKey)obj).Id;
+			}
 			return Id.Equals(obj);
 		}
 
@@ -108,7 +126,7 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="format">The format string to pass to the underlying Id</param>
 		public string ToString(string format)
 		{
-			return Id.ToString(format);
+			return (Id ?? Guid.Empty).ToString(format);
 		}
 
 		/// <summary>
@@ -118,9 +136,14 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="item2">The second object to check equality against</param>
 		public static bool operator == (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
-			if (item1 == null)
+			object objItem1 = item1 as object;
+			if (objItem1 == null && (item2 as object) == null)
 			{
-				return item2 == null;
+				return true;
+			}
+			if (objItem1 == null)
+			{
+				return item2.Equals(item1);
 			}
 			return item1.Equals(item2);
 		}
