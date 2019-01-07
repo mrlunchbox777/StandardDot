@@ -12,12 +12,18 @@ namespace StandardDot.CoreServices.Manager
 
 		internal void TriggerCallbefore(IDisposable value)
 		{
-			Callbefore(this, value);
+			if (Callbefore != null)
+			{
+				Callbefore(this, value);
+			}
 		}
 
 		internal void TriggerCallback(IDisposable value)
 		{
-			Callback(this, value);
+			if (Callback != null)
+			{
+				Callback(this, value);
+			}
 		}
 
 		public override bool Equals(object obj)
@@ -25,6 +31,18 @@ namespace StandardDot.CoreServices.Manager
 			if (Id == null)
 			{
 				return obj == null;
+			}
+			if (obj == null)
+			{
+				return Id == null;
+			}
+			if (obj is Guid)
+			{
+				return Id == (Guid)obj;
+			}
+			if (obj is ManagedIDisposableKey)
+			{
+				return Id == ((ManagedIDisposableKey)obj).Id;
 			}
 			return Id.Equals(obj);
 		}
@@ -47,11 +65,25 @@ namespace StandardDot.CoreServices.Manager
 			return Id.ToString();
 		}
 
+		public string ToString(string format)
+		{
+			if (Id == null)
+			{
+				Guid.Empty.ToString(format);
+			}
+			return Id.ToString(format);
+		}
+
 		public static bool operator == (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
-			if (item1 == null)
+			object objItem1 = item1 as object;
+			if (objItem1 == null && (item2 as object) == null)
 			{
-				return item2 == null;
+				return true;
+			}
+			if (objItem1 == null)
+			{
+				return item2.Equals(item1);
 			}
 			return item1.Equals(item2);
 		}

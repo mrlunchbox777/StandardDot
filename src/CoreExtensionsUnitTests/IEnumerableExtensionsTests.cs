@@ -77,5 +77,27 @@ namespace StandardDot.CoreExtensions.UnitTests
 				Assert.Equal(sources[i], result[i]);
 			}
 		}
+
+		[Fact]
+		public void AnySafeTest()
+		{
+			List<int> sources = null;
+			Assert.False(sources.AnySafe());
+			sources = new List<int>();
+			Assert.False(sources.AnySafe());
+			sources.Add(1);
+			Assert.True(sources.AnySafe());
+		}
+
+		[Fact]
+		public void NotAnySafeTest()
+		{
+			List<int> sources = null;
+			Assert.True(sources.NotAnySafe());
+			sources = new List<int>();
+			Assert.True(sources.NotAnySafe());
+			sources.Add(1);
+			Assert.False(sources.NotAnySafe());
+		}
 	}
 }
