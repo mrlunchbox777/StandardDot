@@ -14,7 +14,7 @@ namespace StandardDot.CoreExtensions
 		/// <param name="source">The source IEnumerable</param>
 		/// <param name="keySelector">The function that returns a unique hash for each element</param>
 		/// <returns>The filtered IEnumerable</returns>
-		public static IEnumerable<TSource> DistinctBy<TSource, TKey>
+		public static IEnumerable<TSource> DistinctBySelector<TSource, TKey>
 			(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
 		{
 			HashSet<TKey> knownKeys = new HashSet<TKey>();
@@ -35,7 +35,7 @@ namespace StandardDot.CoreExtensions
 		/// <returns>The filtered IEnumerable</returns>
 		public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
 		{
-			return DistinctBy(source, x => x.GetHashCode());
+			return DistinctBySelector(source, x => x.GetHashCode());
 		}
 		
 		/// <summary>
