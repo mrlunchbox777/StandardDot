@@ -33,7 +33,7 @@ namespace StandardDot.CoreExtensions
 		/// <typeparam name="TSource">The type in the source <see cref="IEnumerable" /></typeparam>
 		/// <param name="source">The source IEnumerable</param>
 		/// <returns>The filtered IEnumerable</returns>
-		public static IEnumerable<TSource> Distinct<TSource>(this IEnumerable<TSource> source)
+		public static IEnumerable<TSource> DistinctSelector<TSource>(this IEnumerable<TSource> source)
 		{
 			return DistinctBySelector(source, x => x.GetHashCode());
 		}
