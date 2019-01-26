@@ -35,7 +35,7 @@ namespace StandardDot.CoreExtensions.UnitTests
 			};
 
 			Assert.NotEqual(foobars.Count, foobars2.Count);
-			List<Foobar> result = foobars2.DistinctBy(x => x.Foo + "" + x.Bar).ToList();
+			List<Foobar> result = foobars2.DistinctBySelector(x => x.Foo + "" + x.Bar).ToList();
 			Assert.NotEqual(foobars2.Count, result.Count);
 			Assert.Equal(foobars.Count, result.Count);
 			for (int i = 0; i < foobars.Count; i++)
