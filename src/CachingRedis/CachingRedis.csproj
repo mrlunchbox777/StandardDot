@@ -46,7 +46,7 @@
 		<PackageReference Include="StandardDot.Abstract" Version="0.0.1.3" />
 		<PackageReference Include="StandardDot.Caching" Version="0.0.1.4" />
 		<PackageReference Include="StandardDot.CoreExtensions" Version="0.0.1.6" />
-		<PackageReference Include="StandardDot.CoreServices" Version="0.0.1.10" />
+		<PackageReference Include="StandardDot.CoreServices" Version="0.0.1.11" />
 	</ItemGroup>
 
 </Project>
