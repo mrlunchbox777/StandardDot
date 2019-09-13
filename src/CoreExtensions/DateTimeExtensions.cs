@@ -34,7 +34,7 @@ namespace StandardDot.CoreExtensions
 		/// <param name="other">The second DateTime</param>
 		/// <param name="tolerance">The tolerance that is acceptable for equality</param>
 		/// <returns>If the DateTimes are equal within a tolerance</returns>
-		public static bool Compare(this DateTime source, DateTime other, TimeSpan? tolerance = null)
+		public static bool Compare(this DateTime? source, DateTime? other, TimeSpan? tolerance = null)
 		{
 			if (source == other)
 			{

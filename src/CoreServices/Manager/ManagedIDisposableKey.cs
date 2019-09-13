@@ -2,36 +2,93 @@ using System;
 
 namespace StandardDot.CoreServices.Manager
 {
+	/// <summary>
+	/// A Key for the Disposal Manager, it is basically a Guid with a callbefore and callback
+	/// </summary>
 	public class ManagedIDisposableKey
 	{
+		/// <summary>
+		/// The underlying Guid that provides the unique Id
+		/// </summary>
 		public Guid Id { get; set; }
 
-		public event Action<ManagedIDisposableKey, IDisposable> Callback;
+		/// <summary>
+		/// The event that will be raised before disposal
+		/// </summary>
+		protected event Action<ManagedIDisposableKey, IDisposable, DisposalManager> Callbefore;
 
-		public event Action<ManagedIDisposableKey, IDisposable> Callbefore;
+		/// <summary>
+		/// The event that will be raised after disposal
+		/// </summary>
+		protected event Action<ManagedIDisposableKey, DisposalManager> Callback;
 
-		internal void TriggerCallbefore(IDisposable value)
+		/// <summary>
+		/// Subscribes to the Callbefore
+		/// </summary>
+		/// <param name="subscriber">The subscriber to add to the Callbefore</param>
+		public void SubscribeBefore(Action<ManagedIDisposableKey, IDisposable, DisposalManager> subscriber)
+		{
+			Callbefore += subscriber;
+		}
+
+		/// <summary>
+		/// Subscribes to the Callback
+		/// </summary>
+		/// <param name="subscriber">The subscriber to add to the Callback</param>
+		public void SubscribeAfter(Action<ManagedIDisposableKey, DisposalManager> subscriber)
+		{
+			Callback += subscriber;
+		}
+
+		/// <summary>
+		/// Unsubscribes to the Callbefore
+		/// </summary>
+		/// <param name="subscriber">The subscriber to remove from the Callbefore</param>
+		public void UnsubscribeBefore(Action<ManagedIDisposableKey, IDisposable, DisposalManager> subscriber)
+		{
+			Callbefore -= subscriber;
+		}
+
+		/// <summary>
+		/// Unsubscribes to the Callback
+		/// </summary>
+		/// <param name="subscriber">The subscriber to remove from the Callback</param>
+		public void UnsubscribeAfter(Action<ManagedIDisposableKey, DisposalManager> subscriber)
+		{
+			Callback -= subscriber;
+		}
+
+		/// <summary>
+		/// Raise the Callbefore
+		/// </summary>
+		/// <param name="value">The IDisposable about to be disposed</param>
+		/// <param name="manager">The <see cref="StandardDot.CoreServices.Manager.DisposalManager" /> that is disposing the value</param>
+		internal void TriggerCallbefore(IDisposable value, DisposalManager manager)
 		{
 			if (Callbefore != null)
 			{
-				Callbefore(this, value);
+				Callbefore(this, value, manager);
 			}
 		}
 
-		internal void TriggerCallback(IDisposable value)
+		/// <summary>
+		/// Raise the Callback
+		/// </summary>
+		/// <param name="manager">The <see cref="StandardDot.CoreServices.Manager.DisposalManager" /> that disposed the value</param>
+		internal void TriggerCallback(DisposalManager manager)
 		{
 			if (Callback != null)
 			{
-				Callback(this, value);
+				Callback(this, manage);
 			}
 		}
 
+		/// <summary>
+		/// Checks for equality of the underlying Id
+		/// </summary>
+		/// <param name="obj">The object to check equality against</param>
 		public override bool Equals(object obj)
 		{
-			if (Id == null)
-			{
-				return obj == null;
-			}
 			if (obj == null)
 			{
 				return Id == null;
@@ -47,33 +104,36 @@ namespace StandardDot.CoreServices.Manager
 			return Id.Equals(obj);
 		}
 
+		/// <summary>
+		/// Gets the Hash Code of the underlying Id
+		/// </summary>
 		public override int GetHashCode()
 		{
-			if (Id == null)
-			{
-				return Guid.Empty.GetHashCode();
-			}
 			return Id.GetHashCode();
 		}
 
+		/// <summary>
+		/// Gets the string representation of the underlying Id
+		/// </summary>
 		public override string ToString()
 		{
-			if (Id == null)
-			{
-				Guid.Empty.ToString();
-			}
 			return Id.ToString();
 		}
 
+		/// <summary>
+		/// Gets the string representation of the underlying Id with formatting
+		/// </summary>
+		/// <param name="format">The format string to pass to the underlying Id</param>
 		public string ToString(string format)
 		{
-			if (Id == null)
-			{
-				Guid.Empty.ToString(format);
-			}
-			return Id.ToString(format);
+			return (Id ?? Guid.Empty).ToString(format);
 		}
 
+		/// <summary>
+		/// Checks for equality of the underlying Id
+		/// </summary>
+		/// <param name="item1">The first object to check equality against</param>
+		/// <param name="item2">The second object to check equality against</param>
 		public static bool operator == (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
 			object objItem1 = item1 as object;
@@ -88,6 +148,11 @@ namespace StandardDot.CoreServices.Manager
 			return item1.Equals(item2);
 		}
 
+		/// <summary>
+		/// Checks for non-equality of the underlying Id
+		/// </summary>
+		/// <param name="item1">The first object to check non-equality against</param>
+		/// <param name="item2">The second object to check non-equality against</param>
 		public static bool operator != (ManagedIDisposableKey item1, ManagedIDisposableKey item2)
 		{
 			return !(item1 == item2);
