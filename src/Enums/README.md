@@ -10,3 +10,5 @@
 * [Enums Unit Tests](/src/EnumsUnitTests/README.md)
 
 ## Info
+
+### Table of Contents

@@ -14,6 +14,8 @@
 
 ## Info
 
+### Table of Contents
+
 Check [Hmac Authentication help](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md) for integration instructions
 
 The endpoints document contains all the endpoints you'll need to integrate.

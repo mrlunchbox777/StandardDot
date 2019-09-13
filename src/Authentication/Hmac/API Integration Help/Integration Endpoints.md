@@ -12,6 +12,8 @@
 
 ## Info
 
+### Table of Contents
+
 ### Basic Methods
 
 #### Anonymous

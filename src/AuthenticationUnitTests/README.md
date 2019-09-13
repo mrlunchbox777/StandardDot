@@ -12,3 +12,5 @@
 * [Jwt Unit Tests](/src/AuthenticationUnitTests/Jwt/README.md)
 
 ## Info
+
+### Table of Contents

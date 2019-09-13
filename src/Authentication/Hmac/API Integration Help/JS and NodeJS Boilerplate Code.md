@@ -12,6 +12,8 @@
 
 ## Info
 
+### Table of Contents
+
 ### How To Integrate
 
 [Other libraries](https://www.jokecamp.com/blog/examples-of-creating-base64-hashes-using-hmac-sha256-in-different-languages/)

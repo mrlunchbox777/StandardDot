@@ -12,3 +12,5 @@
 * [Serialization Unit Tests](/src/CoreServicesUnitTests/Serialization/README.md)
 
 ## Info
+
+### Table of Contents
