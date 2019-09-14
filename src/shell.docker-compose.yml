@@ -1,15 +1,17 @@
 version: '3'
 
 services:
-  terminal:
+  standarddot_shell:
     build:
       context: .
       dockerfile: Shell.Dockerfile
+      args:
+        NUGET_PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
     volumes:
       - ./:/app
     depends_on:
-      - redis
+      - standarddot_redis
     stdin_open: true
     tty: true
-  redis:
-    image: redis:alpine
+  standarddot_redis:
+    image: redis:5-alpine

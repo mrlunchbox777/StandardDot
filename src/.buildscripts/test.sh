@@ -13,25 +13,36 @@ do
     echo "-----------------------------------------------"
 done
 
+dotnet build-server shutdown
+
 # run sonarqube
-if [ "${DSONAR_LOGIN}" != "" ]
+if [ "${SONAR_LOGIN}" != "" ]
 then
     # sonar-scanner \
-    #     -Dsonar.projectKey=${DSONAR_PROJECTKEY} \
-    #     -Dsonar.organization=${DSONAR_ORGANIZATION} \
+    #     -Dsonar.projectKey=${SONAR_PROJECTKEY} \
+    #     -Dsonar.organization=${SONAR_ORGANIZATION} \
     #     -Dsonar.sources=. \
-    #     -Dsonar.host.url=${DSONAR_HOST} \
-    #     -Dsonar.login=${DSONAR_LOGIN}
+    #     -Dsonar.host.url=${SONAR_HOST} \
+    #     -Dsonar.login=${SONAR_LOGIN}
+    ignorables=" \
+        *Tests/ , .buildscripts/ , .sonarqube/ , .vscode/ , **/README.md \
+        , **/*.csproj , *.sh , *.yml , *.Dockerfile , *.sln , .env , .env.example \
+        "
+
     dotnet sonarscanner begin \
-        -d:sonar.projectKey=${DSONAR_PROJECTKEY} \
-        -d:sonar.organization=${DSONAR_ORGANIZATION} \
-        -d:sonar.sources=. \
-        -d:sonar.host.url=${DSONAR_HOST} \
-        -d:sonar.login=${DSONAR_LOGIN} \
-        -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-        -d:sonar.coverage.exclusions="**Tests*.cs"
+        -k:"${SONAR_PROJECTKEY}" \
+        -o:"${SONAR_ORGANIZATION}" \
+        -d:sonar.host.url="${SONAR_HOST}" \
+        -d:sonar.login="${SONAR_LOGIN}" \
+        -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+        -d:sonar.coverage.exclusions="${ignorables}"
+        # -d:sonar.exclusions=${ignorables}
+        # -d:sonar.sources=. \
+
     dotnet build ./StandardDot.sln
-    dotnet sonarscanner end
+
+    dotnet sonarscanner end \
+        -d:sonar.login="${SONAR_LOGIN}"
 else
     echo "Skipping Sonar Scanner"
 fi
