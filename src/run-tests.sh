@@ -1,1 +1,1 @@
-docker-compose -f test.docker-compose.yml up --abort-on-container-exit
+docker-compose -f docker-compose.yml up --abort-on-container-exit
