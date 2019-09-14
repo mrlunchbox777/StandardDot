@@ -10,4 +10,4 @@ services:
     depends_on:
       - redis
   redis:
-    image: redis:alpine
+    image: redis:5-alpine
