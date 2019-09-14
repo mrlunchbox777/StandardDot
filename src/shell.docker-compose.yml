@@ -4,10 +4,12 @@ services:
   terminal:
     build:
       context: .
-      dockerfile: Terminal.Dockerfile
+      dockerfile: Shell.Dockerfile
     volumes:
       - ./:/app
     depends_on:
       - redis
+    stdin_open: true
+    tty: true
   redis:
     image: redis:alpine
