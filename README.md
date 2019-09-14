@@ -1,17 +1,10 @@
 # README - Standard Dot
 
-![StandardDot](https://img.shields.io/badge/Standard%20Dot-0.0.1-blue.svg)
 ![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0-green.svg)
-![.NET Core](https://img.shields.io/badge/.NET%20Core-2.0-green.svg)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mrlunchbox777_StandardDot&metric=alert_status)](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mrlunchbox777_StandardDot&metric=coverage)](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
 
-## Stats
-
-| Type | Develop | Master | Branch |
-| :--- | :---: | :---: | :---: |
-| Sonar Qube | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Adevelop&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Amaster&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Amaster) | [![Quality Gate Status](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/api/project_badges/measure?project=StandardDot%3Abranch&metric=alert_status)](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch) |
-| Jenkins | -> | [![Build Status](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/buildStatus/icon?job=StandardDot)](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/job/StandardDot/buildTimeTrend) | <- |
-
-### What this repository is for
+## What this repository is for
 
 Basic .NET Standard Libraries
 
