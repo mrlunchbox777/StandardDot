@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  test:
+    build:
+      context: .
+      dockerfile: Test.Dockerfile
+    volumes:
+      - ./:/app
+    depends_on:
+      - redis
+  redis:
+    image: redis:alpine
