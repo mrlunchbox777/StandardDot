@@ -5,9 +5,21 @@ services:
     build:
       context: .
       dockerfile: Test.Dockerfile
+      args:
+        # you may want to skip this install if you aren't running sonarqube
+        INSTALL_SONAR_SCANNER: "true"
+        # these have good defaults
+        # SONAR_SCANNER_HOME:
+        # SONAR_SCANNER_OPTS:
+        # SONAR_SCANNER_VERSION:
     volumes:
       - ./:/app
     depends_on:
       - redis
+    environment:
+      - DSONAR_LOGIN
+      - DSONAR_HOST
+      - DSONAR_PROJECTKEY
+      - DSONAR_ORGANIZATION
   redis:
     image: redis:5-alpine
