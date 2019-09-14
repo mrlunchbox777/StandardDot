@@ -1,7 +1,5 @@
 FROM microsoft/dotnet:2.2-sdk-alpine
 
-ENV TEST_DIRS=""
-
 WORKDIR /tempApp
 COPY . .
 RUN ./.buildscripts/restore.sh
