@@ -1,14 +1,12 @@
 FROM microsoft/dotnet:2.2-sdk-alpine
 
+RUN apk update && apk upgrade && apk add bash
+
 ARG NUGET_PACKAGE_SOURCE
 
 ENV NUGET_PACKAGE_SOURCE="${NUGET_PACKAGE_SOURCE}"
 
-WORKDIR /tempApp
-COPY . .
-RUN ./.buildscripts/restore.sh
-
-RUN apk update && apk upgrade && apk add bash
-
 WORKDIR /app
-CMD dotnet restore && tail -f /dev/null
+COPY . .
+RUN ./src/.buildscripts/restore.sh
+CMD cd src && dotnet restore && cd .. && tail -f /dev/null

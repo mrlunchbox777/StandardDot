@@ -4,7 +4,7 @@ services:
   standarddot_shell:
     build:
       context: .
-      dockerfile: Shell.Dockerfile
+      dockerfile: src/Shell.Dockerfile
       args:
         NUGET_PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
     volumes:

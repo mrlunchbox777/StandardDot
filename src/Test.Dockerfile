@@ -1,6 +1,6 @@
 FROM microsoft/dotnet:2.2-sdk-alpine
 
-RUN apk add openjdk8-jre
+RUN apk update && apk upgrade && apk add openjdk8-jre git
 
 ARG SONAR_SCANNER_HOME="${HOME}/.sonar/sonar-scanner-${SONAR_SCANNER_VERSION}-linux"
 ARG SONAR_SCANNER_OPTS="-server"
@@ -14,14 +14,9 @@ ENV SONAR_SCANNER_VERSION="${SONAR_SCANNER_VERSION}"
 ENV NUGET_PACKAGE_SOURCE="${NUGET_PACKAGE_SOURCE}"
 
 ENV PATH="/root/.dotnet/tools:${PATH}"
-
-WORKDIR /tempApp
-COPY ./.buildscripts ./.buildscripts
-RUN if [ "${INSTALL_SONAR_SCANNER}" == "true" ]; then ./.buildscripts/install_sonar_scanner.sh; else echo "Skipping Sonar Scanner"; fi
-
-WORKDIR /tempApp
-COPY . .
-RUN ./.buildscripts/restore.sh
-
 WORKDIR /app
-CMD ./.buildscripts/test.sh
+COPY ./src/.buildscripts ./src/.buildscripts
+RUN if [ "${INSTALL_SONAR_SCANNER}" == "true" ]; then ./src/.buildscripts/install_sonar_scanner.sh; else echo "Skipping Sonar Scanner"; fi
+COPY . .
+RUN ./src/.buildscripts/restore.sh
+CMD ./src/.buildscripts/test.sh

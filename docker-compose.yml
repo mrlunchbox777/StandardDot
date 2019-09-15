@@ -4,7 +4,7 @@ services:
   standarddot_test:
     build:
       context: .
-      dockerfile: Test.Dockerfile
+      dockerfile: src/Test.Dockerfile
       args:
         NUGET_PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
         # you may want to skip this install if you aren't running sonarqube
