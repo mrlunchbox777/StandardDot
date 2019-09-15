@@ -1,3 +1,22 @@
+# pulled from https://stackoverflow.com/questions/296536/how-to-urlencode-data-for-curl-command
+rawurlencode() {
+  local string="${1}"
+  local strlen=${#string}
+  local encoded=""
+  local pos c o
+
+  for (( pos=0 ; pos<strlen ; pos++ )); do
+     c=${string:$pos:1}
+     case "$c" in
+        [-_.~a-zA-Z0-9] ) o="${c}" ;;
+        * )               printf -v o '%%%02x' "'$c"
+     esac
+     encoded+="${o}"
+  done
+  echo "${encoded}"    # You can either set a return variable (FASTER) 
+  REPLY="${encoded}"   #+or echo the result (EASIER)... or both... :p
+}
+
 cd src
 
 # need an API Key to publish
@@ -6,6 +25,20 @@ then
     echo "----------------"
     echo "unable to publish without the environment variable NUGET_API_KEY set"
     echo "----------------"
+    exit 1
+fi
+
+urlEncodedBranchName="$(rawurlencode ${GIT_BRANCH_NAME})"
+qualityGate="$(wget -qO- https://sonarcloud.io/api/qualitygates/project_status?projectKey=mrlunchbox777_StandardDot&branch=${urlEncodedBranchName})"
+qualityGateStatus="$(echo ${qualityGate} | jq -r '.projectStatus.status')"
+
+# need quality gate passing
+if [ "${qualityGateStatus}" != "OK" ]
+then
+    echo "----------------"
+    echo "quality gate failed with status ${qualityGateStatus}"
+    echo "----------------"
+    exit 1
 fi
 
 # Attempt to publish everything except Test Projects

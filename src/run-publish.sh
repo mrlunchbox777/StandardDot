@@ -1,6 +1,9 @@
 cd ..
 
+    
 GIT_BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
+export GIT_BRANCH_NAME="${GIT_BRANCH_NAME}"
+
 if [ "${GIT_BRANCH_NAME}" == "master" ]
 then
     docker-compose -f publish.docker-compose.yml up $@
