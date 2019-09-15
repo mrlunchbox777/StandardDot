@@ -1,5 +1,6 @@
 cd src
 
+# need an API Key to publish
 if [ "$NUGET_API_KEY" == "" ]
 then
     echo "----------------"
@@ -7,7 +8,7 @@ then
     echo "----------------"
 fi
 
-# deployableDirectories="$(ls -d */ | grep -v Tests)"
+# Attempt to publish everything except Test Projects
 for i in $(ls -d */ | grep -v Tests)
 do
     echo "----------------"
@@ -18,6 +19,7 @@ do
     dotnet build -c Release --force --no-incremental
     dotnet pack --no-build --no-restore -o ./
 
+    # Make sure we have a nuget package to publish
     nugetPackages="$(find . -regex '.*\.nupkg' -print)"
 
     if [ "$nugetPackages" == "" ]
@@ -26,6 +28,7 @@ do
         echo "failed to publish ${i}"
         echo "----------------"
     else
+        # publish the first package found
         nugetPackage="$(echo $nugetPackages | cut -d$'\n' -f1)"
         echo "pushing $nugetPackage to $NUGET_PUSH_SOURCE"
         dotnet nuget push "$nugetPackage" -k "$NUGET_API_KEY" -s "$NUGET_PUSH_SOURCE"
