@@ -29,7 +29,7 @@ then
 fi
 
 urlEncodedBranchName="$(rawurlencode ${GIT_BRANCH_NAME})"
-qualityGate="$(wget -qO- https://sonarcloud.io/api/qualitygates/project_status?projectKey=mrlunchbox777_StandardDot&branch=${urlEncodedBranchName})"
+qualityGate="$(wget -qO- https://sonarcloud.io/api/qualitygates/project_status?projectKey=${SONAR_PROJECTKEY}&branch=${urlEncodedBranchName})"
 qualityGateStatus="$(echo ${qualityGate} | jq -r '.projectStatus.status')"
 
 # need quality gate passing

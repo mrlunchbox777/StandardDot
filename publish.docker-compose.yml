@@ -10,5 +10,6 @@ services:
     volumes:
       - ./:/app
     environment:
+      - SONAR_PROJECTKEY
       - NUGET_API_KEY
       - NUGET_PUSH_SOURCE=https://www.nuget.org/api/v2/package
