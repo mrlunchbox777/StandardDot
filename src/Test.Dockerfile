@@ -14,6 +14,7 @@ ENV SONAR_SCANNER_VERSION="${SONAR_SCANNER_VERSION}"
 ENV NUGET_PACKAGE_SOURCE="${NUGET_PACKAGE_SOURCE}"
 
 ENV PATH="/root/.dotnet/tools:${PATH}"
+
 WORKDIR /app
 COPY ./src/.buildscripts ./src/.buildscripts
 RUN if [ "${INSTALL_SONAR_SCANNER}" == "true" ]; then ./src/.buildscripts/install_sonar_scanner.sh; else echo "Skipping Sonar Scanner"; fi

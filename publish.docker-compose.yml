@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  standarddot_publish:
+    build:
+      context: .
+      dockerfile: src/Publish.Dockerfile
+      args:
+        NUGET_PACKAGE_SOURCE: "https://api.nuget.org/v3/index.json"
+    volumes:
+      - ./:/app
+    environment:
+      - NUGET_API_KEY
+      - NUGET_PUSH_SOURCE=https://www.nuget.org/api/v2/package
