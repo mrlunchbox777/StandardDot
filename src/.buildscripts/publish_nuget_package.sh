@@ -18,7 +18,6 @@ do
     dotnet build -c Release --force --no-incremental
     dotnet pack --no-build --no-restore -o ./
 
-    #nugetPackages="$(find . -regex '.*\.nupkg' -printf '%f\n')"
     nugetPackages="$(find . -regex '.*\.nupkg' -print)"
 
     if [ "$nugetPackages" == "" ]
