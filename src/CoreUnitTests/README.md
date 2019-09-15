@@ -3,8 +3,8 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-	* [Core](/src/Core/README.md)
+  * [Index](/docs/Index.md)
+  * [Core](/src/Core/README.md)
 
 ### Children
 

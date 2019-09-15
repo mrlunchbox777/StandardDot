@@ -43,24 +43,29 @@ If you have any features you'd like to request, problems you have found, or ques
 
 ### Configuration
 
-* You need the [.NET Core SDK](https://www.microsoft.com/net/download/windows)
+* You need the [.NET Core SDK](https://dotnet.microsoft.com/download)
 
 ### How to run tests
 
-* The tests are included in the project and use [XUnit](https://xunit.github.io/). You can run them from [VS Code](https://code.visualstudio.com/) and a [Dot Net Core Extension](https://github.com/matijarmk/dotnet-core-commands) might help.
+* The tests are included in the project and use [XUnit](https://xunit.github.io/)
+* To run the tests you'll need support for .sh files (usually bash) and docker/docker-compose installed and available from the PATH
+* To run them do the following from the root directory
+
+1. `cd src`
+2. `./run-tests.sh`
 
 ### Deployment instructions
 
 * You can find all of the StandardDot packages on [nuget.org](https://www.nuget.org/packages?q=StandardDot)
 * The goal is to have a readme for each project that will give general instructions for usage on each project
-* This project is built and tested automatically by [Jenkins](http://ec2-34-217-32-249.us-west-2.compute.amazonaws.com:8080/) and [SonarQube](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Adevelop)
+* This project is built and tested automatically by [Azure DevOps](https://dev.azure.com/mrlunchbox/Standard%20Dot) and [SonarQube](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
 
 ## Contribution guidelines
 
 * Writing tests
-	* We use [XUnit](https://xunit.github.io/)
-	* We are aiming for >90% code coverage, so basically all code should have acompanying test
+  * We use [XUnit](https://xunit.github.io/)
+  * We are aiming for >90% code coverage, so basically all code should have accompanying test
 * Code review
-	* All pull requests will need to be reviewed by an admin
-* You can find results of testing and code quality analysis on [SonarQube](http://ec2-52-41-240-180.us-west-2.compute.amazonaws.com/dashboard?id=StandardDot%3Abranch)
+  * All pull requests will need to be reviewed by an admin
+* You can find results of testing and code quality analysis on [SonarQube](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
 * To get code to [`develop`](https://github.com/mrlunchbox777/shoellibraries/tree/develop) or [`master`](https://github.com/mrlunchbox777/shoellibraries/tree/master) there must a pull request (Which can only be accepted by an admin)

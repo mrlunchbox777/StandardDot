@@ -3,9 +3,9 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-		* [Authentication](/src/Authentication/README.md)
-			* [Hmac](/src/Authentication/Hmac/README.md)
+  * [Index](/docs/Index.md)
+    * [Authentication](/src/Authentication/README.md)
+      * [Hmac](/src/Authentication/Hmac/README.md)
 
 ### Children
 
@@ -49,7 +49,7 @@ The value more specifically like this
 sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}
 ```
 
-1. `:` - The first one is the key value seperator, the remaining `:`'s are seperator to get the different portions of the header value
+1. `:` - The first one is the key value separator, the remaining `:`'s are separator to get the different portions of the header value
 2. `Authorization` - Header key
 3. `sds` - Authentication namespace
 4. `AppId` - The AppId you get from the provider
@@ -73,15 +73,14 @@ The signature data will look like this
 Steps in the process
 
 1. Get your content, URI, and request method
-2. Generate a nonce (guids work fine)
+2. Generate a nonce (a guid will work fine)
 3. Generate a Unix Timestamp from UTC
 4. MD5 hash your content, and then Base64 Encode the hash
 5. Create your signature string
-	* `{AppId}{RequestHttpMethod}{RequestUriString}{RequestTimeStamp}{Nonce}{RequestContentBase64String}`
+```{AppId}{RequestHttpMethod}{RequestUriString}{RequestTimeStamp}{Nonce}{RequestContentBase64String}```
 6. HMAC SHA256 Hash your signature, using your Secret Key as the hashing key, and then Base64 Encode the hash - [C++](https://gist.github.com/woodja/6082940)
-7. Create your header
-	* Complete Header - `[Authorization: sds AppId:Signature:Nonce:Timestamp]`
-	* Header Value - `sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
+7. Create your header: Complete Header -
+`[Authorization: sds AppId:Signature:Nonce:Timestamp]`; Header Value - `sds {AppId}:{RequestSignatureBase64String}:{Nonce}:{RequestTimeStamp}`
 8. Submit your header with your request, and you should be authenticated
 
-There are several utility enpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
+There are several utility endpoints given in the [Integration Endpoints](/src/Authentication/Hmac/API%20Integration%20Help/Integration%20Endpoints.md)
