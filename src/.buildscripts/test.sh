@@ -27,17 +27,30 @@ then
         *Tests/ , .buildscripts/ , .sonarqube/ , .vscode/ , **/README.md \
         , **/*.csproj , *.sh , *.yml , *.Dockerfile , *.sln , .env , .env.example \
         "
-
-    dotnet sonarscanner begin \
-        -k:"${SONAR_PROJECTKEY}" \
-        -o:"${SONAR_ORGANIZATION}" \
-        -d:sonar.host.url="${SONAR_HOST}" \
-        -d:sonar.login="${SONAR_LOGIN}" \
-        -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
-        -d:sonar.coverage.exclusions="${ignorables}" \
-        -d:sonar.branch.name="${GIT_BRANCH_NAME}" \
-        -d:sonar.branch.target="${GIT_BRANCH_TARGET}" \
-        -d:sonar.tests="**/test_result.xml"
+    if [ "${GIT_BRANCH_NAME}" == "master" ]
+    then
+        dotnet sonarscanner begin \
+            -k:"${SONAR_PROJECTKEY}" \
+            -o:"${SONAR_ORGANIZATION}" \
+            -d:sonar.host.url="${SONAR_HOST}" \
+            -d:sonar.login="${SONAR_LOGIN}" \
+            -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            -d:sonar.coverage.exclusions="${ignorables}" \
+            -d:sonar.branch.name="${GIT_BRANCH_NAME}" \
+            -d:sonar.tests="**/test_result.xml"
+            # -d:sonar.branch.target="${GIT_BRANCH_TARGET}" \
+    else
+        dotnet sonarscanner begin \
+            -k:"${SONAR_PROJECTKEY}" \
+            -o:"${SONAR_ORGANIZATION}" \
+            -d:sonar.host.url="${SONAR_HOST}" \
+            -d:sonar.login="${SONAR_LOGIN}" \
+            -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
+            -d:sonar.coverage.exclusions="${ignorables}" \
+            -d:sonar.branch.name="${GIT_BRANCH_NAME}" \
+            -d:sonar.branch.target="${GIT_BRANCH_TARGET}" \
+            -d:sonar.tests="**/test_result.xml"
+    fi
 
     dotnet build ./StandardDot.sln
 
