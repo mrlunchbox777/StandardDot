@@ -313,3 +313,5 @@ src/.vscode/solution-explorer/
 .sonarqube/
 .env
 coverage.opencover.xml
+.testResults
+test_result.xml

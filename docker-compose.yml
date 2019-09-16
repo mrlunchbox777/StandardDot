@@ -15,6 +15,7 @@ services:
         # SONAR_SCANNER_VERSION:
     volumes:
       - ./:/app
+      - ./.testResults:/testResults
     depends_on:
       - standarddot_redis
     environment:

@@ -8,7 +8,11 @@ do
     echo "-----------------------------------------------"
     echo "running $i"
     cd "$i"
-    dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+    mkdir -p "/testResults/$i"
+    mkdir -p "/testResults/coverage/$i"
+    dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover --test-adapter-path:. --logger:"xunit;LogFilePath=test_result.xml"
+    cp "./coverage.opencover.xml" "/testResults/coverage/$i/coverage.opencover.xml"
+    cp "test_result.xml" "/testResults/$i/test_result.xml"
     cd ..
     echo "completed running $i"
     echo "-----------------------------------------------"
@@ -32,7 +36,8 @@ then
         -d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml" \
         -d:sonar.coverage.exclusions="${ignorables}" \
         -d:sonar.branch.name="${GIT_BRANCH_NAME}" \
-        -d:sonar.branch.target="${GIT_BRANCH_TARGET}"
+        -d:sonar.branch.target="${GIT_BRANCH_TARGET}" \
+        -d:sonar.tests="**/test_result.xml"
 
     dotnet build ./StandardDot.sln
 

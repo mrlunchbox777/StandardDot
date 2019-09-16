@@ -31,6 +31,17 @@ stages:
         SONAR_HOST: $(SONAR_HOST)
         SONAR_ORGANIZATION: $(SONAR_ORGANIZATION)
         SONAR_PROJECTKEY: $(SONAR_PROJECTKEY)
+    - task: PublishTestResults
+      inputs:
+        testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+        testResultsFiles: '.testResults/**/test_result.xml' 
+        #searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
+        #mergeTestResults: false # Optional
+        #failTaskOnFailedTests: false # Optional
+        #testRunTitle: # Optional
+        #buildPlatform: # Optional
+        #buildConfiguration: # Optional
+        #publishRunAttachments: true # Optional
 
 - stage: publish
   jobs:
