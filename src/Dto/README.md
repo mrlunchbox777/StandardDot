@@ -3,7 +3,7 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
+  * [Index](/docs/Index.md)
 
 ### Children
 
@@ -13,3 +13,5 @@
 * [Dto Unit Tests](/src/DtoUnitTests/README.md)
 
 ## Info
+
+### Table of Contents

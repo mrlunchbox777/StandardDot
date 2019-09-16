@@ -26,8 +26,8 @@ namespace StandardDot.CoreExtensions.UnitTests
 		[Fact]
 		public void CompareDateTimeTest()
 		{
-			DateTime first = DateTime.UtcNow;
-			DateTime second = first.AddSeconds(5);
+			DateTime? first = DateTime.UtcNow;
+			DateTime? second = ((DateTime)first).AddSeconds(5);
 			TimeSpan passTolerance = TimeSpan.FromSeconds(5);
 
 			Assert.False(first.Compare(second));

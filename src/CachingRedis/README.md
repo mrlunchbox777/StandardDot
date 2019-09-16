@@ -3,7 +3,7 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
+  * [Index](/docs/Index.md)
 
 ### Children
 
@@ -16,3 +16,5 @@
 * [Caching Redis Unit Tests](/src/CachingRedisUnitTests/README.md)
 
 ## Info
+
+### Table of Contents

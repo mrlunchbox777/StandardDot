@@ -3,14 +3,16 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-		* [Authentication](/src/Authentication/README.md)
-			* [Hmac](/src/Authentication/Hmac/README.md)
-				* [Hmac Authentication Help](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
+  * [Index](/docs/Index.md)
+    * [Authentication](/src/Authentication/README.md)
+      * [Hmac](/src/Authentication/Hmac/README.md)
+        * [Hmac Authentication Help](/src/Authentication/Hmac/API%20Integration%20Help/HMAC%20Authentication%20Help.md)
 
 ### Children
 
 ## Info
+
+### Table of Contents
 
 ### How To Integrate
 
@@ -18,7 +20,7 @@
 
 Switch var to const if desired
 
-You will need to provide a nonce method `nonce()`, the httpmethod `requestHttpMethod`, the URL (must be url encoded) `urlEncodedRequestUriString`, `APP_ID`, and `SECRET_KEY`
+You will need to provide a nonce method `nonce()`, the http method `requestHttpMethod`, the URL (must be url encoded) `urlEncodedRequestUriString`, `APP_ID`, and `SECRET_KEY`
 
 This is nodejs but can be replicated in regular js fairly easily
 

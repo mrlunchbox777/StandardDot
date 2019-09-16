@@ -3,7 +3,7 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
+  * [Index](/docs/Index.md)
 
 ### Children
 
@@ -11,3 +11,5 @@
 * [Core Unit Tests](/src/CoreUnitTests/README.md)
 
 ## Info
+
+### Table of Contents

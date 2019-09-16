@@ -3,8 +3,8 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-	* [Abstract](/src/Abstract/README.md)
+  * [Index](/docs/Index.md)
+  * [Abstract](/src/Abstract/README.md)
 
 ### Children
 
@@ -14,3 +14,5 @@
 * [Core Services Integration Tests](/src/AbstractIntegrationTests/CoreServices/README.md)
 
 ## Info
+
+### Table of Contents

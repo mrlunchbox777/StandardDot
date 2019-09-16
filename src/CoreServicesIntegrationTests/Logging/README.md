@@ -3,10 +3,12 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-		* [Core Services Integration Tests](/src/CoreServicesIntegrationTests/README.md)
-		* [Logging](/src/CoreServices/Logging/README.md)
+  * [Index](/docs/Index.md)
+    * [Core Services Integration Tests](/src/CoreServicesIntegrationTests/README.md)
+    * [Logging](/src/CoreServices/Logging/README.md)
 
 ### Children
 
 ## Info
+
+### Table of Contents

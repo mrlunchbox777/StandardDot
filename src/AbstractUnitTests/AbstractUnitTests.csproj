@@ -27,6 +27,7 @@
 		<DotNetCliToolReference Include="dotnet-xunit" Version="2.3.1" />
 		<None Update=".\testConfigurationJson.json" CopyToOutputDirectory="PreserveNewest" />
 		<None Update=".\testConfigurationJson2.json" CopyToOutputDirectory="PreserveNewest" />
+		<PackageReference Include="XunitXml.TestLogger" Version="2.1.26" />
 	</ItemGroup>
 
 	<ItemGroup>

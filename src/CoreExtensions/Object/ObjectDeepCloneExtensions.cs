@@ -539,7 +539,7 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToSkip = overrideSettings?.Where(s => s?.FullNamesToSkip?.Any() ?? false).SelectMany(s => s.FullNamesToSkip)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToSkip?.Any() ?? false)
+				if (fullNamesToSkip.AnySafe())
 				{
 					cachedFullNamesToSkip.Add(overrideSettings.GetHashCode(), fullNamesToSkip);
 				}
@@ -553,13 +553,13 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToInclude = overrideSettings?.Where(s => s?.FullNamesToInclude?.Any() ?? false).SelectMany(s => s.FullNamesToInclude)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToInclude?.Any() ?? false)
+				if (fullNamesToInclude.AnySafe())
 				{
 					cachedFullNamesToInclude.Add(overrideSettings.GetHashCode(), fullNamesToInclude);
 				}
 			}
 
-			if (fullNamesToSkip?.Any() ?? false)
+			if (fullNamesToSkip.AnySafe())
 			{
 				foreach (string fullNameToSkip in fullNamesToSkip)
 				{
@@ -574,7 +574,7 @@ namespace StandardDot.CoreExtensions.Object
 					}
 				}
 			}
-			if (fullNamesToInclude?.Any() ?? false)
+			if (fullNamesToInclude.AnySafe())
 			{
 				foreach (string fullNameToInclude in fullNamesToInclude)
 				{
@@ -613,13 +613,13 @@ namespace StandardDot.CoreExtensions.Object
 			{
 				fullNamesToAttempt = overrideSettings?.Where(s => s?.FullNamesToAttempt?.Any() ?? false).SelectMany(s => s.FullNamesToAttempt)
 					.Where(f => !string.IsNullOrWhiteSpace(f)).ToList();
-				if (fullNamesToAttempt?.Any() ?? false)
+				if (fullNamesToAttempt.AnySafe())
 				{
 					cachedFullNamesToAttempt.Add(overrideSettings.GetHashCode(), fullNamesToAttempt);
 				}
 			}
 
-			if (fullNamesToAttempt?.Any() ?? false)
+			if (fullNamesToAttempt.AnySafe())
 			{
 				foreach (string fullNameToAttempt in fullNamesToAttempt)
 				{
