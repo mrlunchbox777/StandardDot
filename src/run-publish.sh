@@ -1,6 +1,6 @@
 cd ..
- 
-GIT_BRANCH_NAME="${Build.SourceBranchName}"
+
+GIT_BRANCH_NAME="${BUILD_SOURCEBRANCHNAME}"
 if [ "${GIT_BRANCH_NAME}" == "" ]
 then
     GIT_BRANCH_NAME="$(git rev-parse --abbrev-ref HEAD)"
