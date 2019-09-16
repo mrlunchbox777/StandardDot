@@ -13,9 +13,8 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-# Handling these with a library and mapping to env_var
-# variables:
-#   buildConfiguration: 'Release'
+variables:
+- group: 'Core Pipeline Vars'
 
 stages:
 - stage: test
