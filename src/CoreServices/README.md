@@ -3,11 +3,11 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
+  * [Index](/docs/Index.md)
 
 ### Children
 
-* [Extentions](/src/CoreServices/Extensions/README.md)
+* [Extensions](/src/CoreServices/Extensions/README.md)
 * [Logging](/src/CoreServices/Logging/README.md)
 * [Manager](/src/CoreServices/Manager/README.md)
 * [Pagination](/src/CoreServices/Pagination/README.md)

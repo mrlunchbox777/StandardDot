@@ -3,9 +3,9 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-		* [Core Extensions Unit Tests](/src/CoreExtensionsUnitTests/README.md)
-		* [Object](/src/CoreExtensions/Object/README.md)
+  * [Index](/docs/Index.md)
+    * [Core Extensions Unit Tests](/src/CoreExtensionsUnitTests/README.md)
+    * [Object](/src/CoreExtensions/Object/README.md)
 
 ### Children
 

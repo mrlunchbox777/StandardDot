@@ -1,0 +1,58 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+# General Pipeline docs - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema#pipeline-structure
+
+name: 'test other branches'
+
+trigger:
+- master
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Handling these with a library and mapping to env_var
+# variables:
+#   buildConfiguration: 'Release'
+
+stages:
+- stage: test
+  jobs:
+  - job: runTests
+    steps:
+    - bash: cd src && ./run-tests.sh
+      displayName: 'run tests'
+      env:
+        NUGET_API_KEY: $(NUGET_API_KEY)
+        SONAR_LOGIN: $(SONAR_LOGIN)
+        NUGET_PUSH_SOURCE: $(NUGET_PUSH_SOURCE)
+        SONAR_HOST: $(SONAR_HOST)
+        SONAR_ORGANIZATION: $(SONAR_ORGANIZATION)
+        SONAR_PROJECTKEY: $(SONAR_PROJECTKEY)
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
+        testResultsFiles: '.testResults/*/test_result.xml' 
+        #searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
+        #mergeTestResults: false # Optional
+        #failTaskOnFailedTests: false # Optional
+        #testRunTitle: # Optional
+        #buildPlatform: # Optional
+        #buildConfiguration: # Optional
+        #publishRunAttachments: true # Optional
+
+- stage: publish
+  jobs:
+  - job: runPublish
+    steps:
+    - bash: cd src && ./run-publish.sh
+      displayName: 'publish packages'
+      env:
+        NUGET_API_KEY: $(NUGET_API_KEY)
+        SONAR_LOGIN: $(SONAR_LOGIN)
+        NUGET_PUSH_SOURCE: $(NUGET_PUSH_SOURCE)
+        SONAR_HOST: $(SONAR_HOST)
+        SONAR_ORGANIZATION: $(SONAR_ORGANIZATION)
+        SONAR_PROJECTKEY: $(SONAR_PROJECTKEY)

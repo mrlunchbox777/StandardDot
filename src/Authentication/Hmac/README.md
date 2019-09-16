@@ -3,8 +3,8 @@
 ## Navigation
 
 * [Home](/README.md)
-	* [Index](/docs/Index.md)
-		* [Authentication](/src/Authentication/README.md)
+  * [Index](/docs/Index.md)
+    * [Authentication](/src/Authentication/README.md)
 
 ### Children
 
@@ -29,8 +29,8 @@ An Example DTO
 
 ```json
 {
-	"Name": "BasicContent",
-	"Id": "2f097177-a9aa-4851-a4b3-403c7e05bff6"
+  "Name": "BasicContent",
+  "Id": "2f097177-a9aa-4851-a4b3-403c7e05bff6"
 }
 ```
 
@@ -38,16 +38,16 @@ A breakdown of the types in the DTO
 
 ```json
 {
-	"Name": "string",
-	"Id": "string"
+  "Name": "string",
+  "Id": "string"
 }
 ```
 
-There is an included a C# class that will allow you to simply add the headers to a webclient via an extention method, and parse the errors that are returned.
+There is an included a C# class that will allow you to simply add the headers to a WebClient via an extension method, and parse the errors that are returned.
 
 If you aren't using a .NET Standard language, it can be used as a reference for reproduction.
 
-If you are able to use it you can call it like this (this assumes you have a SerializeJson extention for objects, and a GetBytes extention for strings, as well as the BasicContent DTO)
+If you are able to use it you can call it like this (this assumes you have a SerializeJson extension for objects, and a GetBytes extension for strings, as well as the BasicContent DTO)
 
 ```csharp
 Uri newUri = new Uri(url);
@@ -58,17 +58,17 @@ string payload = content.SerializeJson();
 Tuple<HttpStatusCode, string> codeAndDescription;
 try
 {
-	using (WebClient webClient = new WebClient())
-	{
-		webClient.AddHmacHeaders(newUri, HttpMethod.Post, payload, HeaderGenerator);
-		await webClient.UploadDataTaskAsync(newUri, HttpMethod.Post.Method, payload.GetBytes());
-		codeAndDescription = webClient.GetStatusCodeAndDescription();
-	}
+  using (WebClient webClient = new WebClient())
+  {
+    webClient.AddHmacHeaders(newUri, HttpMethod.Post, payload, HeaderGenerator);
+    await webClient.UploadDataTaskAsync(newUri, HttpMethod.Post.Method, payload.GetBytes());
+    codeAndDescription = webClient.GetStatusCodeAndDescription();
+  }
 }
 catch (WebException ex)
 {
-	HttpWebResponse response = (HttpWebResponse)ex.Response;
-	codeAndDescription = new Tuple<HttpStatusCode, string>(response.StatusCode, response.StatusDescription);
+  HttpWebResponse response = (HttpWebResponse)ex.Response;
+  codeAndDescription = new Tuple<HttpStatusCode, string>(response.StatusCode, response.StatusDescription);
 }
 ```
 

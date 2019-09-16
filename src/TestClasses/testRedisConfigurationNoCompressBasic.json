@@ -1,6 +1,6 @@
 {
 	"redisSettings": {
-		"configurationOptions" : "127.0.0.1:6379,connectTimeout=3000",
+		"configurationOptions" : "standarddot_redis:6379,connectTimeout=3000",
 		"defaultScanPageSize" : 1000,
 		"redisServiceImplementationType" : "KeyValue",
 		"compressValues" : false,

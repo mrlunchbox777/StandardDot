@@ -79,7 +79,7 @@ namespace StandardDot.CoreServices.Manager
 		{
 			if (Callback != null)
 			{
-				Callback(this, manage);
+				Callback(this, manager);
 			}
 		}
 
@@ -126,7 +126,7 @@ namespace StandardDot.CoreServices.Manager
 		/// <param name="format">The format string to pass to the underlying Id</param>
 		public string ToString(string format)
 		{
-			return (Id ?? Guid.Empty).ToString(format);
+			return Id.ToString(format);
 		}
 
 		/// <summary>
