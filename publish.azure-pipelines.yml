@@ -34,7 +34,7 @@ stages:
     - task: PublishTestResults
       inputs:
         testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
-        testResultsFiles: '.testResults/**/test_result.xml' 
+        testResultsFiles: '.testResults/*/test_result.xml' 
         #searchFolder: '$(System.DefaultWorkingDirectory)' # Optional
         #mergeTestResults: false # Optional
         #failTaskOnFailedTests: false # Optional
