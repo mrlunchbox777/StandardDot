@@ -19,6 +19,8 @@ services:
     depends_on:
       - standarddot_redis
     environment:
+      - GIT_BRANCH_NAME
+      - GIT_BRANCH_TARGET
       - SONAR_LOGIN
       - SONAR_HOST
       - SONAR_PROJECTKEY

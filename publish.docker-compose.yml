@@ -10,6 +10,8 @@ services:
     volumes:
       - ./:/app
     environment:
+      - GIT_BRANCH_NAME
+      - GIT_BRANCH_TARGET
       - SONAR_PROJECTKEY
       - NUGET_API_KEY
       - NUGET_PUSH_SOURCE=https://www.nuget.org/api/v2/package
