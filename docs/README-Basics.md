@@ -21,7 +21,7 @@
       * Version tag prefix - `v`
       * Support branch prefix - `support/`
 * This is a [C#](https://www.tutorialspoint.com/csharp/index.htm) stack
-  * Current using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/whats-new/whats-new-in-dotnet-standard?tabs=csharp#whats-new-in-the-net-standard-20) and [.NET Core 2.0](https://docs.microsoft.com/en-us/dotnet/core/whats-new/)
+  * Current using [.NET Standard 2.0](https://docs.microsoft.com/en-us/dotnet/standard/whats-new/whats-new-in-dotnet-standard?tabs=csharp#whats-new-in-the-net-standard-20)
   * [What's the difference?](https://msdn.microsoft.com/en-us/magazine/mt842506.aspx)
 
 ### Suggested Development Tools (optional)
