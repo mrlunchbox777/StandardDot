@@ -13,6 +13,11 @@ fi
 export GIT_BRANCH_NAME="${GIT_BRANCH_NAME}"
 export GIT_BRANCH_TARGET="${GIT_BRANCH_TARGET}"
 
+echo "------------------------------------------------------------"
+echo "Running tests for potential merge operation"
+echo "${GIT_BRANCH_NAME} (Source) -> ${GIT_BRANCH_TARGET} (Target)"
+echo "------------------------------------------------------------"
+
 docker-compose -f docker-compose.yml up --abort-on-container-exit $@
 
 cd src
