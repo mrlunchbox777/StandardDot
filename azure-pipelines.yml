@@ -31,7 +31,7 @@ steps:
     SONAR_HOST: $(SONAR_HOST)
     SONAR_ORGANIZATION: $(SONAR_ORGANIZATION)
     SONAR_PROJECTKEY: $(SONAR_PROJECTKEY)
-    Build.SourceBranchName: $(Build.SourceBranchName)
+    BUILD_SOURCEBRANCHNAME: $(BUILD_SOURCEBRANCHNAME)
 - task: PublishTestResults@2
   inputs:
     testResultsFormat: 'xUnit' # Options: JUnit, NUnit, VSTest, xUnit, cTest
