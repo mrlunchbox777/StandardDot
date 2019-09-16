@@ -1,0 +1,29 @@
+# ASP.NET Core
+# Build and test ASP.NET Core projects targeting .NET Core.
+# Add steps that run tests, create a NuGet package, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/dotnet-core
+
+# General Pipeline docs - https://docs.microsoft.com/en-us/azure/devops/pipelines/yaml-schema?view=azure-devops&tabs=schema#pipeline-structure
+
+name: 'test other branches'
+
+trigger:
+- feature/*
+- release/*
+- hotfix/*
+- support/*
+- develop
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+# Handling these with a library and mapping to env_var
+# variables:
+#   buildConfiguration: 'Release'
+
+steps:
+- bash: cd src && ./run-tests.sh
+  displayName: 'run tests'
+  env:
+    NUGET_API_KEY: $(NUGET_API_KEY)
+    SONAR_LOGIN: $(SONAR_LOGIN)
