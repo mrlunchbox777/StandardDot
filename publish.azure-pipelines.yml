@@ -11,7 +11,7 @@ trigger:
 - master
 
 # no pr builds
-# pr: none
+pr: none
 
 variables:
 - group: 'Core Pipeline Vars'
