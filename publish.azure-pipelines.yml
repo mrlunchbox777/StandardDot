@@ -16,6 +16,7 @@ pool:
 variables:
 - group: 'Core Pipeline Vars'
 
+stages:
 - stage: test
   jobs:
   - job: runTests
@@ -41,7 +42,6 @@ variables:
         #buildPlatform: # Optional
         #buildConfiguration: # Optional
         #publishRunAttachments: true # Optional
-
 - stage: publish
   jobs:
   - job: runPublish
