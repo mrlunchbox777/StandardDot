@@ -10,8 +10,8 @@ name: 'test other branches'
 trigger:
 - master
 
-pool:
-  vmImage: 'ubuntu-latest'
+# no pr builds
+# pr: none
 
 variables:
 - group: 'Core Pipeline Vars'
@@ -20,6 +20,8 @@ stages:
 - stage: test
   jobs:
   - job: runTests
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - bash: cd src && ./run-tests.sh
       displayName: 'run tests'
@@ -45,6 +47,8 @@ stages:
 - stage: publish
   jobs:
   - job: runPublish
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - bash: cd src && ./run-publish.sh
       displayName: 'publish packages'
