@@ -16,7 +16,6 @@ pool:
 variables:
 - group: 'Core Pipeline Vars'
 
-stages:
 - stage: test
   jobs:
   - job: runTests
