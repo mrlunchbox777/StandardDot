@@ -294,11 +294,11 @@ namespace StandardDot.Caching.Redis
 				Invalidate(id);
 				return false;
 			}
-			if (DateTime.Compare(value.CachedTime, item.Value.CachedTime) != 0)
+			if (DateTime.Compare(value.CachedTime, item.Value.CachedTime) <= 0)
 			{
 				return false;
 			}
-			if (DateTime.Compare(value.ExpireTime, item.Value.ExpireTime) != 0)
+			if (DateTime.Compare(value.ExpireTime, item.Value.ExpireTime) <= 0)
 			{
 				return false;
 			}
