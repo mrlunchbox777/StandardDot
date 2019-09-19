@@ -1,4 +1,7 @@
 echo updating packages
+
+cd src
+
 for j in $(ls -d */)
 do
     echo "----------------"
@@ -8,7 +11,7 @@ do
     for i in $(cat *.csproj | grep PackageReference | cut -d'"' -f 2)
     do
         echo "updating ${i} for ${j}"
-        sudo dotnet add package $i
+        dotnet add package $i
         echo "updated ${i} for ${j}"
     done
     cd ..
@@ -16,4 +19,7 @@ do
     echo "updated ${j}"
     echo "----------------"
 done
+
+cd ..
+
 echo updated!
