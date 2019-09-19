@@ -46,7 +46,7 @@ else
 fi
 
 # Attempt to publish everything except Test Projects
-for i in $(ls -d */ | grep -v Tests)
+for i in $(ls -d */ | grep -v Test)
 do
     echo "----------------"
     echo "publishing ${i}"
