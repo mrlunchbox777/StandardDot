@@ -46,7 +46,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Hangfire" Version="1.6.20" />
+		<PackageReference Include="Hangfire" Version="1.7.6" />
 	</ItemGroup>
 
 </Project>
