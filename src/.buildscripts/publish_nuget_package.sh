@@ -39,6 +39,10 @@ then
     echo "quality gate failed with status ${qualityGateStatus}"
     echo "----------------"
     exit 1
+else
+    echo "----------------"
+    echo "quality has status ${qualityGateStatus}"
+    echo "----------------"
 fi
 
 # Attempt to publish everything except Test Projects
@@ -50,7 +54,7 @@ do
     cd "${i}"
 
     dotnet build -c Release --force --no-incremental
-    dotnet pack --no-build --no-restore -o ./
+    dotnet pack -o ./
 
     # Make sure we have a nuget package to publish
     nugetPackages="$(find . -regex '.*\.nupkg' -print)"
