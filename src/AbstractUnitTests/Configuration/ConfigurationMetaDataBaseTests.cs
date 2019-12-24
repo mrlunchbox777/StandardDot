@@ -7,7 +7,7 @@ using Xunit;
 
 namespace StandardDot.Abstract.UnitTests.Configuration
 {
-	public class ConfigurationMetaDataBaseTests
+	public class ConfigurationMetadataBaseTests
 	{
 		[Fact]
 		public void PropertiesFile()

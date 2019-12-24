@@ -5,7 +5,7 @@ using Xunit;
 
 namespace StandardDot.Abstract.IntegrationTests.Configuration
 {
-	public class IConfigurationMetaDataTests
+	public class IConfigurationMetadataTests
 	{
 		[Fact]
 		public void PropertiesFile()
