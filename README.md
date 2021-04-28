@@ -1,5 +1,11 @@
 # README - Standard Dot
 
+## Abandoned
+
+This repo is abandoned... at the current moment .net 5 and the dependant libraries have implemented nearly everything that is provided here. This is now archival.
+
+## See the above
+
 ![.NET Standard](https://img.shields.io/badge/.NET%20Standard-2.0-green.svg)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=mrlunchbox777_StandardDot&metric=alert_status)](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
 [![Coverage](https://sonarcloud.io/api/project_badges/measure?project=mrlunchbox777_StandardDot&metric=coverage)](https://sonarcloud.io/dashboard?id=mrlunchbox777_StandardDot)
